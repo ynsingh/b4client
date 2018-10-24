@@ -20,7 +20,7 @@ public class SessionKey {
                 BufferedReader r = new BufferedReader(new FileReader( "Rand_server.txt"));
                 String s1 =null;
                 String s2 = null;
-                
+
                 while ((s1 = br.readLine()) != null)
                 {
                     list.add(s1);
@@ -34,26 +34,26 @@ public class SessionKey {
             {
                 e.printStackTrace();
             }
-            
-            
+
+
             BufferedWriter writer=null;
             writer = new BufferedWriter(new FileWriter("SessionKey.txt"));
-            
+
             String listWord;
             for (int i = 0; i< list.size(); i++)
             {
                 listWord = list.get(i);
                 writer.write(listWord);
-                
+
             }
-            
+
             writer.close();
         } catch (IOException ex) {
             Logger.getLogger(SessionKey.class.getName()).log(Level.SEVERE, null, ex);
         }
-   }
+    }
 }
-    
 
-    
+
+
 
