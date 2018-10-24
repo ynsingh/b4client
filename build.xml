@@ -99,6 +99,22 @@
 		</jar>
         </target>
 
+	 <target name="javadoc" description="javadoc documentation">
+		 <!--                <javadoc destdir="build/javadoc" version="true" author="true" access="public" -->
+			 <javadoc destdir="build/javadoc" version="true" author="true" access="public"
+                         doctitle="Brihaspati Api" windowtitle="Brihaspati  Api"
+                         bottom="Copyright &#169; 2018 Brihaspati Group IIT Kanpur. All Right Reserved.">
+                        <fileset dir="java/com/ehelpy/brihaspati4/" defaultexcludes="yes">
+                        </fileset>
+                        <fileset dir="java/" defaultexcludes="yes">
+                                <include name="*.java"/>
+                        </fileset>
+                        <package name="com.ehelpy.brihaspati4"/>
+                </javadoc>
+        </target>
+
+
+
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
         <copy todir="${ant.library.dir}">

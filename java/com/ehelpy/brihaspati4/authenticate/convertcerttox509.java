@@ -11,67 +11,67 @@ import java.util.Base64;
 //This function convert String formatted X.509 Certificate into its original form
 // It is able to convert the same either into a Certificate chain or individual certificate
 public class convertcerttox509 {
-	public static X509Certificate[] convertToX509Certarray(String certEntry) throws IOException {
-		 				
+    public static X509Certificate[] convertToX509Certarray(String certEntry) throws IOException {
+
         InputStream in = null;
         X509Certificate cert = null;
         try {
-        	
-        	//System.out.println("tHE RECIEVED CERT FOR CONVERSION IS:   "+certEntry);
+
+            //System.out.println("tHE RECIEVED CERT FOR CONVERSION IS:   "+certEntry);
             byte[] certEntryBytes = Base64.getDecoder().decode(certEntry);
             //for(int j =0; j<i; j++)
             //System.out.println("I am converting cert from string to X509 format. THe converted byte format cert is:   "+certEntryBytes[j]);
-            
+
             in = new ByteArrayInputStream(certEntryBytes);
             debug_level.debug(1, "I am converting cert from string to X509 format. THe converted byte array stream  format cert is:   "+in);
-            
+
             CertificateFactory certFactory = null;
-			certFactory = CertificateFactory.getInstance("X.509"); 
+            certFactory = CertificateFactory.getInstance("X.509");
             cert = (X509Certificate) certFactory.generateCertificate(in);
             System.out.println("I am converting cert from string to X509 format. THe converted cert is:   "+cert);
             //PublicKey pubkey = cert.getPublicKey();
             debug_level.debug(1, "Certificate to signature routine is completed ");
-			
+
         } catch (CertificateException ex) {
-        	ex.getMessage();
-        	return new X509Certificate[]{};
- 
+            ex.getMessage();
+            return new X509Certificate[] {};
+
         } finally {
             if (in != null) {
-                    in.close();
+                in.close();
             }
         }
         //System.out.println("I am converting cert from string to X509 format. THe converted cert is:   "+cert);
-       // return cert;
-        return new X509Certificate[]{cert};
+        // return cert;
+        return new X509Certificate[] {cert};
     }
-	public static X509Certificate convertToX509Cert(String certEntry) throws IOException {
-			
+    public static X509Certificate convertToX509Cert(String certEntry) throws IOException {
+
         InputStream in = null;
         X509Certificate cert = null;
         try {
-        	byte[] certEntryBytes = Base64.getDecoder().decode(certEntry);
-        	debug_level.debug(1, "tHE RECIEVED CERT FOR CONVERSION IS:   "+certEntry);
-        	
-            
+            byte[] certEntryBytes = Base64.getDecoder().decode(certEntry);
+            debug_level.debug(1, "tHE RECIEVED CERT FOR CONVERSION IS:   "+certEntry);
+
+
             in = new ByteArrayInputStream(certEntryBytes);
-            
+
             CertificateFactory certFactory = null;
-			certFactory = CertificateFactory.getInstance("X.509"); 
+            certFactory = CertificateFactory.getInstance("X.509");
             cert = (X509Certificate) certFactory.generateCertificate(in);
             debug_level.debug(1,"I am converting cert from string to X509 format. THe converted cert is:   "+cert);
-            
+
         } catch (CertificateException ex) {
-        	ex.getMessage();
-        	//return new X509Certificate[]{};
- 
+            ex.getMessage();
+            //return new X509Certificate[]{};
+
         } finally {
             if (in != null) {
-                    in.close();
+                in.close();
             }
         }
         return cert;
     }
 
-	
+
 }

@@ -17,8 +17,8 @@ import java.util.stream.StreamSupport;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 
 public class Main {
-	public static void main(String[] args)
-	{
+    public static void main(String[] args)
+    {
 //		InetAddress IPNow = null;
 //		try {
 //			IPNow = InetAddress.getLocalHost();
@@ -36,13 +36,13 @@ public class Main {
 //			{SysOutCtrl.SysoutSet("Your IP captured is"+ip, 1);
 //			SysOutCtrl.SysoutSet("Please check your connectivity", 1);}
 //	}
-		Enumeration<NetworkInterface> nics=null;
-		try {
-			 nics = NetworkInterface.getNetworkInterfaces();
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(nics);
-	}
-	}
+        Enumeration<NetworkInterface> nics=null;
+        try {
+            nics = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println(nics);
+    }
+}
