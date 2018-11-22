@@ -204,12 +204,14 @@ public class IndexManagementUtilityMethods extends IndexManagement
     {
         SysOutCtrl.SysoutSet("index table before entry");
         SysOutCtrl.SysoutSet("myIndex"+myindex,2);
+        
+        myindex.put(hash_id, node_id); // here appending xml details i.e. hash_id and node_id in index
 
         String A =myindex.keySet().toString();
         FileWriter F=null;
         try
         {
-            F = new FileWriter("MyIndexTable.xml");
+            F = new FileWriter("MyIndexTable.txt");
         }
         catch (IOException e1)
         {
@@ -231,10 +233,18 @@ public class IndexManagementUtilityMethods extends IndexManagement
         {
             e.printStackTrace();
         }
+        
+        printMap(myindex);
 
-        myindex.put(hash_id, node_id); // here appending xml details i.e. hash_id and node_id in index
-        SysOutCtrl.SysoutSet("index table after this entry myindex"+myindex,2);
     }
+    
+    public static <K, V> void printMap(Map<K, V> map) 
+	{
+    	System.out.println("MY index: ");
+    	System.out.println("");
+		for (Map.Entry<K, V> entry : map.entrySet()) 
+	    	System.out.println( entry.getKey() +" : "+entry.getValue());
+	}
 
     public static void getIndexing() throws Exception
     {   // creating xml to get indexing from immdt successor
@@ -798,8 +808,8 @@ public class IndexManagementUtilityMethods extends IndexManagement
     }
 
     //generating xml search query reply
-    public static void createXmlSearchQueryReply(String destIp,String nodeId, String to_hash_id, String selfNodeId, String selfIp,
-            String selfPortNo)
+    public static void createXmlSearchQueryReply(String caller_Ip,String querried_ip, String caller_node_id, String selfNodeId, String selfIp,
+            String querried_emailid_hash)
     {
 
         DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
@@ -829,10 +839,10 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         ((Element) codeele).setAttribute("tag", tagvalue);
 
-        Text t1 = doc.createTextNode(to_hash_id);
+        Text t1 = doc.createTextNode(caller_node_id);
 
         // next hop will be given by routing module
-        Text t2 = doc.createTextNode(nodeId);
+        Text t2 = doc.createTextNode(querried_ip);
 
         // String selfNodeId1="aaaaa";
 
@@ -840,7 +850,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         Text t4 = doc.createTextNode(selfIp);
 
-        Text t5 = doc.createTextNode(selfPortNo);
+        Text t5 = doc.createTextNode(querried_emailid_hash);
 
         hashidele.appendChild(t1);
         tonodeidele.appendChild(t2);
@@ -887,7 +897,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
 
         SysOutCtrl.SysoutSet("SearchQueryReply.xml file Generated ",2);
-        OverlayManagementUtilityMethods.sendFileDirect(destIp, new File("SearchQueryReply.xml"));
+        OverlayManagementUtilityMethods.sendFileDirect(caller_Ip, new File("SearchQueryReply.xml"));
         CommunicationManager.TransmittingBuffer.add( new File("SearchQueryReply.xml"));
         SysOutCtrl.SysoutSet("search query reply xml created and added to tx buffer",2);
         // return (new File("SearchQueryReply.xml"));
@@ -979,7 +989,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
     }
 
-    public static void informNodeIdToCaller(String caller, String value, String key) {// at responsible node informing action to caller node
+    public static void informNodeIdToCaller(String caller, String value, String key, boolean flag) {// at responsible node informing action to caller node
         // This method will inform the caller node the nodeId of the to_hash_id field in
         // his search query.
         // Now here caller's nodeId will be put as to_hash_id to route the query till
@@ -987,36 +997,57 @@ public class IndexManagementUtilityMethods extends IndexManagement
         // will have the desired node id
         // String nodeId=value;
 
-        String ip="yyyy";
-        if(value.equals(OverlayManagement.myNodeId))
+        String querried_ip="yyyy";
+        if(flag == true)
         {
-            ip= getMyIp();
+        
+        	if(value.equals(OverlayManagement.myNodeId))
+        	{
+        		querried_ip= getMyIp();
+        	}
+        
+        	else
+        	{ 
+        		querried_ip = CommunicationManager.myIpTable.get(value);// here i am putting directly ip address of the called
+        	}//String ip = OverlayManagement.myIpTable1.get(value);// here i am putting directly ip address of the called
+
+        	SysOutCtrl.SysoutSet("ip"+querried_ip,2 );													// node.
+        	// String nodeId = "IP_NOT_FOUND_AT RESP_NODE"; new
+        	//	String str= null;
+        	//    Optional<String> str2 = Optional.ofNullable(ip); new
+
+        	//    if (str2.isPresent()) new
+        	//	  {new
+        	//         nodeId = ip; new
+        	//       }new
+       
+        	//       SysOutCtrl.SysoutSet("destination ip not avaliable with comm mgr table", 3);
+        	
+        	String caller_node_id = caller;
+        	// String selfNodeId=OverlayManagement.myNodeId;
+        	
+        	String selfNodeId = OverlayManagement.myNodeId;// putting searched hash in self node id. this needs to be put in separate filed
+        	// later on.
+        	String selfIp = getMyIp();
+        	String querried_emailid_hash= key;
+        	SysOutCtrl.SysoutSet("self ip add " + selfIp,2);
+        	String caller_Ip=CommunicationManager.myIpTable.get(caller_node_id);
+        	createXmlSearchQueryReply(caller_Ip, querried_ip, caller_node_id, selfNodeId, selfIp, querried_emailid_hash);
+        	// CommunicationManager.TransmittingBuffer.add(searchQueryReply);
         }
+        
         else
-        {   ip = CommunicationManager.myIpTable.get(value);// here i am putting directly ip address of the called
-        }//String ip = OverlayManagement.myIpTable1.get(value);// here i am putting directly ip address of the called
-
-        SysOutCtrl.SysoutSet("ip"+ip,2 );													// node.
-        String nodeId = "IP_NOT_FOUND_AT RESP_NODE";
-        //	String str= null;
-        Optional<String> str2 = Optional.ofNullable(ip);
-
-        if (str2.isPresent()) {
-            nodeId = ip;
-        }
-        SysOutCtrl.SysoutSet("destination ip not avaliable with comm mgr table", 3);
-        String to_hash_id = caller;
-        // String selfNodeId=OverlayManagement.myNodeId;
-        String selfNodeId = OverlayManagement.myNodeId;// putting searched hash in self node id. this needs to be put in separate filed
-        // later on.
-        String selfIp = getMyIp();
-        String selfPortNo = key;
-        SysOutCtrl.SysoutSet("self ip add " + selfIp,2);
-        String destIp=CommunicationManager.myIpTable.get(to_hash_id);
-        createXmlSearchQueryReply(destIp, nodeId, to_hash_id, selfNodeId, selfIp, selfPortNo);
-        // CommunicationManager.TransmittingBuffer.add(searchQueryReply);
+        {
+        	querried_ip = value;
+        	String caller_node_id = caller;
+        	String selfNodeId = OverlayManagement.myNodeId;
+        	String selfIp = getMyIp();
+        	String querried_emailid_hash= key;
+        	SysOutCtrl.SysoutSet("self ip add " + selfIp,2);
+        	String caller_Ip=CommunicationManager.myIpTable.get(caller_node_id);
+        	createXmlSearchQueryReply(caller_Ip, querried_ip, caller_node_id, selfNodeId, selfIp, querried_emailid_hash);
+        }	
     }
-
     public static String getMyIp() {// getting my ip address		// TODO Auto-generated method stub
         while(!UpdateIP.Connected)
         {
@@ -1195,7 +1226,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
             SysOutCtrl.SysoutSet("I am not a responsible node for this email.",2);
             SysOutCtrl.SysoutSet("creating search query.",2);
             emailSha1.put(sha1, email);
-            searchReply.put(sha1, ":not available, please try again");
+            searchReply.put(sha1, null);
             //searchReply.put(sha1, "127.0.0.1");
 
 
@@ -1218,13 +1249,19 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
                     if(IndexManagement.searchReplyReceived==false)
                     {
-                        SysOutCtrl.SysoutSet("please wait");
+                        /*  SysOutCtrl.SysoutSet("please wait");
                         try {
                             Thread.sleep(3000);
                         } catch (InterruptedException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
-                        }
+                        }*/
+                 
+                        JFrame frame1 = new JFrame("Message");
+                        //show a joptionpane dialog using showMessageDialog
+                        JOptionPane.showMessageDialog(frame1, "Searched IP Not Found In Given Time ");
+                        String destIp = "TimedOut";
+                       
                     }
                     else
                     {
@@ -1244,9 +1281,10 @@ public class IndexManagementUtilityMethods extends IndexManagement
             };
 
             timer.schedule(startIM, 30000);
+            
+            return destIp;
         }
 
-        return destIp;
     }
 
     private static final int setInterval()
