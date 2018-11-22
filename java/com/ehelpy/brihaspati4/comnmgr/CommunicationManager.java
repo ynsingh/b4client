@@ -30,7 +30,6 @@ public class CommunicationManager extends Thread
 	
 	public void  run()
 	{
-	
 		Thread t0= new Thread
 		(
 				new Runnable()
@@ -135,14 +134,5 @@ public class CommunicationManager extends Thread
 		t2.start();
 		
 		SysOutCtrl.SysoutSet("my predecessor 4....................."+PredecessorSuccessor.myPredecessors[4]);
-
-	
 	}
-	
-
-	
 }
-
-
-
-

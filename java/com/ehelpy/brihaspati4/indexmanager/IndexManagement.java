@@ -151,15 +151,21 @@ public class IndexManagement extends Thread
                             String caller= info_from_xml[3];
                             SysOutCtrl.SysoutSet("value after checking index table :"+value);
 
-                            if(value.equals("xxxxx"))
+                            boolean flag = true;
+							if(value.equals("NoEntryInIndexTable"))
                             {
-                                SysOutCtrl.SysoutSet("no match found in this index table sending 'xxxxx' to caller",2);
-                                IndexManagementUtilityMethods.informNodeIdToCaller(caller,value,hashIdFromxml);
+								flag = false;
+                                SysOutCtrl.SysoutSet("no match found in this index table sending 'NoEntryInIndexTable' to caller",2);
+                                IndexManagementUtilityMethods.informNodeIdToCaller(caller,value,hashIdFromxml, flag);
                             }
-                            SysOutCtrl.SysoutSet(" match found in this index table informing caller",2);
+							
+							else
+							{	
+								SysOutCtrl.SysoutSet(" match found in this index table informing caller",2);
 
-                            IndexManagementUtilityMethods.informNodeIdToCaller(caller,value, hashIdFromxml);
-                            // inform the sender about this value ie node id by setting up a socket.
+								IndexManagementUtilityMethods.informNodeIdToCaller(caller,value, hashIdFromxml, flag);
+								// inform the sender about this value ie node id by setting up a socket.
+							}
                         }
 
                         else if(info_from_xml[0].equals( "0004"))
@@ -202,11 +208,11 @@ public class IndexManagement extends Thread
 
                         else if(info_from_xml[0].equals( "0012"))	// reply of search query
                         {
-                            String nodeId=info_from_xml[2];
-                            searchReply.put(info_from_xml[5], nodeId);// storing hashid(5) and ip(2)  of called number in searchreply
+                            String querried_ip=info_from_xml[2];
+                            searchReply.put(info_from_xml[5], querried_ip);// storing querried_emailid_hash(5) and ip(2)  of called number in searchreply
                             IndexManagementUtilityMethods.storeIp( info_from_xml[5]);
                             searchReplyReceived=true;
-                            SysOutCtrl.SysoutSet("Search query reply: nodeId "+nodeId,2);
+                            SysOutCtrl.SysoutSet("Search query reply: nodeId "+querried_ip,2);
                         }
                         // inform the sender about this value ie node id by setting up a socket.
 

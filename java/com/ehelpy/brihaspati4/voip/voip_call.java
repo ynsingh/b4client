@@ -45,7 +45,7 @@ public class voip_call {
             //Pass emailid to Index Manager to fetch the IP address
             //String IPAddr_Caller =	IndexManagementUtilityMethods.searchEmailId(called_emailid, client_cert);// later on replaced by the ip address fetched from the index manager
             String IPAddr_Caller =	IndexManagementUtilityMethods.searchEmailId(called_emailid );// later on replaced by the ip address fetched from the index manager
-            if (IPAddr_Caller == null) {
+            if (IPAddr_Caller.equals("NoEntryInIndexTable") || IPAddr_Caller.equals("TimedOut")) {
                 b4server_services.service();
                 return ;
             }

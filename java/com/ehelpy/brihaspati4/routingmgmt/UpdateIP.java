@@ -26,7 +26,7 @@ public class UpdateIP extends RTUpdate9
 
     public synchronized void run() //String UpdateThisIP()// throws UnknownHostException
     {
-        com.ehelpy.brihaspati4.indexmanager.CreateXmlFile IPUpdateQuery = new com.ehelpy.brihaspati4.indexmanager.CreateXmlFile();
+     //   com.ehelpy.brihaspati4.indexmanager.CreateXmlFile IPUpdateQuery = new com.ehelpy.brihaspati4.indexmanager.CreateXmlFile();
 
         DelayInMills CreateDelay = new DelayInMills();
         long Delay = 3000;// This needs to be changed to the amount of time after
@@ -120,7 +120,7 @@ public class UpdateIP extends RTUpdate9
                     }
 
                     else {
-                        Collection<String> Node_id_extracted = CommunicationManager.myIpTable.keySet(); /// code to extract hash_id from array by first
+                /*        Collection<String> Node_id_extracted = CommunicationManager.myIpTable.keySet(); /// code to extract hash_id from array by first
                         /// converting it into collection then to an array
                         Object[] Nodeid_array = Node_id_extracted.toArray();
 
@@ -131,7 +131,7 @@ public class UpdateIP extends RTUpdate9
                             CommunicationManager.TransmittingBuffer.add(IPUpdate);
                             SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
                             SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
-                        }
+                        }	*/
 
                         SysOutCtrl.SysoutSet("IP add updated to :" + MyIP,1);
 
