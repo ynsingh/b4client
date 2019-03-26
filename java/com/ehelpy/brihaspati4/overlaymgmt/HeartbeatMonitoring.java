@@ -3,233 +3,287 @@ package com.ehelpy.brihaspati4.overlaymgmt;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
+import com.ehelpy.brihaspati4.comnmgr.XmlFileSegregation;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
+import com.ehelpy.brihaspati4.routingmgmt.PurgeEntry;
+import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 
 public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
-	//Maj Piyush Tiwari
-	//this code is for checking the reachability of nodes list available with this node.
+	       
+	  public static void heartbeatCheck() {
+          // TODO Auto-generated method stub
+  	SysOutCtrl.SysoutSet("you are in heartbeatcheck method cheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeckkkkkkkkkkkkkkkkkkkkk111111111111111111", 2);
+  	
+  	/// code for checking  ip table entries
+  	
+  	boolean bool_iptable = false;
+     Set<String> keys_ip = CommunicationManager.myIpTable.keySet();
+     for(String key: keys_ip)
+     {
+   	  String ip = CommunicationManager.myIpTable.get(key);
+   	  bool_iptable =	CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip);
+   	 
+   	  if(!bool_iptable)
+   	  {
+   		  CommunicationManager.myIpTable.remove(key, ip);
+   		  OverlayManagement.updatPredSec();
+   		  Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet(); /// code to extract hash_id from array by first
+   			/// converting it into collection then to an array
+   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
 
-		
-	   
-		public static String[][] DeadAfterFirstPingArray = new String[CommunicationManager.myIpTable.size()][2];//Create a 2d array of the nodes which were dead after first ping
-        public static String[][] DeadAfterSecondPingArray = new String[CommunicationManager.myIpTable.size()][2];//Create a 2d array of the nodes which were dead after second ping
-        public static String[][] DeadAfterThirdPingArray = new String[CommunicationManager.myIpTable.size()][2];//Create a 2d array of the nodes which were dead after third ping
-        
-        
-        
-        
-        public static void heartbeatCheck() {
-                // TODO Auto-generated method stub
-        	SysOutCtrl.SysoutSet("you are in heartbeatcheck method cheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeckkkkkkkkkkkkkkkkkkkkk", 2);
-        	
-       
-            			Collection<String> ipList=CommunicationManager.myIpTable.values();//convert the linked hash map of node id and iptable from comn mngr to collection of string.
-            			Object[] ip_array = ipList.toArray();//convert the collection to array.						
-            			
-            			int IPSize =ip_array.length;
-            			
-            			SysOutCtrl.SysoutSet("size of ip array :"+IPSize, 2);
-            			
-            			for(int i1=0;i1<ip_array.length;i1++) 
-            			{
-                        
-                        
-            				boolean bool;
-            				String ip = (String) ip_array[i1];
-            				SysOutCtrl.SysoutSet("Ip table from first method " +ip, 2);
-                
-                        	try {
-                        			bool = pingCheck(ip);
-                        			SysOutCtrl.SysoutSet("bool"+bool, 2);
-                        			if(bool==false)
-                        			{
-                        				
-                        				SysOutCtrl.SysoutSet("you are in if block of first pingCheck", 3);
-                        				SysOutCtrl.SysoutSet("size of the array " +ip_array.length , 3);
-                        				
-                        				DeadAfterFirstPingArray[i1][0] = pingArray[i1][0];
-                        				DeadAfterFirstPingArray[i1][1] = pingArray[i1][1];
-                        				SysOutCtrl.SysoutSet(DeadAfterFirstPingArray[i1][0], 2);
-                        				SysOutCtrl.SysoutSet(DeadAfterFirstPingArray[i1][1], 2);
-                              
-                                
-                        			}  
-                        			
-                        			 
-                        			else 
-                        			{
-                        				SysOutCtrl.SysoutSet("you are in else block of first pingCheck", 3);
-                        				DeadAfterFirstPingArray[i1][0] = "0";
-                        				DeadAfterFirstPingArray[i1][1] = "0";
-                        				SysOutCtrl.SysoutSet(DeadAfterFirstPingArray[i1][0], 2);
-                        				SysOutCtrl.SysoutSet(DeadAfterFirstPingArray[i1][1], 2);
-                        			}	
-                        		}	
-                        	
-                        	catch (Exception e) {
-                        		// TODO Auto-generated catch block
-                        		e.printStackTrace();
-                        		System.out.println(e);
-                    			e.toString();
-                        		}
-            			}
-                        	
-            			SysOutCtrl.SysoutSet("DeadAfterFirstPingArray", 2);               
-                
-                  
-                                
-            			System.out.println("Checking the DeadAfterFirstPing nodes by pinging 2nd time");
-                  
-            			for(int i2=0;i2<ip_array.length;i2++) 
-            			{
-                
-                
-            				boolean bool = true;
-            				String FirstTimeDeadIp = DeadAfterFirstPingArray[i2][1];
-            				System.out.println("ip variable from 2nd method "+FirstTimeDeadIp);
-                
-            				if(FirstTimeDeadIp  == "0")
-                
-            				{   }
-            				else
-            				{
-            					System.out.println("you are in if loop of ip equals null");
-            					try {
-            						bool =pingCheck(FirstTimeDeadIp);
-            						} catch (Exception e) {
-                // TODO Auto-generated catch block
-            							e.printStackTrace();
-            							System.out.println(e);
-            							e.toString();
-            						}
-        
-            				if(bool==false)
-            				{
-                
-        
-            					DeadAfterSecondPingArray[i2][0] = DeadAfterFirstPingArray[i2][0];
-            					DeadAfterSecondPingArray[i2][1] = DeadAfterFirstPingArray[i2][1];
-                
-            				}        
-            				else {
-            					DeadAfterSecondPingArray[i2][0] = "0";
-            					DeadAfterSecondPingArray[i2][1] = "0";
-            					}
-            				}}
-            			for( int i2 = 0;i2<DeadAfterFirstPingArray.length;i2++)
-            			{
-            				System.out.println(DeadAfterSecondPingArray[i2][0]);
-            			}
+   													
+   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
 
-            			System.out.println("Checking the DeadAfterSecondPing nodes by pinging 3rd time");
-            			for(int i3=0;i3<ip_array.length;i3++) 
-            			{
-                
-                
-            				boolean bool = true;
-            				String SecondTimeDeadIp = DeadAfterFirstPingArray[i3][1];
-            				System.out.println("ip variable from 2nd method "+SecondTimeDeadIp);
-                
-            				if(SecondTimeDeadIp  == "0")
-                
-            				{   }
-            				else
-            				{
-            					System.out.println("you are in if loop of ip equals null");
-            					try {
-            						bool =pingCheck(SecondTimeDeadIp);
-            					} catch (Exception e) {
-            						// TODO Auto-generated catch block
-            						e.printStackTrace();
-            						System.out.println(e);
-            						e.toString();
-            					}
-        
-            			if(bool==false)
-                         {
-                
-        
-            				DeadAfterThirdPingArray[i3][0] = DeadAfterSecondPingArray[i3][0];
-            				DeadAfterThirdPingArray[i3][1] = DeadAfterSecondPingArray[i3][1];
-                
-                         }        
-            			else {
-            				DeadAfterThirdPingArray[i3][0] = "0";
-            				DeadAfterThirdPingArray[i3][1] = "0";
-            			}
-        
-            				}
-            			}
-        com.ehelpy.brihaspati4.routingmgmt.PurgeEntry deleteFromRt = new com.ehelpy.brihaspati4.routingmgmt.PurgeEntry();
-        
-        	for( int i3 = 0;i3<DeadAfterThirdPingArray.length;i3++) {
-        	
-        	if(DeadAfterThirdPingArray[i3][0] != null) {
-        		
-        		deleteFromRt.purge(DeadAfterThirdPingArray[i3][0]);
-        		
-        		CommunicationManager.myIpTable.remove(DeadAfterThirdPingArray[i3][0], DeadAfterThirdPingArray[i3][1]);
-        		IndexManagementUtilityMethods.removeIndexing(DeadAfterThirdPingArray[i3][0]);
-        	}
-//        	else {
-//        		pingArray[i3][0] = "0";
-//        	   	pingArray[i3][1] = "0";
-//        		}
-                System.out.println(DeadAfterThirdPingArray[i3][0]);
-
-                }
-      	
-        SysOutCtrl.SysoutSet("HM run completed doooooooooooooooooooooooooooooooooneeeeeeeeeeeeeeeeeeeeeeeeeee", 2);
-		        
-        }
-
-    	public static boolean pingCheck(String ip) throws IOException, InterruptedException  
+   		  CommunicationManager.lock.lock();
+   		  try
+   		  {
+   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+   		  }
+   		  finally
+   		  {
+   				CommunicationManager.lock.unlock();
+   		  }
+   			
+   	}	  
+	  }
+    
+     //removing entries from suu and pred
+ 	for(int i = 0; i<CommunicationManager.succ.size(); i++)
 	{
-
-		Process p1 = java.lang.Runtime.getRuntime().exec("ping -n 4 "+ip);
-  	    int returnVal = p1.waitFor();
-  	    System.out.println(returnVal);
-  	    boolean reachable = (returnVal==0);
-  			if (reachable==true)
-  			{
-  				return reachable;
-  			}else
-  			{
-  				Process p2 = java.lang.Runtime.getRuntime().exec("ping -c 4 "+ip);
-  		  	    int returnVal2 = p2.waitFor();
-  		  	    System.out.println(returnVal2);
-  		  	boolean reachable2 = (returnVal2==0);
-  		  return reachable2;
-  			}
-		}
-        
-      /* public static boolean pingCheck(String ip) throws IOException {
+		if(!CommunicationManager.myIpTable.containsKey(CommunicationManager.succ.get(i)))
+			CommunicationManager.succ.remove(i);
+	}
 	
-        	InetAddress address = InetAddress.getByName(ip);
-        	System.out.println("Is host reachable- get address? " + address.toString());
-            boolean reachable = address.isReachable(10000);
-
-            System.out.println("Is host reachable? " + reachable);
-            return reachable;
+	for(int i = 0; i<CommunicationManager.pred.size(); i++)
+	{
+		if(!CommunicationManager.myIpTable.containsKey(CommunicationManager.pred.get(i)))
+			CommunicationManager.pred.remove(i);
+	}
+      
+	
+	///code for myindex and cached index entries removal
+	
+      Collection<String> ipList_myindex = IndexManagement.NodeId_ip_of_myindex.values();
+      Collection<String> ipList_cached_index = IndexManagement.cached_NodeId_ip_index.values();
+      
+      Object[] ip_array_myindex = ipList_myindex.toArray();
+      Object[] ip_array_cached_index = ipList_cached_index.toArray();
+      			
+      
+      boolean entry_removed = false;
+      
+      for(int i=0;i<ip_array_myindex.length;i++) 
+      {
+      	String ip = (String) ip_array_myindex[i];
+      	
+      	String ip_check = null;
+      	String nodeid_of_ip = null;    
+      	
+      	Set<String> keys1 = IndexManagement.NodeId_ip_of_myindex.keySet();
+          for(String key : keys1)   
+          {
+          	ip_check = IndexManagement.NodeId_ip_of_myindex.get(key);
+          	if(ip_check.equals(ip))
+          	{
+          		nodeid_of_ip = key;
+          	   	break;
+          	}
           }
-        */
+          
             
-//        public static boolean checkNull(String[][] array)
-//    	{boolean bool= false;
-//
-//    	
-//    		if(!Arrays.asList(array).isEmpty())
-//    			
-//    		{bool= false;}
-//    		bool=true;
-//    		
-//    		
-//    		return bool;
-//    	
-//    	}
-  
+          String node_id_of_email_hash_check = null;
+          String email_hash = null;
+      	
+          Set<String> keys2 = IndexManagement.myindex.keySet();
+          for(String key : keys2)   
+          {
+          	node_id_of_email_hash_check = IndexManagement.myindex.get(key);
+          	if(node_id_of_email_hash_check.equals(nodeid_of_ip))
+          	{
+          		email_hash = key;
+          		break;
+          	}
+          }
+      	
+        boolean bool;
+      	
+      	SysOutCtrl.SysoutSet("Ip table from first method " +ip, 2);
+          
+                  
+      	bool =	CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip);
+      	SysOutCtrl.SysoutSet("bool"+bool, 2);
+      	
+      	if(bool==false)
+      	{
+      		SysOutCtrl.SysoutSet("DeadAfterPing", 2);  
+             	
+      		System.out.println("Ip to be removed");
+  		
+        		IndexManagement.NodeId_ip_of_myindex.remove(nodeid_of_ip, ip);
+        		
+        		if(!email_hash.equals(null)||!email_hash.equals("null")||!email_hash.equals(" ")||!email_hash.equals("")||!email_hash.isEmpty())
+        		{	
+        			IndexManagementUtilityMethods.myindex.remove(email_hash, node_id_of_email_hash_check);
+        			entry_removed = true;
+        		}	
+        	
+      	}
+      }
+      
+      if(entry_removed)
+    	  IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+      
+      for(int i=0;i<ip_array_cached_index.length;i++) 
+      {
+      	String ip = (String) ip_array_cached_index[i];
+      	
+      	String ip_check = null;
+      	String nodeid_of_ip = null;    
+      	
+      	Set<String> keys1 = IndexManagement.cached_NodeId_ip_index.keySet();
+          for(String key : keys1)   
+          {
+          	ip_check = IndexManagement.cached_NodeId_ip_index.get(key);
+          	if(ip_check.equals(ip))
+          	{
+          		nodeid_of_ip = key;
+          	   	break;
+          	}
+          }
+          
+            
+          String node_id_of_email_hash_check = null;
+          String email_hash = null;
+      	
+          Set<String> keys2 = IndexManagement.cached_index.keySet();
+          for(String key : keys2)   
+          {
+          	node_id_of_email_hash_check = IndexManagement.cached_index.get(key);
+          	if(node_id_of_email_hash_check.equals(nodeid_of_ip))
+          	{
+          		email_hash = key;
+          		break;
+          	}
+          }
+      	
+        boolean bool;
+      	
+      	SysOutCtrl.SysoutSet("Ip table from first method " +ip, 2);
+          
+                  
+      	bool =	CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip);
+      	SysOutCtrl.SysoutSet("bool"+bool, 2);
+      	
+      	if(bool==false)
+      	{
+      		SysOutCtrl.SysoutSet("DeadAfterPing", 2);  
+             	
+      		System.out.println("Ip to be removed");
+  		
+        		IndexManagement.cached_NodeId_ip_index.remove(nodeid_of_ip, ip);
+        		
+        		if(!email_hash.equals(null)||!email_hash.equals("null")||!email_hash.equals(" ")||!email_hash.equals("")||!email_hash.isEmpty())
+        			IndexManagementUtilityMethods.cached_index.remove(email_hash, node_id_of_email_hash_check);
+        			
+      	}
+      }
+      			
+     ///for routing table removal
+      
+      boolean bool_routingtable = false;
+      Set<String> keys_rt = RTUpdate9.Routing_Table.keySet();
+      for(String key: keys_rt)
+      {
+    	  String ip = RTUpdate9.Routing_Table.get(key);
+    	  bool_routingtable =	CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip);
+    	  if(!bool_routingtable)
+    	  {
+    		  System.out.println("Entry to be pugedd: "+ key);
+				
+					  RTUpdate9.Routing_Table.remove(key, ip);
+					  PurgeEntry.purge(key);
+    	  }
+      }
+      
+      
+      
+      
+  SysOutCtrl.SysoutSet("HM run completed doooooooooooooooooooooooooooooooooneeeeeeeeeeeeeeeeeeeeeeeeeee 1111111111111111111", 2);
+	        
+  }
+
+        
+        
+	  public static void heartbeatCheck1() throws IOException {
+                // TODO Auto-generated method stub
+		  SysOutCtrl.SysoutSet("you are in heartbeatcheck method cheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeckkkkkkkkkkkkkkkkkkkkk22222222222222", 2);
+        	
+		  Map<String,String>	ActNodeipList= OverlayManagement.AliveNodes;
+		  List<String> Act=ActNodeipList.keySet().stream().collect(Collectors.toList());
+		  Collections.sort(Act);
+		//  com.ehelpy.brihaspati4.routingmgmt.PurgeEntry deleteFromRt = new com.ehelpy.brihaspati4.routingmgmt.PurgeEntry();
+            			
+		  Set<String> keys = RTUpdate9.Routing_Table.keySet();
+		  
+		  try
+		  {
+			  for(String key: keys)
+			  {
+				  if(Act.contains(key))
+				  {
+					  System.out.println("the NON purged entries:"+key);
+				  }
+				  else 
+				  {	 
+					  try {
+						  String purge = key;
+						  String ipadd = RTUpdate9.Routing_Table.get(key);
+						  if(!purge.equals(null))
+						  {
+							  System.out.println("Entry to be pugedd: "+ purge);
+							  
+							  if(CommunicationManager.myIpTable.containsKey(purge))
+							  { 
+								  CommunicationManager.myIpTable.remove(purge, ipadd);
+								  OverlayManagement.updatPredSec();
+							  }
+								  
+							  RTUpdate9.Routing_Table.remove(purge, ipadd);
+							  PurgeEntry.purge(purge);
+						  }
+					  }catch(NullPointerException e)
+					  {}
+            	 }
+			  }
+		  }
+		  catch(ConcurrentModificationException e)
+		  {
+			  
+		  }
+		  
+		  		  
+		  Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+		  save.Save_RTNow();
+		  
+		  SysOutCtrl.SysoutSet("RT saved after Purging", 2);
+      	
+		  SysOutCtrl.SysoutSet("HM run completed doooooooooooooooooooooooooooooooooneeeeeeeeeeeeeeeeeeeeeeeeeee22222222222222222", 2);
+		  OverlayManagement.AliveNodes.clear(); 
+		  System.out.println(AliveNodes);
+            			
         }
+		
+  	}

@@ -5,165 +5,139 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Set;
 
 public class Save_Retrieve_RT extends UpdateTabFromQuery
 {
-    public static String[] NodesInRT = new String[120];
 
-    public static class Save_RT
-    {
-        int LenP ;
-        int LenS;
-        FileWriter RTWriter = null;
+	
+	public static class Save_RT
+	{
+		public void Save_RTNow() 
+		{ 
+			Set<String> nodeId_extracted = Routing_Table.keySet(); /// code to extract hash_id from array by first
+			/// converting it into collection then to an array
+			Collection<String> ip_extracted = Routing_Table.values();
+		
+			String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+			String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+			
+			RoutingTableWriter(nodeIdArr,ipAddArr);
+		}
 
-        public void Save_RTNow()
-        {
+		public static void RoutingTableWriter(String[] nodeId, String[] ipAdd)
+		{
+			FileWriter write = null;
+			String[] NodeIpArr=new String[nodeId.length];
+			
+			for (int i=0; i<nodeId.length;i++)
+			{
+				String NodeID = nodeId[i];
+				String IpAdd = ipAdd[i];
+				String NodeIp=NodeID.concat(IpAdd);
+				NodeIpArr[i]=NodeIp;
+			}
+			try
+			{
+				write = new FileWriter("RTP2P.txt");
+			}
+			catch (IOException e1) 
+			{
+		
+				e1.printStackTrace();
+			}
+			
+			PrintWriter wr = new PrintWriter(write);
+		
+			for(int j=0; j<NodeIpArr.length;j++)
+			{
+				wr.write(NodeIpArr[j]);
+				wr.println("");
+			}
+		
+			SysOutCtrl.SysoutSet("Routing table written to file");
+			wr.flush();
+			
+		}
+	}
+	
+	public static class Retrieve_RT
+	{
+		public String[][] Retrieve_RT_Now() throws IOException
+		{
+			CheckRTExists CheckRT = new CheckRTExists();
+			boolean RTExists = CheckRT.ImportRT();
+			
+		if(RTExists==true)
+		{
+			try 
+			{
 
-
-            try {
-                RTWriter = new FileWriter("RTP2P.xml");
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            for (int i = 0; i < Pred.length; i++)
-            {
-                if(Pred[i]!=null)
-                {
-                    NodesInRT[i] = Pred[i];
-                }
-                else
-                {
-                    LenP = i;
-                    SysOutCtrl.SysoutSet("Lenght in Pred is :"+LenP,3);
-                    break;
-                }
-            }
-
-            for (int i = 0; i < Succ.length; i++)
-            {
-                if(Succ[i]!=null)
-                {
-                    NodesInRT[LenP+i] = Succ[i];
-                }
-                else
-                {
-                    LenS=LenP+i;
-                    SysOutCtrl.SysoutSet("LenP + LenS is :"+ LenS,3);
-                    break;
-                }
-            }
-
-            for (int i = 0; i < Mid.length; i++)
-            {
-                if(Mid[i]!=null)
-                {
-                    NodesInRT[LenS+i] = Mid[i];
-                }
-            }
-
-            for(int i=0; i<NodesInRT.length; i++)
-            {
-                if(NodesInRT[i]!=null)
-                {
-                    SysOutCtrl.SysoutSet(i+" Node in RT :"+ NodesInRT[i],3);
-                    try
-                    {
-                        RTWriter.write(NodesInRT[i]);
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            try
-            {
-                RTWriter.flush();
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-//				e.printStackTrace();
-            }
-        }
-
-    }
-
-    static class Retrieve_RT
-    {
-        public String[] Retrieve_RT_Now()
-        {
-            CheckRTExists CheckRT = new CheckRTExists();
-            boolean RTExists = CheckRT.ImportRT();
-
-            if(RTExists=true)
-            {
-                try
-                {
-                    BR = new BufferedReader(new FileReader("RTP2P.xml"));
-
-//				BR = new BufferedReader(new FileReader("D:\\roy\\aaaaaaroy\\IITK\\Java practice\\Wk space prac\\Trial\\RTP2P.xml"));
+				BR = new BufferedReader(new FileReader("RTP2P.txt"));
+				
+//				BR = new BufferedReader(new FileReader("D:\\roy\\aaaaaaroy\\IITK\\Java practice\\Wk space prac\\Trial\\RTP2P.txt"));
 //				Change address above for testing purposes
-
-                    StringBuffer StrBuff = new StringBuffer();
-                    String Line;
-                    String NodeId;
-
-                    try
-                    {
-                        Line = BR.readLine();
-                        if (Line!=null)
-                        {
-                            int Length = Line.length();
-                            int Iterator = Length/40;
-                            for(int l=0,j=0; l<Iterator; j=j+40,l++)
-                            {
-                                NodeId = Line.substring(j,j+40);
-//								String Node = line.substring(j,j+40);
-                                RoutingInptBuff[l] = NodeId;
-                                SysOutCtrl.SysoutSet(l+" Entry in RotingInputBuff :"+RoutingInptBuff[l],3);
-                            }
-                        }
-                    }
-
-                    catch (IOException e)
-                    {
-                        // TODO Auto-generated catch block
-//					e.printStackTrace();
-                    }
-                }
-
-
-                catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-//				e.printStackTrace();
-                    SysOutCtrl.SysoutSet("RT NOT FOUND, by Save_Retrieve_RT",3);
-                    SysOutCtrl.SysoutSet("Initialising NULL RT...",3);
-
-                    for(int m=0; m<120; m++)
-                    {
-                        RoutingInptBuff[m]=null;
-                        SysOutCtrl.SysoutSet(m+" "+RoutingInptBuff[m],3);
-                    }
-                }
-            }
-
-            else
-            {
-                SysOutCtrl.SysoutSet("RT NOT FOUND",1);
-                SysOutCtrl.SysoutSet("Initialising NULL RT...",1);
-
-                for(int m=0; m<120; m++)
-                {
-                    RoutingInptBuff[m]=null;
-                    SysOutCtrl.SysoutSet(m+" "+RoutingInptBuff[m], 3);
-                }
-            }
-            return RoutingInptBuff;
-        }
-    }
+			
+				String Line;
+				String NodeId;
+				String Ipadd;
+				try
+				{	
+			
+				for(int l=0;l<120;l++)
+				{
+					
+					Line = BR.readLine();
+					int number=Line.length();
+					if (Line!=null)
+					{
+						NodeId = Line.substring(0,40);
+						Ipadd= Line.substring(40,number);
+						RoutingInptBuff[l][0] = NodeId;
+						RoutingInptBuff[l][1] = Ipadd;
+						SysOutCtrl.SysoutSet(l+" Entry in RotingInputBuff :"+RoutingInptBuff[l][0]+RoutingInptBuff[l][1],3);
+						System.out.println(l+" Entry in RotingInputBuff :"+RoutingInptBuff[l][0]+RoutingInptBuff[l][1]);
+				
+					 } 	
+				}	
+				}catch (NullPointerException e) 
+				{
+				}catch(IndexOutOfBoundsException e)
+				{
+				}
+			
+			}
+				
+			catch (FileNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				//				e.printStackTrace();
+				SysOutCtrl.SysoutSet("RT NOT FOUND, by Save_Retrieve_RT",3);
+				SysOutCtrl.SysoutSet("Initialising NULL RT...",3);
+				
+				for(int m=0;m<120;m++)
+				{
+					RoutingInptBuff[m][0]=null;
+					SysOutCtrl.SysoutSet(m+" "+RoutingInptBuff[m][0],3);
+			    }
+			}
+		}	
+		
+		else 
+		{
+			SysOutCtrl.SysoutSet("RT NOT FOUND",1);
+			SysOutCtrl.SysoutSet("Initialising NULL RT...",1);
+			
+			for(int m=0;m<120;m++)
+		    {
+				RoutingInptBuff[m][0]=null;
+		    	SysOutCtrl.SysoutSet(m+" "+RoutingInptBuff[m][0], 3);
+		    }
+		}
+		return RoutingInptBuff;
+		}
+	}
 }
 
