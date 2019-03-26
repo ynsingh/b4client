@@ -13,7 +13,7 @@ import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
 
 public class P2PMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // TODO Auto-generated method stub
 
         //CommunicationUtilityMethods.fillReceiveBuffer();//to simulate running condition when 10 xml query files are loaded in RxBuffer.

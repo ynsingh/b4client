@@ -11,16 +11,33 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
+import com.ehelpy.brihaspati4.indexmanager.SHA1;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
+import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
+import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 
 public class CommunicationUtilityMethods extends CommunicationManager {
@@ -32,98 +49,153 @@ public class CommunicationUtilityMethods extends CommunicationManager {
 
         String str = inFile.getName();		// System.out.println("reply from addQueryFile method, Flename="+str);
 
+       synchronized(lock_RecBuff_Main)
+       {
         ReceivingBuffer.add(ReceivingBuffer.size(), inFile); // this statement will append the msg ie
-        // filename(Queryi.xml) in the receiving buffer
-        SysOutCtrl.SysoutSet("file added to receving buffer"+str);
-        SysOutCtrl.SysoutSet("Receiving Bufer: "+ReceivingBuffer);
+        
+        
+        	// filename(Queryi.xml) in the receiving buffer
+       	SysOutCtrl.SysoutSet("file added to receving buffer"+str);
+       	SysOutCtrl.SysoutSet("Receiving Bufer: "+ReceivingBuffer);
+       }
+       	
     }
+    public static void addQueryTransmittingBuffer(File inFile) 
+    // TransmittingBuffer
+    {
+    	synchronized(lock_TransBuff_Main)
+    	{
+    		System.out.println("adding to transmit buff");
+        	TransmittingBuffer.add(TransmittingBuffer.size(), inFile); 
+    	}
+       	
+   }
+
 
     public File getQueryFile() // get a message from the front of the queue of receiving buffer // returns an
     // xml file
     {
+    	synchronized(lock_RecBuff_Main)
+    	{
+        	return ReceivingBuffer.get(0);
+    	}
+   }
 
-        return ReceivingBuffer.get(0);
-    }
-
-    public static void fileSender(String toNodeIp, String s) {
+    public static void fileSender(String toNodeIp, String s) 
+    {
         SysOutCtrl.SysoutSet("you are in fileSender method",2);
         SysOutCtrl.SysoutSet("Transmitting buffer status: "+TransmittingBuffer);
-        int port = 2222;
-        Socket sock = null;
-        try {
-            sock = new Socket(toNodeIp, port);
-        } catch (UnknownHostException e1) {
-            // TODO Auto-generated catch block
-            System.out.println("1111");
-            //e1.printStackTrace();
-            SysOutCtrl.SysoutSet("check connection");
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            SysOutCtrl.SysoutSet("Connection timed out: Please check your connectivity with"+ toNodeIp,1);
-//			FileWriter F=null;
-//			try {
-//				F = new FileWriter("ReAdd.xml");
-//			} catch (IOException e11) {
-//				// TODO Auto-generated catch block
-//				e11.printStackTrace();
-//			}
-//			try {
-//				F.write(s);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//			try {
-//				F.flush();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//			File ReTx = new File("ReAdd.xml");
-//		    CommunicationManager.TransmittingBuffer.add(ReTx);
-            CommunicationUtilityMethods.sendXmlToNextNodeId();
-            //fileSender(toNodeIp, s);
-            //e1.printStackTrace();
-
-        }
-
-//		if (!sock.isConnected())
-//			SysOutCtrl.SysoutSet("Socket Connection Not established",2);
-//		else
-//			SysOutCtrl.SysoutSet("Socket Connection established : " + sock.getInetAddress(),1);
-
-        byte[] mybytearray = s.getBytes();
-        //SysOutCtrl.SysoutSet("file lenght before sending of" + s.toString() + ":" + s.length());
-        BufferedInputStream bis = null;
-
-        OutputStream os = null;
-        try {
-            // bis.read(mybytearray, 0, mybytearray.length);
-            //SysOutCtrl.SysoutSet(s.toString() + "bytes sent" + mybytearray.length);
-            os = sock.getOutputStream();
-            os.write(mybytearray, 0, mybytearray.length);
-            os.flush();
-            // bis.close();
-            sock.close();
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace();
-            SysOutCtrl.SysoutSet("CHECK CONNECTION");
-        } catch (NullPointerException e1) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace();
-            SysOutCtrl.SysoutSet("CHECK CONNECTION-NPE");
-        }
+        
+        boolean is_receiver_active = false;
+        
+        is_receiver_active = IsApplicationAlive_AtReceiver(toNodeIp);
+        
+        System.out.println("client alive status : "+is_receiver_active);
+        
+        if(is_receiver_active)
+        {
+            
+        	int port = 2222;
+                
+        	System.out.println("IP SENT TO FILE SENDER : "+toNodeIp);
+        
+        	try 
+        	{
+        		Socket	sock = new Socket(toNodeIp, port);
+        		
+        		if (sock.isConnected())
+        		{	
+                    SysOutCtrl.SysoutSet("Client Socket is Connected...",2);
+                    
+                    byte[] mybytearray = s.getBytes();
+                                
+                    OutputStream os = sock.getOutputStream();
+                    os.write(mybytearray, 0, mybytearray.length);
+                	   	
+                	os.flush();
+                	sock.close();
+        		}
+        		else
+        			sock.close();
+        		
+        	} 
+        	catch (IOException e)
+        	{
+        		SysOutCtrl.SysoutSet("check connection");
+        		SysOutCtrl.SysoutSet("Connection timed out: Please check your connectivity with"+ toNodeIp,1);
+        	}
+        	catch (NullPointerException e)
+        	{
+        		System.out.println("NullPointerException");
+        	}
+       }
     }
+    
+    public static void Application_Alive_Response_ByReciever()
+    {
+    	
+    	ServerSocket servsock = null;
+		
+		try {
+			servsock = new ServerSocket(4444);
+		} catch (IOException e1) {
+			
+			e1.printStackTrace();
+		}
+		
+	    Socket sock = null;
+		try {
+			sock = servsock.accept();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+        if (!sock.isConnected())
+          	System.out.println("Client Socket not Connected...");
+        else {
+            System.out.println("Client Socket Connected : " + sock);
+        }	
+              
+        try {
+			servsock.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public static boolean IsApplicationAlive_AtReceiver(String hostname)
+    {
+    	boolean IsAlive = false;
+    	int port = 4444;
+        	
+    	if(!hostname.equals(null)||!hostname.isEmpty()||!hostname.equals("null")||!hostname.equals("")||!hostname.equals(" "))
+    	{	
+    		SocketAddress sock_address = new InetSocketAddress(hostname, port);
+    		Socket sock = new Socket();
+    		int timeout = 5000;
+    	
+    		try {
+    			sock.connect(sock_address, timeout);
+    			sock.close();
+    			IsAlive = true;
+    		} catch (SocketTimeoutException exception) {
+    			// TODO Auto-generated catch block
+    			System.out.println("socket timeout exception");
+    		}catch(IOException exception) {
+    			System.out.println("IO Exception");
+    		}
+    	}	
+    	return IsAlive;
+    	
+    }
+    
     public static synchronized void fileReceiver() throws IOException {
 
+    	
         SysOutCtrl.SysoutSet("You are in File receiver method",2);
 
         ServerSocket servsock = new ServerSocket(2222);
+		
 
         int fileReceiveIndex = 0;
 
@@ -131,195 +203,171 @@ public class CommunicationUtilityMethods extends CommunicationManager {
             SysOutCtrl.SysoutSet("Sever Socket not Bounded...",2);
         else
             SysOutCtrl.SysoutSet("Server Socket bounded to Port : " + servsock.getLocalPort(),1);
+        	
+        Socket sock = servsock.accept();
+     	
+        if (!sock.isConnected())
+        {	
+           SysOutCtrl.SysoutSet("Client Socket not Connected...",2);
+           sock.close();
+        }  
+        else 
+        {
+           SysOutCtrl.SysoutSet("Client Socket Connected : " + sock,1);
+           
+           byte[] mybytearray = new byte[4096];
+           InputStream is = sock.getInputStream();
+           String fileName=getFileName();
+           FileOutputStream fos = new FileOutputStream(fileName);
 
-        // File myFile = new File(file_to_pass);
-        while (true) {
-            Socket sock = servsock.accept();
+           BufferedOutputStream bos = new BufferedOutputStream(fos);
+           int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+           int current = bytesRead;
 
-            if (!sock.isConnected())
-                SysOutCtrl.SysoutSet("Client Socket not Connected...",2);
-            else {
-                SysOutCtrl.SysoutSet("Client Socket Connected : " + sock,1);
-                fileReceiveIndex++;
-            }
+           do {
+             bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
+             if (bytesRead >= 0)
+           	  current += bytesRead;
+           } while (bytesRead > -1);
 
-            int index = 0;
-            byte[] mybytearray = new byte[4096];
-            InputStream is = sock.getInputStream();
-            String fileName=getFileName();
-            FileOutputStream fos = new FileOutputStream(fileName);
+           bos.write(mybytearray, 0, current);
+           bos.flush();
 
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-            int current = bytesRead;
+           bos.close();
+           fos.flush();
+           fos.close();
+           sock.close();
+               
+           for (int i = 0; i < mybytearray.length; i++) {
+              System.out.print(mybytearray[i] + " ");
+           }
+           SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
+           File inFile = new File(fileName);
 
-            do {
-                bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
-                if (bytesRead >= 0)
-                    current += bytesRead;
-            } while (bytesRead > -1);
+           SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
+           SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
+           SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
 
-            bos.write(mybytearray, 0, current);
-            bos.flush();
-
-            bos.close();
-            fos.flush();
-            fos.close();
-            sock.close();
-            for (int i = 0; i < mybytearray.length; i++) {
-                System.out.print(mybytearray[i] + " ");
-            }
-            SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
-            File inFile = new File(fileName);
-
-            SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
-
-            SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
-            SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
-            String[] xmlParsed =ParseXmlFile.ParseXml(inFile) ;
-            if(xmlParsed[0].equals("0031"))
-            {
-                CommunicationManager.RxBufferOM.add(inFile);
-            }
-            else
-                addQueryToReceiveBuffer(inFile);
-
+           String[] xmlParsed =ParseXmlFile.ParseXml(inFile) ;
+           System.out.println("file received is : "+xmlParsed[0]);
+           if(xmlParsed[0].equals("0031"))
+           {
+           	CommunicationManager.RxBufferOM.add(inFile);
+           }
+           else
+               addQueryToReceiveBuffer(inFile);
+           
+           fileReceiveIndex++;
         }
+              
+        servsock.close();
 
     }
-
-    public static void sendXmlToNextNodeId() {
+    
+    public static void sendXmlToNextNodeId()
+    {
 
         SysOutCtrl.SysoutSet("you are in sendXmlToNextNodeId",2);
-
-        while (!TransmittingBuffer.isEmpty())// if OpBufferIM is not empty this if block will be executed
-        {
-            //File file = new File("Query_0.xml");
-            File file = TransmittingBuffer.remove();
-            // String filepath=file.getAbsolutePath();
-            BufferedReader r = null;
-            try {
+        
+           	while (!TransmittingBuffer.isEmpty())// if OpBufferIM is not empty this if block will be executed
+        	{
+         	  File file = TransmittingBuffer.removeFirst();
+           
+        	  BufferedReader r = null;
+        	  try 
+        	  {
                 r = new BufferedReader(new FileReader(file.toString()));
-            } catch (FileNotFoundException e) {
+        	  }
+        	  catch (FileNotFoundException e)
+        	  {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            String s = "", line = null;
-            try {
-                while ((line = r.readLine()) != null) {
+        	  }
+            
+        	  String s = "";
+        	  String line = null;
+        	  try 
+        	  {
+                while ((line = r.readLine()) != null)
+                {
                     s += line;
                 }
-            } catch (IOException e) {
+        	  } 
+        	  catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            // System.out.print(s);
-
-            //	System.out.print("reading a file before sending: " + s);
-
-            String[] xmlParsed;
-            // xmlParsed = ParseXmlFile.ParseXml(new File(filepath));
-            SysOutCtrl.SysoutSet("Xml file parsed:" + file,2);
-            xmlParsed = ParseXmlFile.ParseXml(file);
+        	  }
+            
+        	  String[] xmlParsed;
+                      
+        	  SysOutCtrl.SysoutSet("Xml file parsed:" + file,2);
+           
+        	  xmlParsed = ParseXmlFile.ParseXml(file);
 
 
-            String tohashId="";
-            //if(xmlParsed[0].equals("0002"))
-            {
-                tohashId = xmlParsed[1];
-            }
-            // getting hashId from current query
-            //String tonodeId = GiveNextHop(tohashId); // calling function to get the root node id
+        	  String tohashId="";
+        	  
+        	  tohashId = xmlParsed[1];
+            
+              String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(tohashId);
+            
+              SysOutCtrl.SysoutSet("NextHop  from RoutingManagement for " + file + ":" + tonodeId,2);
+              System.out.println("Querry hash : "+tohashId);
+              System.out.println("Next Hop : "+tonodeId);
+              
+              String toIp = getIpFromMyIpTable(tonodeId); // calling function to get the ip address of the root node id
 
-
-            String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(tohashId);
-            if(tonodeId.equals(OverlayManagement.myNodeId))
-            {
-                tonodeId=PredecessorSuccessor.mySuccessors[0];
-            }
-            SysOutCtrl.SysoutSet("NextHop  from RoutingManagement for " + file + ":" + tonodeId,2);
-            String toIp = getIpFromMyIpTable(tonodeId); // calling function to get the ip address of the root node id
-
-            try
-            {   if(toIp.isEmpty())
-                    //	toIp="127.0.0.1";
-                    toIp=getIpFromMyIpTable(PredecessorSuccessor.mySuccessors[0]);
-                SysOutCtrl.SysoutSet("toIp of successor[0] selected:" + toIp,2);
-
-
-                //	tonodeId=OverlayManagement.mySuccessors[0];
-            } catch(NullPointerException e1) {
-
-                //tonodeId=OverlayManagement.mySuccessors[0];
-                //toIp="127.0.0.1";
-                toIp=getIpFromMyIpTable(PredecessorSuccessor.mySuccessors[0]);
-                SysOutCtrl.SysoutSet("toIp of successor[0] selected:" + toIp,2);
-
-            }
-
-            {
-
-                //	SysOutCtrl.SysoutSet("to_node_id after getting null entry "+tonodeId);
-            }
-            SysOutCtrl.SysoutSet("Destination Ip Add for " + file + ":" + toIp,2);
-            SysOutCtrl.SysoutSet("Calling File Sender Method " ,2);
-            //		if(!toIp.equals("xxxx"))
-            //	{fileSender("localhost", s);}
-            if(!toIp.equals("127.0.0.1"))
-                fileSender(toIp, s);
-            else
-                //	SysOutCtrl.SysoutSet("in if block");}
-            {   SysOutCtrl.SysoutSet("Next hop is not reachable",2);
-//SysOutCtrl.SysoutSet("Putting file in TransmittingBuffer to Reattempt transmission",2);
-//
-//			FileWriter F=null;
-//			try {
-//				F = new FileWriter("ReTx.xml");
-//			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//			try {
-//				F.write(s);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//			try {
-//				F.flush();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//			File ReTx = new File("ReTx.xml");
-//		    CommunicationManager.TransmittingBuffer.add(ReTx);
-//
-//		    SysOutCtrl.SysoutSet("Failed File put for retransmission succesfully");
-            }
-        }
-
-        SysOutCtrl.SysoutSet("Thread t3 reply-Transmitting Buffer found empty",2);
+              System.out.println("Ip from Ip Table"+toIp);
+  
+              SysOutCtrl.SysoutSet("Destination Ip Add for " + file + ":" + toIp,2);
+              SysOutCtrl.SysoutSet("Calling File Sender Method " ,2);
+         
+              fileSender(toIp, s);
+          
+          }
+      SysOutCtrl.SysoutSet("Thread t2 reply-Transmitting Buffer found empty",2);
     }
-// hashid will be used to locate the root node id. this method will be required if new add query has come. RT module will implement this method.
 
-//	public static String GiveNextHop(String hashId) {
-//		// TODO Auto-generated method stub
-//		String nodeId = "cdef0";
-//		return nodeId;
-//	}
 
-    // from nodeid to getIp will be implemented by OM.
+   
     public static String getIpFromMyIpTable(String nodeId) {
-        // String str="192.168.1.104";
+        
         SysOutCtrl.SysoutSet("My IP Table:"+myIpTable);
-        String ip = CommunicationManager.myIpTable.get(nodeId);
-        //	if(ip.isEmpty())
-        //	{ip="localhost";}
+        String ip = null;
+        
+        if(RTUpdate9.Routing_Table.containsKey(nodeId))
+        	ip = RTUpdate9.Routing_Table.get(nodeId);
+        
+        else 
+        {
+        	if(CommunicationManager.myIpTable.containsKey(PredecessorSuccessor.mySuccessors[0]))
+        		ip = CommunicationManager.myIpTable.get(PredecessorSuccessor.mySuccessors[0]);
+        	
+        	else if(CommunicationManager.myIpTable.isEmpty())
+        	{
+        		System.out.println("My ip table is empty");
+        		ip = PresentIP.MyPresentIP();
+        	}
+        	
+        	else
+        	{
+        		String nodeid = null;
+        		
+        		Set<String> keys1 =CommunicationManager.myIpTable.keySet();
+	            for(String key : keys1)
+		        {
+		        	nodeid = key;
+		        	System.out.println("getting 1st entry from ip table");
+		        	ip = CommunicationManager.myIpTable.get(nodeid);
+		        	break;
+		        }
+        	}
+        }
+        
         SysOutCtrl.SysoutSet("ip address from myIpTable"+ip,2);
         return ip;
     }
+    
     public static void fillReceiveBuffer() {
         // TODO Auto-generated method stub
         SysOutCtrl.SysoutSet("you are in FillReceiveBuffer method",2);
@@ -348,14 +396,25 @@ public class CommunicationUtilityMethods extends CommunicationManager {
     public static boolean responsibleNode(String Pred,String Self,String key)
     {
         boolean bool=false;
-        List<String> list= new LinkedList();
+                
+        System.out.println("my node id"+OverlayManagement.myNodeId);
+    
+        List<String> list= new LinkedList<String>();
         list.add(Pred);
         list.add(Self);
         list.add(key);
 
         SysOutCtrl.SysoutSet("list"+list);
+       
         Collections.sort(list);
+        
+        System.out.println("sorted list"+list);
+        System.out.println("index of pred: "+list.indexOf(Pred));
+        System.out.println("index of self: "+list.indexOf(Self));
+        System.out.println("index of hash: "+list.indexOf(key));
+     
         SysOutCtrl.SysoutSet("sorted list"+list);
+
         if(list.indexOf(Pred)<list.indexOf(Self))
         {
             if(list.indexOf(key)==1)
@@ -368,6 +427,10 @@ public class CommunicationUtilityMethods extends CommunicationManager {
             if(list.indexOf(key)==2||list.indexOf(key)==0)
                 bool=true;
         }
+          
         return bool;
     }
+
+    
+   
 }

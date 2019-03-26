@@ -12,8 +12,10 @@ public class GlobalObject {
     private static boolean Specific_status = false; //specific services not running
     private static boolean running_status = true;
 
-    public static GlobalObject getGlobalObject() {
-        if ( globalObject==null) {
+    public static GlobalObject getGlobalObject()
+    {
+        if ( globalObject==null)
+        {
             globalObject = new GlobalObject();
         }
         return globalObject;
@@ -25,7 +27,8 @@ public class GlobalObject {
 
     }
 
-    public boolean getRunStatus() {
+    public boolean getRunStatus()
+    {
         return running_status ;
     }
 

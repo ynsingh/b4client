@@ -5,49 +5,43 @@ import java.util.Arrays;
 public class PurgeEntry extends RTUpdate9
 {
 //	we pass a 40 Hex string Id (dead node form Heartbeat monitor) to it for purging from the RT
+	
+	public static void purge(String Purge)
+	{
+		SysOutCtrl.SysoutSet("Node to be Purged from RT is :"+Purge, 2);
+	//	System.out.println("pred list"+   Arrays.asList(Pred));
+//		System.out.println("succ list"+   Arrays.asList(Succ));
+	//	System.out.println("mid list"+   Arrays.asList(Mid));
+	
+		for(int i=0;i<40;i++){
+			if(Purge==Pred[i][0]) {
+				SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
+				Pred[i][0]=null;
+				Pred[i][1]=null;
+				SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Pred", 2);
+				break;
+			}
+			if(Purge==Succ[i][0]) {
+				SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
+				Succ[i][0]=null;
+				Succ[i][1]=null;
+				SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Succ", 2);
+				break;
+			}
+			if(Purge==Mid[i][0]) {
+				SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
+				Mid[i][0]=null;
+				Mid[i][1]=null;
+				SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Mid", 2);
+				break;
+			}
+		}
+		
+		SysOutCtrl.SysoutSet("RT Table after Purged Entry", 2);	
+		
+		PrintRT9 PrintRT = new PrintRT9();
+		PrintRT.PrintMatrix();
 
-    public void purge(String Purge)
-    {
-        SysOutCtrl.SysoutSet("Node to be Purged from RT is :"+Purge, 2);
-
-        if(Arrays.asList(Pred).contains(Purge))
-        {
-            SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
-            int Loc = Arrays.asList(Pred).indexOf(Purge);
-            Pred[Loc]=null;
-            SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Pred", 2);
-
-        }
-
-        else if(Arrays.asList(Succ).contains(Purge))
-        {
-            SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
-            int Loc = Arrays.asList(Succ).indexOf(Purge);
-            Succ[Loc]=null;
-            SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Succ", 2);
-
-        }
-
-        if(Arrays.asList(Mid).contains(Purge))
-        {
-            SysOutCtrl.SysoutSet("Found Entry to be Purged in RT", 2);
-            int Loc = Arrays.asList(Mid).indexOf(Purge);
-            Mid[Loc]=null;
-            SysOutCtrl.SysoutSet("Node :"+Purge+" purged from RT Mid", 2);
-
-        }
-
-
-        Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
-        save.Save_RTNow();
-
-        SysOutCtrl.SysoutSet("RT saved after Purging", 2);
-
-        SysOutCtrl.SysoutSet("RT Table after Purged Entry", 2);
-
-        PrintRT9 PrintRT = new PrintRT9();
-        PrintRT.PrintMatrix();
-
-
-    }
+	
+	}
 }

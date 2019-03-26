@@ -7,11 +7,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,6 +47,7 @@ import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
+import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
 
@@ -55,26 +61,47 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
     public static void addIndexRequest(String key, String value)
     {   // this method add index entry
-        if(key.equals(OverlayManagement.myNodeId))
+
+    	if(key.equals(OverlayManagement.myNodeId))
         {
-            myIndexTable(key, value);
-            SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
+    		if(!myindex.containsKey(key))
+    		{	
+    			myindex.put(key, value);
+        		myIndexTable();
+        		NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+        		SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
+        		IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+        	}	
         }
 
+    	else if(PredecessorSuccessor.myPredecessors[4].equals(OverlayManagement.myNodeId)&&PredecessorSuccessor.mySuccessors[0].equals(OverlayManagement.myNodeId))
+    	{
+    		 myindex.put(key, value);
+    		 myIndexTable();
+             NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+             SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
+    	}
 
         else if (CommunicationUtilityMethods.responsibleNode(PredecessorSuccessor.myPredecessors[4],OverlayManagement.myNodeId,key))
         {
 
             SysOutCtrl.SysoutSet("my node id is smaller than pred");
-
-            myIndexTable(key, value);
-            SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
+            
+            if(!myindex.containsKey(key))
+            {	
+            	myindex.put(key, value);
+            	myIndexTable();
+            	NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+            	SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
+            	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+            }
         }
 
         else
         {
             File file = IndexManagementUtilityMethods.createXmlAddIndexQuery(key, value);
-            CommunicationManager.TransmittingBuffer.add(file);
+        //    CommunicationManager.TransmittingBuffer.add(file);
+            com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(file);
         }
     }
 
@@ -88,10 +115,25 @@ public class IndexManagementUtilityMethods extends IndexManagement
                 CheckIP=false;
             }
         }
-
+        
         System.out.println("MY old IP was : "+MyIP);
 
         MyIP = IPAdd;
+        
+        FileWriter write = null;
+		
+		try {
+			write = new FileWriter("MyPreviousIP.txt");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		
+		PrintWriter wr = new PrintWriter(write);
+		
+		wr.write(MyIP);
+		wr.flush();
 
         String email_hash = selfHashId;
         String myNodeId = OverlayManagement.myNodeId;
@@ -106,7 +148,22 @@ public class IndexManagementUtilityMethods extends IndexManagement
             String Node_id= (String) Nodeid_array[i];
             System.out.println(" "+Node_id);
             File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
-            CommunicationManager.TransmittingBuffer.add(IPUpdate);
+        
+            com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
+            SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
+            SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
+        }
+        
+        Collection<String> Node_id_extracted1 = RTUpdate9.Routing_Table.keySet();
+        Object[] Nodeid_array1 = Node_id_extracted1.toArray();
+
+        for(int i=0; i<Nodeid_array1.length; i++)
+        {
+            String Node_id= (String) Nodeid_array[i];
+            System.out.println(" "+Node_id);
+            File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
+        
+            com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
             SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
             SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
         }
@@ -119,49 +176,40 @@ public class IndexManagementUtilityMethods extends IndexManagement
         Change_In_IP_Check();
     }
 
-    public static void Add_in_Index(String[] xml_info) // xml_info[1]=hashid from readxmlfile
-    {   /// advertisement to enter it into index table
-        // // Here, the received query with tag value = 0002 means advertisement
-        // then this node will put its value in its index table, if
-        // (a) it is exact match, root_node_id.equals(xml_info[1]) or
-        // (b) it is between self(incl) and first predecessor (excl)
-        // How to get self node id;
-
-        SysOutCtrl.SysoutSet("in add in index method for adding index entry",2);
-        String self_node_id = OverlayManagement.myNodeId; // here calling a function myNodeId from the routing
-        // table who will return node's node_id.
-        String[] predecessor = PredecessorSuccessor.myPredecessors; // here calling a function getmypredecessor() from
-        // the routing table who will return node's
-        // predecessor.
-        try
-        {
-            if (xml_info[1].equals(self_node_id)) // it returns boolean value// Here, if it is a exact match i.e.
-                // queried hash_id matching exactly with root node id
+    public static void timer(String Cached_Entry)
+	{
+    	Timer time_set = new Timer();
+		TimerTask task_timer = new TimerTask()
+		{
+            @Override
+            public void run()
             {
-                SysOutCtrl.SysoutSet("i am root node",2);
-                myIndexTable(xml_info[1], xml_info[2]);
+            	if(cached_index.containsKey(Cached_Entry))
+            	{
+            		String nodeid_of_CacheIndex = cached_index.get(Cached_Entry);
+            		cached_index.remove(Cached_Entry, nodeid_of_CacheIndex);
+            		
+            		if(cached_NodeId_ip_index.containsKey(nodeid_of_CacheIndex))
+                	{
+            			String Ip_of_CachedIndexNodeId = cached_NodeId_ip_index.get(nodeid_of_CacheIndex);
+            			cached_NodeId_ip_index.remove(nodeid_of_CacheIndex, Ip_of_CachedIndexNodeId); 
+                	}
+            	}
             }
-            else if ((xml_info[1].compareToIgnoreCase(self_node_id) < 0)&& (xml_info[1].compareToIgnoreCase(predecessor[4]) > 0))
-                SysOutCtrl.SysoutSet("i am responsible node for this add request",2);
-            // Here, if the queried hash_id is not exactly matching with root node id
+          };
 
-            // then we need to compare it as follows :-
-            // (a) first it should be smaller than root node means before it
-            // (xmldetail1[1].compareToIgnoreCase(root_node_id)<0)
-            // (b) and should be greater than its first predecessor
-            // (xmldetail1[1].compareToIgnoreCase(predecessor)>0)
-            // if it satisfies these two conditions then it lies between them then it need
-            // to append that entry in index of root else discard.
-            // compareToIgnoreCase Returns:a negative integer, zero, or a positive integer
-            // as the specified String is greater than, equal to, or less than this String,
-            // ignoring case considerations.
-
-            myIndexTable(xml_info[1], xml_info[2]);
-            SysOutCtrl.SysoutSet("myIndex is "+myindex,2);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+          time_set.schedule(task_timer, 10800000);
+	}
+    
+    public static void Add_in_Index(String[] xml_info) // xml_info[1]=hashid from readxmlfile
+    {       
+        if(!myindex.containsKey(xml_info[1]))
+        {	
+        	myindex.put(xml_info[1], xml_info[2]);
+        	myIndexTable();
+        	NodeId_ip_of_myindex.put(xml_info[2], xml_info[4]);
+        	SysOutCtrl.SysoutSet("myIndex is "+myindex,2);
+        	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
         }
     }
 
@@ -172,27 +220,55 @@ public class IndexManagementUtilityMethods extends IndexManagement
         SysOutCtrl.SysoutSet("myNodeId is : " + self_node_id,3);
         String value = "";
         String hash_id = hashIdFromxml;
-        try
+        System.out.println("query received : "+hash_id);
+        
+       	if (hash_id.equals(self_node_id)) // it returns boolean value// Here, if it is a exact match i.e. queried
         {
-            if (hash_id.equals(self_node_id)) // it returns boolean value// Here, if it is a exact match i.e. queried
-            {
-                value = self_node_id;
-            }
-            else if (myindex.containsKey(hash_id)) // Returns true if this map contains a mapping for the specified
-                // key.
-            {
-                value = myindex.get(hash_id);
-                SysOutCtrl.SysoutSet("value of hashID from index table of search_in_index :"+value);
-            }
-
-            else if(!myindex.containsKey(hash_id))
-            {
-                value="NoEntryInIndexTable";
-            }
+            value = self_node_id;
         }
-        catch (Exception e)
+    	
+       	// new code ///////////////////////////////
+	/*	else
+		{
+		    boolean flag = true;
+			System.out.println("in else block");
+			
+			Set<String> keys = myindex.keySet();
+    		for(String key: keys)
+			{
+				System.out.println("in for block");
+								
+				if(key.equals(hash_id))
+				{
+					System.out.println("in if block");
+					flag = false;
+					break;
+				}
+				
+			}
+			
+			if(flag)
+				value ="NoEntryInIndexTable";
+				
+				
+			else
+			{
+				value = myindex.get(hash_id);
+			}
+			
+				
+		}*/
+       	//////////////////////
+	       
+      	else if (myindex.containsKey(hash_id)) // Returns true if this map contains a mapping for the specified key.
         {
-            e.printStackTrace();
+           value = myindex.get(hash_id);
+           SysOutCtrl.SysoutSet("value of hashID from index table of search_in_index :"+value);
+        }
+
+        else if(!myindex.containsKey(hash_id))
+        {
+           value="SORRY! Called Person Is Not Active At The Moment.";
         }
 
         SysOutCtrl.SysoutSet("value of hashID from index table of search_in_index b4 returning :"+value);
@@ -200,13 +276,15 @@ public class IndexManagementUtilityMethods extends IndexManagement
         return value;
     }
 
-    final static void myIndexTable(String hash_id, String node_id) // saving my index table
+    public static void myIndexTable() // saving my index table
     {
-        SysOutCtrl.SysoutSet("index table before entry");
-        SysOutCtrl.SysoutSet("myIndex"+myindex,2);
+    //    SysOutCtrl.SysoutSet("index table before entry");
+     //   SysOutCtrl.SysoutSet("myIndex"+myindex,2);
         
-        myindex.put(hash_id, node_id); // here appending xml details i.e. hash_id and node_id in index
-
+    //    myindex.put(hash_id, node_id); // here appending xml details i.e. hash_id and node_id in index
+    	
+    	SysOutCtrl.SysoutSet("myIndex"+myindex,2);
+        
         String A =myindex.keySet().toString();
         FileWriter F=null;
         try
@@ -235,8 +313,24 @@ public class IndexManagementUtilityMethods extends IndexManagement
         }
         
         printMap(myindex);
-
     }
+    
+	public static void Ip_txt_empty()
+	{
+		PrintWriter writer = null;
+		try
+		{
+			writer = new PrintWriter("IpTable.txt");
+		}
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		
+		writer.println("");
+		writer.flush();
+	}
     
     public static <K, V> void printMap(Map<K, V> map) 
 	{
@@ -255,6 +349,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
         // now i hv to create a request message to send it to my successor that i need
         // those entries from its index table to whom now i am repsonsible, bcz i
         // recently joined the overlay.
+    	
+   // 	if(PredecessorSuccessor.mySuccessors[0].equals(OverlayManagement.myNodeId))
+    //	{}
 
         DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -351,8 +448,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         SysOutCtrl.SysoutSet("requestIndexingQuery.xml file Generated.",2);
 
-        CommunicationManager.TransmittingBuffer.add(file1); // passing the info to addmessage method of tablebuffer
+       // CommunicationManager.TransmittingBuffer.add(file1); // passing the info to addmessage method of tablebuffer
         // class
+        com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(file1);
         SysOutCtrl.SysoutSet("Get indexing method sending request to immediate successor " + PredecessorSuccessor.mySuccessors[0],2);
 
     }
@@ -360,71 +458,242 @@ public class IndexManagementUtilityMethods extends IndexManagement
     static void UpdateIndexing()
     {   // when a node receive index table copy from predecessor, it will check its position wrt previous and update accordingly
 
-        String[] myPredecessorsUpdated = PredecessorSuccessor.getMyPredecessors(OverlayManagement.nodeId, OverlayManagement.myNodeId);
+    	String[] my_pred = PredecessorSuccessor.getMyPredecessors(OverlayManagement.nodeId, OverlayManagement.myNodeId);
+    	
+    	int change = 0;
+    	
+    	String ip_mypred_1 = get_pred_ip(my_pred[4]);
+    	String ip_mypred_2 = get_pred_ip(my_pred[3]);
+    	String ip_mypred_3 = get_pred_ip(my_pred[2]);
+    	String ip_mypred_4 = get_pred_ip(my_pred[1]);
+    	String ip_mypred_5 = get_pred_ip(my_pred[0]);
+    	
+    	boolean check_1 = true;
+    	boolean check_2 = true;
+    	boolean check_3 = true;
+    	boolean check_4 = true;
+    	boolean check_5 = true;
+    	
+    	if(ip_mypred_1 == "null")
+    		check_1 =false;
+    	else
+    		check_1 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_1);
+    	
+    	if(ip_mypred_2 == "null")
+    		check_2 =false;
+    	else
+    		check_2 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_2);
+    	
+    	if(ip_mypred_3 == "null")
+    		check_3 =false;
+    	else
+    		check_3 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_3);
+    	
+    	if(ip_mypred_4 == "null")
+    		check_4 =false;
+    	else
+    		check_4 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_4);
+    	
+    	if(ip_mypred_5 == "null")
+    		check_5 =false;
+    	else
+    		check_5 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_5);
+    	
+    	if(!check_1)
+    		change =1;
+    	
+    	if(!check_1&&!check_2)
+    		change =2;
+    	
+    	if(!check_1&&!check_2&&!check_3)
+    		change =3;
+    	
+    	if(!check_1&&!check_2&&!check_3&&!check_4)
+    		change =4;
+    	
+    	if(!check_1&&!check_2&&!check_3&&!check_4&&!check_5)
+    		change =5;
+        
+		switch (change)
+		{
+			case 0:
+				System.out.println("No change in pred");
+				break;
+			
+			case 1:
+				System.out.println("Imm Pred have left ");
+				
+				Set<String> keys1 = myindex5.keySet();
+		        for(String key : keys1)
+		           	myindex.put(key, myindex5.get(key));
+		        		       		        
+		    	Set<String> ip1 = nodeid_ip_myindex5.keySet();
+	            for(String key : ip1)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
+		    			
+	            myIndexTable();
+	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+				break;
+				
+			case 2:
+				System.out.println("Two Imm Pred have left");
+				
+				Set<String> keys2 = myindex5.keySet();
+	            for(String key : keys2)
+	            	myindex.put(key, myindex5.get(key));
+		        
+		    	Set<String> keys3 = myindex4.keySet();
+	            for(String key : keys3)
+	            	myindex.put(key, myindex4.get(key));
+	            
+	            Set<String> ip2 = nodeid_ip_myindex5.keySet();
+	            for(String key : ip2)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
+		        
+		        Set<String> ip3 = nodeid_ip_myindex4.keySet();
+	            for(String key : ip3)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex4.get(key));
+		    			
+	            myIndexTable();
+	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+				break;
+				
+			case 3:
+				System.out.println("Three Imm Pred have left");
+				
+				Set<String> keys4 = myindex5.keySet();
+	            for(String key : keys4)
+	            	myindex.put(key, myindex5.get(key));
+		        
+		    	Set<String> keys5 = myindex4.keySet();
+	            for(String key : keys5)
+	            	myindex.put(key, myindex4.get(key));
+		    			
+	            Set<String> keys6 = myindex3.keySet();
+	            for(String key : keys6)
+	            	myindex.put(key, myindex3.get(key));
+	            
+	            Set<String> ip4 = nodeid_ip_myindex5.keySet();
+	            for(String key : ip4)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
+		        
+		        Set<String> ip5 = nodeid_ip_myindex4.keySet();
+	            for(String key : ip5)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex4.get(key));
+	            
+		        Set<String> ip6 = nodeid_ip_myindex3.keySet();
+	            for(String key : ip6)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex3.get(key));	
+		        
+	            myIndexTable();
+	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+				break;
+				
+			case 4:
+				System.out.println("Four Imm Pred have left");
+				
+				Set<String> keys7 = myindex5.keySet();
+	            for(String key : keys7)
+	            	myindex.put(key, myindex5.get(key));
+		        
+		    	Set<String> keys8 = myindex4.keySet();
+	            for(String key : keys8)
+	            	myindex.put(key, myindex4.get(key));
+		    			
+	            Set<String> keys9 = myindex3.keySet();
+	            for(String key : keys9)
+	            	myindex.put(key, myindex3.get(key));
+	            
+	            Set<String> keys10 = myindex2.keySet();
+	            for(String key : keys10)
+		        	myindex.put(key, myindex2.get(key));
+	            
+	            Set<String> ip7 = nodeid_ip_myindex5.keySet();
+	            for(String key : ip7)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
+		        
+		        Set<String> ip8 = nodeid_ip_myindex4.keySet();
+	            for(String key : ip8)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex4.get(key));
+	            
+		        Set<String> ip9 = nodeid_ip_myindex3.keySet();
+	            for(String key : ip9)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex3.get(key));
+		        
+		        Set<String> ip10 = nodeid_ip_myindex2.keySet();
+		        for(String key : ip10)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex2.get(key));
+		        
+		        myIndexTable();	            
+	           	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+				break;	
+				
+			case 5:
+				System.out.println("All Five Imm Pred have left");
+				
+				Set<String> keys11 = myindex5.keySet();
+	            for(String key : keys11)
+		        	myindex.put(key, myindex5.get(key));
+		        
+		    	Set<String> keys12 = myindex4.keySet();
+	            for(String key : keys12)
+		        	myindex.put(key, myindex4.get(key));
+		    			
+	            Set<String> keys13 = myindex3.keySet();
+	            for(String key : keys13)
+		        	myindex.put(key, myindex3.get(key));
+	            
+	            Set<String> keys14 = myindex2.keySet();
+	            for(String key : keys14)
+		        	myindex.put(key, myindex2.get(key));
+				
+	            Set<String> keys15 = myindex1.keySet();
+	            for(String key : keys15)
+		        	myindex.put(key, myindex1.get(key));
+	            
+	            Set<String> ip11 = nodeid_ip_myindex5.keySet();
+	            for(String key : ip11)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
+		        
+		        Set<String> ip12 = nodeid_ip_myindex4.keySet();
+	            for(String key : ip12)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex4.get(key));
+	            
+		        Set<String> ip13 = nodeid_ip_myindex3.keySet();
+	            for(String key : ip13)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex3.get(key));
+		        
+		        Set<String> ip14 = nodeid_ip_myindex2.keySet();
+		        for(String key : ip14)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex2.get(key));
+		        
+		        Set<String> ip15 = nodeid_ip_myindex1.keySet();
+		        for(String key : ip15)
+		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex1.get(key));
+				
+		        myIndexTable();
+		        IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+	            break;
+		}		
+        
+    
+   }
+      
+   public static String get_pred_ip(String nodeId) {
+    
+        String ip = "null";
+        
+        if(CommunicationManager.myIpTable.containsKey(nodeId))
+        	ip = CommunicationManager.myIpTable.get(nodeId);
+        
+        else 
+        	ip = "null";
+        	
+        SysOutCtrl.SysoutSet("ip address from myIpTable"+ip,2);
+        return ip;
+	}
 
-        int index = (Arrays.asList(myPredecessorsCopy).indexOf(myPredecessorsUpdated[4]));
-
-        switch (index)
-        {
-        case 0:
-            SysOutCtrl.SysoutSet("immediate predecessor is same as earlier",2);
-            break;
-
-        case 1:
-            SysOutCtrl.SysoutSet("immediate predecessor shifted to index 2",2);
-            Map tmp = new LinkedHashMap(myindex1);
-            tmp.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp);
-            break;
-
-        case 2:
-            SysOutCtrl.SysoutSet("immediate predecessor shifted to index 3",2);
-            Map tmp1 = new LinkedHashMap(myindex1);
-            tmp1.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp1);
-            tmp1 = new LinkedHashMap(myindex2);
-            tmp1.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp1);
-            break;
-
-        case 3:
-            SysOutCtrl.SysoutSet("immediate predecessor shifted to index 4",2);
-            Map tmp11 = new LinkedHashMap(myindex1);
-            tmp11.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp11);
-            tmp11 = new LinkedHashMap(myindex2);
-            tmp11.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp11);
-            tmp11 = new LinkedHashMap(myindex3);
-            tmp11.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp11);
-            break;
-
-        case 4:
-            SysOutCtrl.SysoutSet("immediate predecessor shifted to index 5",2);
-            Map tmp111 = new LinkedHashMap(myindex1);
-            tmp111.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp111);
-            tmp111 = new LinkedHashMap(myindex2);
-            tmp111.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp111);
-            tmp111 = new LinkedHashMap(myindex3);
-            tmp111.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp111);
-            tmp111 = new LinkedHashMap(myindex4);
-            tmp111.keySet().removeAll(myindex.keySet());
-            myindex.putAll(tmp111);
-        }
-
-        changeFlagIntimationForIndexTableUpdate = false;// manually changing the sattus after doing the required
-        // update work
-        changeFlagIntimationForIndexTableTransmit = true;
-        // update is noticed and following actions are to be initieade
-        // updating the index table -done
-        // transmitting to the successors done
-    }
-
-    public static void TransmitMyIndexXmlFileToSuccessors()
+	public static void TransmitMyIndexXmlFileToSuccessors()
     {   // create index table xml file to be forwarded to five successors
 
         String selfNodeId = OverlayManagement.myNodeId;
@@ -434,32 +703,132 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         for (int i = 0; i < 5; i++)
         {
-            SysOutCtrl.SysoutSet("my successor "+i+" "+PredecessorSuccessor.mySuccessors[i]);
-            String to_hash_id = PredecessorSuccessor.mySuccessors[i];
-            SysOutCtrl.SysoutSet("successor[i]"+to_hash_id);
-            File myIndexInXml = null;
-            if(!to_hash_id.isEmpty())
-            {
-                try {
-                    myIndexInXml = convert_hashmap_toxml(myindex, "0010",to_hash_id, selfNodeId, toNodeId, selfIp, self_port_no);
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (TransformerException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ParserConfigurationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                CommunicationManager.TransmittingBuffer.add(myIndexInXml);
-            }
-        }
+        	SysOutCtrl.SysoutSet("my successor "+i+" "+PredecessorSuccessor.mySuccessors[i]);
+        	String to_hash_id = PredecessorSuccessor.mySuccessors[i];
+        	SysOutCtrl.SysoutSet("successor[i]"+to_hash_id);
+        	File myIndexInXml = null;
+        	if(!to_hash_id.isEmpty())
+        	{
+        		try {
+        			myIndexInXml = convert_hashmap_of_indexTable_transmitted_toxml(myindex, "0010",to_hash_id, selfNodeId, toNodeId, selfIp, self_port_no, "NoAction");
+        		} catch (FileNotFoundException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		} catch (TransformerException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		} catch (ParserConfigurationException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        			//     CommunicationManager.TransmittingBuffer.add(myIndexInXml);
+       			com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(myIndexInXml);
+       		}
+       }
     }
 
     // converting index table to xml file
-    public static File convert_hashmap_toxml(Map<String, String> myindex1, String tag,String to_hash_id, String selfNodeId,
+  public static File convert_hashmap_of_indexTable_transmitted_toxml(Map<String, String> myindex1, String tag,String to_hash_id, String selfNodeId,
+            String toNodeId, String selfIp, String self_port_no, String action)
+    throws FileNotFoundException, TransformerException, ParserConfigurationException
+    {
+        SysOutCtrl.SysoutSet("You are in convert HashMap to XML method " + myindex1,2);
+        SysOutCtrl.SysoutSet("Index table " + myindex1,3);
+        
+        Collection<String> hash_id_extracted = myindex1.keySet(); /// code to extract hash_id from array by first
+        /// converting it into collection then to an array
+        Object[] hashid_array = hash_id_extracted.toArray();
+
+        Collection<String> node_id_extracted = myindex1.values();/// code to extract node_id from array by first
+        /// converting it into collection then to an array
+        Object[] nodeid_array = node_id_extracted.toArray();
+        
+        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = f.newDocumentBuilder();
+        Document doc = db.newDocument();
+
+        Element rootele = doc.createElement("XML");
+        doc.appendChild(rootele);
+        Element tagidele = doc.createElement("Query_");
+
+
+        String tagvalue = tag;
+        SysOutCtrl.SysoutSet("Tagvalue for indexingQuery: " + tagvalue,2); // prints out the value at the randomly selected
+        // index
+
+        ((Element) tagidele).setAttribute("tag", tagvalue);
+        rootele.appendChild(tagidele);
+        int i = 0;
+
+        for (int j = 0; j < hashid_array.length; j++)
+        {
+            Element codeele = doc.createElement("indexentries");
+            tagidele.appendChild(codeele);
+            ((Element) codeele).setAttribute("record_no", Integer.toString(i)); // here using i as tagvalue
+            i++;
+
+            Element hashidele = doc.createElement("hash_id");
+            hashidele.appendChild(doc.createTextNode((String) hashid_array[j]));
+            codeele.appendChild(hashidele);
+
+            Element nodeidele = doc.createElement("node_id");
+            nodeidele.appendChild(doc.createTextNode((String) nodeid_array[j]));
+            codeele.appendChild(nodeidele);
+            
+            String ip_of_email_hash_nodeid;
+            
+            if(NodeId_ip_of_myindex.containsKey(nodeid_array[j]))
+            {
+            	ip_of_email_hash_nodeid = NodeId_ip_of_myindex.get(nodeid_array[j]);
+        		
+        		Element ipele_emailhash_nodeid = doc.createElement("self_port_no");
+        		ipele_emailhash_nodeid.appendChild(doc.createTextNode((String) ip_of_email_hash_nodeid));
+                codeele.appendChild(ipele_emailhash_nodeid);
+                
+                if(action == "DeleteNodeIdFromIndexIpTable")
+                	NodeId_ip_of_myindex.remove(nodeid_array[j], ip_of_email_hash_nodeid);
+            }
+            
+        }
+
+        Element hashidele = doc.createElement("to_hash_id");
+        Element tonodeidele = doc.createElement("to_node_id");
+        Element selfnodeidele = doc.createElement("self_node_id");
+        Element ipele = doc.createElement("self_ip_address");
+        Element ipele_emailhash_nodeid = doc.createElement("self_port_no");
+
+        Text t1 = doc.createTextNode(to_hash_id);
+        Text t2 = doc.createTextNode(toNodeId);
+        Text t3 = doc.createTextNode(selfNodeId);
+        Text t4 = doc.createTextNode(selfIp);
+
+        Text t5 = doc.createTextNode(self_port_no);
+
+        hashidele.appendChild(t1);
+        tonodeidele.appendChild(t2);
+
+        selfnodeidele.appendChild(t3);
+        ipele.appendChild(t4);
+        ipele_emailhash_nodeid.appendChild(t5);
+
+        tagidele.appendChild(hashidele);
+        tagidele.appendChild(tonodeidele);
+        tagidele.appendChild(selfnodeidele);
+        tagidele.appendChild(ipele);
+        tagidele.appendChild(ipele_emailhash_nodeid);
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+
+        StreamResult result = new StreamResult(new FileOutputStream("XML.xml"));
+        transformer.transform(source, result);
+        SysOutCtrl.SysoutSet("HashMap converted to xml file");
+
+        return (new File("XML.xml"));
+    }
+
+    public static File convert_hashmap_of_index_toxml(Map<String, String> myindex1, String tag,String to_hash_id, String selfNodeId,
             String toNodeId, String selfIp, String self_port_no)
     throws FileNotFoundException, TransformerException, ParserConfigurationException
     {
@@ -545,92 +914,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         return (new File("XML.xml"));
     }
-
-    public static File createXmlSearchQuery(String key)
-    {   // creating serach query xml file from other node's index table
-
-        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
-        try {
-            db = f.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        Document doc = db.newDocument();
-
-        Element rootele = doc.createElement("Query");
-        Element codeele = doc.createElement("Query_");
-        Element hashidele = doc.createElement("to_hash_id");
-        Element tonodeidele = doc.createElement("to_node_id");
-        Element selfnodeidele = doc.createElement("self_node_id");
-        Element ipele = doc.createElement("self_ip_address");
-        Element portele = doc.createElement("self_port_no");
-
-        /// randomly chooses the string index from the string array
-
-        String tagvalue = "0003"; // use random index to store corresponding string value in another string
-
-        SysOutCtrl.SysoutSet("tag selected: " + tagvalue,2); // prints out the value at the randomly selected index
-
-        ((Element) codeele).setAttribute("tag", tagvalue);
-
-        Text t1 = doc.createTextNode(key);
-        Text t2 = doc.createTextNode("SearchQuery");
-        String selfNodeId = OverlayManagement.myNodeId;
-
-        Text t3 = doc.createTextNode(selfNodeId);
-        String selfIp = getMyIp();
-        Text t4 = doc.createTextNode(selfIp);
-        String selfPortNo = "2222";
-        Text t5 = doc.createTextNode(selfPortNo);
-
-        hashidele.appendChild(t1);
-        tonodeidele.appendChild(t2);
-        selfnodeidele.appendChild(t3);
-        ipele.appendChild(t4);
-        portele.appendChild(t5);
-
-        codeele.appendChild(hashidele);
-        codeele.appendChild(tonodeidele);
-        codeele.appendChild(selfnodeidele);
-        codeele.appendChild(ipele);
-        codeele.appendChild(portele);
-
-        rootele.appendChild(codeele);
-        doc.appendChild(rootele);
-
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = null;
-        try {
-            transformer = transformerFactory.newTransformer();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        }
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = null;
-        try {
-            result = new StreamResult(new FileOutputStream("SearchQuery.xml"));
-        } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        try {
-            transformer.transform(source, result);
-        } catch (TransformerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-
-        File file1 = new File("SearchQuery.xml");
-
-        SysOutCtrl.SysoutSet("SearchQuery.xml file Generated.",2);
-
-        return file1;
-
-    }
-
+    
     public static Map<String, String> convertXmlToIndexTable(File inFile)
     {   // converting xml to index table ie hashmap
 
@@ -684,7 +968,147 @@ public class IndexManagementUtilityMethods extends IndexManagement
         return tempIndexTable;
     }
 
-    public static Map<String, String> generateIndexingForNewlyJoinedNode(String[] info_from_xml)
+    public static Map<String, String> convert_xml_to_Node_ip_table(File inFile)
+	{   // converting xml to index table ie hashmap
+	
+	    Map<String, String> tempIndexTable = new LinkedHashMap<String, String>();
+	    // this method should convert the incoming xml file to myindex9hashmap)
+	
+	    SysOutCtrl.SysoutSet("you are in convertXmlToIndexTable method",2);
+	
+	    try {
+	
+	
+	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder db = dbf.newDocumentBuilder();
+	        Document doc = db.parse(inFile);
+	
+	
+	        NodeList nlist = doc.getElementsByTagName("indexentries");
+	        System.out.println("nlist lenght"+nlist.getLength());
+	
+	        for (int i = 0; i < nlist.getLength(); i++)
+	        {
+	            System.out.println("for loop i "+i);
+	            Node nNode = nlist.item(i);
+	
+	            if (nNode.getNodeType() == Node.ELEMENT_NODE)
+	            {
+	                Element eElement = (Element) nNode; // System.out.println(eElement.getAttribute("id"));
+	
+	                String record_no = eElement.getAttribute("record_no");
+	
+	                NodeList nodeList = eElement.getChildNodes();
+	
+	                for (int x = 0; x < 2; x++) // to get tag value from each xml file.
+	                {
+	                    Node n = nodeList.item(x);
+	                    if (n.getNodeType() == Node.ELEMENT_NODE)
+	                    {
+	                        Element name = (Element) n;
+	                        SysOutCtrl.SysoutSet("indexentries"+record_no+":"+name.getTagName()+"="+name.getTextContent());
+	                        String key = eElement.getElementsByTagName("node_id").item(0).getTextContent();
+	                        String value = eElement.getElementsByTagName("self_port_no").item(0).getTextContent();
+	                        tempIndexTable.put(key, value);
+	                        SysOutCtrl.SysoutSet("record_no: " + record_no + "   NodeId: " + key + "  Ip: " + value,2);
+	                    }
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return tempIndexTable;
+	}
+
+	public static File createXmlSearchQuery(String key, String inter_nodeid_ip, String selfNodeId, String selfIp)
+	{   // creating serach query xml file from other node's index table
+	
+	    DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder db = null;
+	    try {
+	        db = f.newDocumentBuilder();
+	    } catch (ParserConfigurationException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	    Document doc = db.newDocument();
+	
+	    Element rootele = doc.createElement("Query");
+	    Element codeele = doc.createElement("Query_");
+	    Element hashidele = doc.createElement("to_hash_id");
+	    Element tonodeidele = doc.createElement("to_node_id");
+	    Element selfnodeidele = doc.createElement("self_node_id");
+	    Element ipele = doc.createElement("self_ip_address");
+	    Element portele = doc.createElement("self_port_no");
+	    Element intermediate_ipele = doc.createElement("inter_ip");
+	
+	    /// randomly chooses the string index from the string array
+	
+	    String tagvalue = "0003"; // use random index to store corresponding string value in another string
+	
+	    SysOutCtrl.SysoutSet("tag selected: " + tagvalue,2); // prints out the value at the randomly selected index
+	
+	    ((Element) codeele).setAttribute("tag", tagvalue);
+	
+	    Text t1 = doc.createTextNode(key);
+	    Text t2 = doc.createTextNode("SearchQuery");
+	   	
+	    Text t3 = doc.createTextNode(selfNodeId);
+	    Text t4 = doc.createTextNode(selfIp);
+	    String selfPortNo = "2222";
+	    Text t5 = doc.createTextNode(selfPortNo);
+	    Text t6 = doc.createTextNode(inter_nodeid_ip);
+	
+	    hashidele.appendChild(t1);
+	    tonodeidele.appendChild(t2);
+	    selfnodeidele.appendChild(t3);
+	    ipele.appendChild(t4);
+	    portele.appendChild(t5);
+	    intermediate_ipele.appendChild(t6);
+	
+	    codeele.appendChild(hashidele);
+	    codeele.appendChild(tonodeidele);
+	    codeele.appendChild(selfnodeidele);
+	    codeele.appendChild(ipele);
+	    codeele.appendChild(portele);
+	    codeele.appendChild(intermediate_ipele);
+	
+	    rootele.appendChild(codeele);
+	    doc.appendChild(rootele);
+	
+	    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	    Transformer transformer = null;
+	    try {
+	        transformer = transformerFactory.newTransformer();
+	    } catch (TransformerConfigurationException e) {
+	        e.printStackTrace();
+	    }
+	    DOMSource source = new DOMSource(doc);
+	    StreamResult result = null;
+	    try {
+	        result = new StreamResult(new FileOutputStream("SearchQuery.xml"));
+	    } catch (FileNotFoundException e1) {
+	        // TODO Auto-generated catch block
+	        e1.printStackTrace();
+	    }
+	    try {
+	        transformer.transform(source, result);
+	    } catch (TransformerException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	
+	
+	    File file1 = new File("SearchQuery.xml");
+	
+	    SysOutCtrl.SysoutSet("SearchQuery.xml file Generated.",2);
+	
+	    return file1;
+	
+	}
+
+	public static Map<String, String> generateIndexingForNewlyJoinedNode(String[] info_from_xml)
     {   // generating index table form immdt newly joined predecessor
 
         SysOutCtrl.SysoutSet("you are in generate Indexing for newly joined node ",2);
@@ -727,7 +1151,6 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         // and it will make the successor its immediate successor
 
-        String my_immediate_successor = PredecessorSuccessor.mySuccessors[0]; // this will gv successor node id
         SysOutCtrl.SysoutSet("My predecessor was: " + my_immediate_predecessor,2);
         SysOutCtrl.SysoutSet("myindex.containsKey(newlyJoinedNodeId)"+myindex.containsKey(newlyJoinedNodeId),2);
         Map<String, String> fresh_index = new LinkedHashMap<String, String>();
@@ -740,7 +1163,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
             SysOutCtrl.SysoutSet("fresh index table before entry is " + fresh_index,2);
 
 
-            fresh_index.put(newlyJoinedHashId, myindex.get(newlyJoinedHashId)); // second argument will extract value iro this key
+            fresh_index.put(newlyJoinedNodeId, myindex.get(newlyJoinedNodeId)); // second argument will extract value iro this key
             // i.e. self_node_id
 
             SysOutCtrl.SysoutSet(" index table for newly joined predecessor/node " + fresh_index,2);
@@ -750,8 +1173,34 @@ public class IndexManagementUtilityMethods extends IndexManagement
             // existing index table.
 
             SysOutCtrl.SysoutSet("Previous my index table was " + myindex,2);
-            myindex.remove(newlyJoinedHashId); // remove the identified entries from original index table
+            myindex.remove(newlyJoinedNodeId); // remove the identified entries from original index table
+            myIndexTable();
+            System.out.println("My index remove 1");
             SysOutCtrl.SysoutSet("Now my index table is " + myindex,2);
+
+            Collection<String> key_extracted = myindex.keySet(); /// code to extract hash_id from array by first
+            /// converting it into collection then to an array
+            Object[] key_array = key_extracted.toArray();
+
+            for (int i = 0; i < key_array.length; i++)
+            {
+                // System.out.println(key_array[i]);
+                // now we will do the comparison
+                SysOutCtrl.SysoutSet(" "+((String) key_array[i]).compareToIgnoreCase(newlyJoinedNodeId));
+                if(CommunicationUtilityMethods.responsibleNode(OverlayManagement.myNodeId,newlyJoinedNodeId,(String) key_array[i]))
+                {
+                    fresh_index.put((String) key_array[i], myindex.get(key_array[i])); // second argument will extract
+                    // value iro this key i.e.
+                    // self_node_id
+
+                    // (c) at same time these identified key value pairs need to be purged from the
+                    // existing index table.
+                    System.out.println("my pred : "+my_immediate_predecessor);
+                    myindex.remove(key_array[i]); // remove the entries from original index table
+                    myIndexTable();
+                    System.out.println("My index remove 2");
+                }
+            }
         }
         else
         {
@@ -779,7 +1228,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
                 // System.out.println(key_array[i]);
                 // now we will do the comparison
                 SysOutCtrl.SysoutSet(" "+((String) key_array[i]).compareToIgnoreCase(newlyJoinedNodeId));
-                if(CommunicationUtilityMethods.responsibleNode(my_immediate_predecessor,newlyJoinedNodeId,(String) key_array[i]))
+                if(CommunicationUtilityMethods.responsibleNode(OverlayManagement.myNodeId,newlyJoinedNodeId,(String) key_array[i]))
                 {
                     fresh_index.put((String) key_array[i], myindex.get(key_array[i])); // second argument will extract
                     // value iro this key i.e.
@@ -787,7 +1236,11 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
                     // (c) at same time these identified key value pairs need to be purged from the
                     // existing index table.
+                    System.out.println("index condition returned : "+CommunicationUtilityMethods.responsibleNode(OverlayManagement.myNodeId,newlyJoinedNodeId,(String) key_array[i])+", for "+newlyJoinedNodeId+" and iam giving him index entry : "+(String) key_array[i]);
+                    System.out.println("my pred : "+my_immediate_predecessor);
                     myindex.remove(key_array[i]); // remove the entries from original index table
+                    myIndexTable();
+                    System.out.println("My index remove 2");
                 }
             }
             SysOutCtrl.SysoutSet("generated index table for newly joined node "+newlyJoinedNodeId+"is" + fresh_index,2);
@@ -898,7 +1351,8 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         SysOutCtrl.SysoutSet("SearchQueryReply.xml file Generated ",2);
         OverlayManagementUtilityMethods.sendFileDirect(caller_Ip, new File("SearchQueryReply.xml"));
-        CommunicationManager.TransmittingBuffer.add( new File("SearchQueryReply.xml"));
+ //       CommunicationManager.TransmittingBuffer.add( new File("SearchQueryReply.xml"));
+ //       com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(new File("SearchQueryReply.xml"));
         SysOutCtrl.SysoutSet("search query reply xml created and added to tx buffer",2);
         // return (new File("SearchQueryReply.xml"));
 
@@ -984,12 +1438,13 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
 
         SysOutCtrl.SysoutSet(" NewAddIndexQuery.xml file Generated.",2);
+        System.out.println("index querry");
 
         return (new File("NewAddIndexQuery.xml"));
 
     }
 
-    public static void informNodeIdToCaller(String caller, String value, String key, boolean flag) {// at responsible node informing action to caller node
+    public static void informNodeIdToCaller(String caller, String value, String key, boolean flag, String caller_ip) {// at responsible node informing action to caller node
         // This method will inform the caller node the nodeId of the to_hash_id field in
         // his search query.
         // Now here caller's nodeId will be put as to_hash_id to route the query till
@@ -1008,9 +1463,8 @@ public class IndexManagementUtilityMethods extends IndexManagement
         
         	else
         	{ 
-        		querried_ip = CommunicationManager.myIpTable.get(value);// here i am putting directly ip address of the called
-        	}//String ip = OverlayManagement.myIpTable1.get(value);// here i am putting directly ip address of the called
-
+        		querried_ip = IndexManagement.NodeId_ip_of_myindex.get(value);// here i am putting directly ip address of the called
+        	}
         	SysOutCtrl.SysoutSet("ip"+querried_ip,2 );													// node.
         	// String nodeId = "IP_NOT_FOUND_AT RESP_NODE"; new
         	//	String str= null;
@@ -1031,7 +1485,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
         	String selfIp = getMyIp();
         	String querried_emailid_hash= key;
         	SysOutCtrl.SysoutSet("self ip add " + selfIp,2);
-        	String caller_Ip=CommunicationManager.myIpTable.get(caller_node_id);
+        	String caller_Ip= caller_ip;
         	createXmlSearchQueryReply(caller_Ip, querried_ip, caller_node_id, selfNodeId, selfIp, querried_emailid_hash);
         	// CommunicationManager.TransmittingBuffer.add(searchQueryReply);
         }
@@ -1044,10 +1498,107 @@ public class IndexManagementUtilityMethods extends IndexManagement
         	String selfIp = getMyIp();
         	String querried_emailid_hash= key;
         	SysOutCtrl.SysoutSet("self ip add " + selfIp,2);
-        	String caller_Ip=CommunicationManager.myIpTable.get(caller_node_id);
+        	String caller_Ip=caller_ip;
         	createXmlSearchQueryReply(caller_Ip, querried_ip, caller_node_id, selfNodeId, selfIp, querried_emailid_hash);
         }	
     }
+    
+    public static void createXmlForCacheEntry(String caller_Ip,String cache_ip, String caller_node_id, String selfNodeId, String selfIp,
+            String cache_emailid_hash, String cache_nodeId_for_emailIdHash)
+    {
+    	String cache_ip_emailHash = cache_emailid_hash+cache_ip;
+    	
+    	DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentbuilder = null;
+        try {
+            documentbuilder = f.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        Document doc = documentbuilder.newDocument();
+
+        Element rootele = doc.createElement("Query");
+        Element codeele = doc.createElement("Query_");
+        Element hashidele = doc.createElement("to_hash_id");
+        Element tonodeidele = doc.createElement("to_node_id");
+        Element selfnodeidele = doc.createElement("self_node_id");
+        Element ipele = doc.createElement("self_ip_address");
+        Element portele = doc.createElement("self_port_no");
+
+        /// randomly chooses the string index from the string array
+
+        String tagvalue = "0333"; // use random index to store corresponding string value in another string
+
+        SysOutCtrl.SysoutSet("tag selected: " + tagvalue,2); // prints out the value at the randomly selected index
+
+        ((Element) codeele).setAttribute("tag", tagvalue);
+
+        Text t1 = doc.createTextNode(caller_node_id);
+
+        // next hop will be given by routing module
+        Text t2 = doc.createTextNode(cache_ip_emailHash);
+
+        // String selfNodeId1="aaaaa";
+
+        Text t3 = doc.createTextNode(selfNodeId);
+
+        Text t4 = doc.createTextNode(selfIp);
+
+        Text t5 = doc.createTextNode(cache_nodeId_for_emailIdHash);
+
+        hashidele.appendChild(t1);
+        tonodeidele.appendChild(t2);
+        selfnodeidele.appendChild(t3);
+        ipele.appendChild(t4);
+        portele.appendChild(t5);
+
+        codeele.appendChild(hashidele);
+        codeele.appendChild(tonodeidele);
+        codeele.appendChild(selfnodeidele);
+        codeele.appendChild(ipele);
+        codeele.appendChild(portele);
+
+        rootele.appendChild(codeele);
+        doc.appendChild(rootele);
+        // System.out.println("1");
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = null;
+        try {
+            transformer = transformerFactory.newTransformer();
+
+            // System.out.println("2");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = null;
+
+            try {
+                result = new StreamResult(new FileOutputStream("CacheEntry.xml"));
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            // System.out.println("3");
+            transformer.transform(source, result);
+        } catch (TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            // System.out.println("4");
+
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            // System.out.println("6");
+            e.printStackTrace();
+        }
+
+
+        SysOutCtrl.SysoutSet("CacheEntry.xml file Generated ",2);
+        OverlayManagementUtilityMethods.sendFileDirect(caller_Ip, new File("CacheEntry.xml"));
+  //      CommunicationManager.TransmittingBuffer.add( new File("CacheEntry.xml"));
+ //       com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(new File("CacheEntry.xml"));
+        SysOutCtrl.SysoutSet("search query reply xml created and added to tx buffer",2);
+    }
+    
     public static String getMyIp() {// getting my ip address		// TODO Auto-generated method stub
         while(!UpdateIP.Connected)
         {
@@ -1059,45 +1610,20 @@ public class IndexManagementUtilityMethods extends IndexManagement
         return ip;
     }
 
-    public static void removeIndexing(String to_hash_id) {// remove index procedure..
-
-        String self_node_id = OverlayManagement.myNodeId; // here calling a function myNodeId from the routing
-        // table who will return node's node_id.
-        String[] predecessor = PredecessorSuccessor.getMyPredecessors(OverlayManagement.nodeId, OverlayManagement.myNodeId); // here calling a function getmypredecessor() from
-        // the routing table who will return node's
-        // predecessor.
-        try {
-            if (to_hash_id.equals(self_node_id)) // it returns boolean value// Here, if it is a exact match i.e.
-                // queried hash_id matching exactly with root node id
-            {
+    public static void removeIndexing(String to_hash_id)
+    {// remove index procedure..
+ 
                 myindex.remove(to_hash_id);
+                myIndexTable();
+                System.out.println("My index remove 4");
                 SysOutCtrl.SysoutSet("index entry removed for hash id "+to_hash_id);
-            } else if ((to_hash_id.compareToIgnoreCase(self_node_id) < 0)
-                       && (to_hash_id.compareToIgnoreCase(predecessor[4]) > 0))
-                // Here, if the queried hash_id is not exactly matching with root node id
-            {   // then we need to compare it as follows :-
-                // (a) first it should be smaller than root node means before it
-                // (xmldetail1[1].compareToIgnoreCase(root_node_id)<0)
-                // (b) and should be greater than its first predecessor
-                // (xmldetail1[1].compareToIgnoreCase(predecessor)>0)
-                // if it satisfies these two conditions then it lies between them then it need
-                // to append that entry in index of root else discard.
-                // compareToIgnoreCase Returns:a negative integer, zero, or a positive integer
-                // as the specified String is greater than, equal to, or less than this String,
-                // ignoring case considerations.
-                myindex.remove(to_hash_id);
-                SysOutCtrl.SysoutSet("index entry removed for hash id "+to_hash_id);
-            }
 
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static void removeIndexRequest(String key, String value) {// creating remove index query for responsible node
         File file = IndexManagementUtilityMethods.createXmlRemoveIndexQuery(key, value);
-        CommunicationManager.TransmittingBuffer.add(file);
+      //  CommunicationManager.TransmittingBuffer.add(file);
+        com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(file);
     }
 
     private static File createXmlRemoveIndexQuery(String key, String value) {
@@ -1185,106 +1711,155 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
     }
 
-    public static String searchEmailId(String email)
-    {   // search email request from auth module
+    private static String destIp = null;
+    public static String searchEmailId(String email) throws InterruptedException
+    {   // search email request from auth module voip
+    	destIp = null;
         SysOutCtrl.SysoutSet("seached email "+email,2);
-        String destIp=null;
         String sha1 = SHA1.getSha1(email);
         SysOutCtrl.SysoutSet("hash of email "+email+" is: "+sha1,2);
-        if (CommunicationUtilityMethods.responsibleNode(PredecessorSuccessor.myPredecessors[4],OverlayManagement.myNodeId,sha1))
+            	
+        if(cached_index.containsKey(sha1))
         {
-            SysOutCtrl.SysoutSet("I am responsible node for this email.",2);
-            SysOutCtrl.SysoutSet("my index table"+IndexManagement.myindex,2);
-            if(myindex.containsKey(sha1))
-            {
+           	String destNodeId = cached_index.get(sha1);
+			SysOutCtrl.SysoutSet("destination node id is."+destNodeId,2);
+			destIp = cached_NodeId_ip_index.get(destNodeId);
 
-                SysOutCtrl.SysoutSet("Indexting found in my index.",2);
-                String destNodeId=Search_in_Index(sha1);
-                SysOutCtrl.SysoutSet("destination node id is."+destNodeId,2);
-                destIp=CommunicationManager.myIpTable.get(destNodeId);
+			SysOutCtrl.SysoutSet("dest ip from my ip table "+destIp,1);
+			
+	/*		JFrame frame1 = new JFrame("Message");
+    		//show a joptionpane dialog using showMessageDialog
+    		JOptionPane.showMessageDialog(frame1, "Searched IP address is "+destIp);*/
+			
+		}
+        else if(myindex.containsKey(sha1))
+        {
+        	String destNodeId = myindex.get(sha1);
+			SysOutCtrl.SysoutSet("destination node id is."+destNodeId,2);
+			destIp = NodeId_ip_of_myindex.get(destNodeId);
 
-                SysOutCtrl.SysoutSet("dest ip from my ip table "+destIp,1);
-
-                // to display a user with a messege box
-            }
-            else
-            {
-                destIp="ENTRY_DOES_NOT_EXIST_AT_RESPONSIBLE_NODE";
-                SysOutCtrl.SysoutSet("Indexting does not found in my index.",2);
-            }
-
-            JLabel frame = new JLabel("IP_Address");
-            JFrame frame1 = new JFrame("Message");
-            //show a joptionpane dialog using showMessageDialog
-            JOptionPane.showMessageDialog(frame1, "Searched IP address is "+destIp);
-
-            return destIp;
+			SysOutCtrl.SysoutSet("dest ip from my ip table "+destIp,1);
+			
+    	/*	JFrame frame1 = new JFrame("Message");
+    		//show a joptionpane dialog using showMessageDialog
+    		JOptionPane.showMessageDialog(frame1, "Searched IP address is "+destIp);*/
         }
-
         else
         {
-            SysOutCtrl.SysoutSet("I am not a responsible node for this email.",2);
-            SysOutCtrl.SysoutSet("creating search query.",2);
-            emailSha1.put(sha1, email);
-            searchReply.put(sha1, null);
-            //searchReply.put(sha1, "127.0.0.1");
+        	if (CommunicationUtilityMethods.responsibleNode(PredecessorSuccessor.myPredecessors[4],OverlayManagement.myNodeId,sha1))
+        	{
+        		SysOutCtrl.SysoutSet("I am responsible node for this email.",2);
+        		SysOutCtrl.SysoutSet("my index table"+IndexManagement.myindex,2);
+        		if(myindex.containsKey(sha1))
+        		{
 
+        			SysOutCtrl.SysoutSet("Indexting found in my index.",2);
+        			//    String destNodeId=Search_in_Index(sha1);
+        			String destNodeId = myindex.get(sha1);
+        			SysOutCtrl.SysoutSet("destination node id is."+destNodeId,2);
+        			destIp=IndexManagement.NodeId_ip_of_myindex.get(destNodeId);
 
-            File searchQuery=createXmlSearchQuery(sha1);
-            CommunicationManager.TransmittingBuffer.add(searchQuery);
+        			SysOutCtrl.SysoutSet("dest ip from my ip table "+destIp,1);
 
-            timer = new Timer();
+        			// to display a user with a messege box
+        		}
+        		else
+        		{
+        			destIp="SORRY! Called Person Is Not Active At The Moment.";
+        			SysOutCtrl.SysoutSet("Indexting does not found in my index.",2);
+        			
+        			JFrame frame1 = new JFrame("Message");
+            		//show a joptionpane dialog using showMessageDialog
+            		JOptionPane.showMessageDialog(frame1, " "+destIp);
+        		}
 
+       /* 		JFrame frame1 = new JFrame("Message");
+        		//show a joptionpane dialog using showMessageDialog
+        		JOptionPane.showMessageDialog(frame1, " "+destIp);*/
 
-            Timer timer = new Timer();
-            TimerTask startIM = new TimerTask()
-            {
-                @Override
-                public void run()
-                {
-
-                    SysOutCtrl.SysoutSet(""+setInterval());
-
-                    SysOutCtrl.SysoutSet("searchReplyReceived"+IndexManagement.searchReplyReceived);
-
-                    if(IndexManagement.searchReplyReceived==false)
-                    {
-                        /*  SysOutCtrl.SysoutSet("please wait");
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }*/
-                 
-                        JFrame frame1 = new JFrame("Message");
-                        //show a joptionpane dialog using showMessageDialog
-                        JOptionPane.showMessageDialog(frame1, "Searched IP Not Found In Given Time ");
-                        String destIp = "TimedOut";
-                       
-                    }
-                    else
-                    {
-                        SysOutCtrl.SysoutSet("searchReplyReceived after  while"+IndexManagement.searchReplyReceived);
-                        SysOutCtrl.SysoutSet("after while");
-                        String destIp=IndexManagement.searchReply.get(sha1);
-
-                        SysOutCtrl.SysoutSet("ip from search query reply "+destIp,1);
-                        timer.cancel();
-                        JLabel frame = new JLabel("IP_Address");
-                        JFrame frame1 = new JFrame("Message");
-                        //show a joptionpane dialog using showMessageDialog
-                        JOptionPane.showMessageDialog(frame1, "Searched IP address is "+destIp);
-                        IndexManagement.searchReplyReceived=false;
-                    }
-                }
-            };
-
-            timer.schedule(startIM, 30000);
+        	}
+        
+        	else
+        	{
+        		SysOutCtrl.SysoutSet("I am not a responsible node for this email.",2);
+        		SysOutCtrl.SysoutSet("creating search query.",2); 
+        		emailSha1.put(sha1, email);
+        		searchReply.put(sha1,"null");
+        		//searchReply.put(sha1, "127.0.0.1");
+        		
+        		System.out.println("find resposible node");
+        		String inter_ip = "null";
+        		String my_node_id = OverlayManagement.myNodeId;
+        		String my_ip = PresentIP.MyPresentIP();
+        		File searchQuery=createXmlSearchQuery(sha1, inter_ip, my_node_id, my_ip);
             
-            return destIp;
-        }
+        		String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(sha1);
+        		String toIp = CommunicationUtilityMethods.getIpFromMyIpTable(tonodeId);
+         
+        		System.out.println("Node Id returned by routing mgmt : "+tonodeId);
+                   
+        		OverlayManagementUtilityMethods.sendFileDirect(toIp,searchQuery);
+            
+        		//  CommunicationManager.TransmittingBuffer.add(searchQuery);
+        	//	    com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(searchQuery);
+   
 
+        		Timer timer = new Timer();
+        		TimerTask startIM = new TimerTask()
+        		{
+        			@Override
+        			public void run()
+        			{
+        				//check_status(sha1);
+                	
+        				SysOutCtrl.SysoutSet(""+setInterval());
+
+        				SysOutCtrl.SysoutSet("searchReplyReceived"+IndexManagement.searchReplyReceived);
+
+        				if(IndexManagement.searchReplyReceived==false)
+        				{
+        					SysOutCtrl.SysoutSet("please wait");
+        					destIp = "TimedOut";
+        					JFrame frame1 = new JFrame("Message");
+        					//show a joptionpane dialog using showMessageDialog
+        					JOptionPane.showMessageDialog(frame1, "Searched IP Not Found In Given Time ");
+        				}
+                    
+        				else
+        				{
+        					SysOutCtrl.SysoutSet("searchReplyReceived after  while"+IndexManagement.searchReplyReceived);
+        					SysOutCtrl.SysoutSet("after while");
+                       
+        					IndexManagement.searchReplyReceived=false;
+        					destIp=IndexManagement.searchReply.get(sha1);
+                       
+
+        					SysOutCtrl.SysoutSet("ip from search query reply "+destIp,1);
+        					
+        					if(destIp.equals("SORRY! Called Person Is Not Active At The Moment."))
+        					{	
+        						JFrame frame1 = new JFrame("Message");
+        						//show a joptionpane dialog using showMessageDialog
+        						JOptionPane.showMessageDialog(frame1, " "+destIp);
+        					}	
+        				}
+        			}
+        		};
+
+        		timer.schedule(startIM, 19000);
+        		try {
+        			Thread.sleep(20000);
+        		} catch (InterruptedException e) {
+        			e.printStackTrace();
+        		}
+           
+        		timer.cancel();
+           
+        		System.out.println("Destination IP is : "+destIp);
+      
+        	}
+        }
+		return destIp; 
     }
 
     private static final int setInterval()
