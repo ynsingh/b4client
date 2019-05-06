@@ -8,8 +8,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.cert.X509Certificate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,17 +42,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import com.ehelpy.brihaspati4.authenticate.ReadVerifyCert;
 import com.ehelpy.brihaspati4.authenticate.emailid;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
+import com.ehelpy.brihaspati4.comnmgr.XmlFileSegregation;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
+import com.ehelpy.brihaspati4.routingmgmt.PurgeEntry;
 import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
+
 
 //Sqn ldr Deepak Sharma Dated 15 Apr 2018 ; 1255 Hrs
 // this class contains all the important functions used by index manager module
@@ -61,7 +69,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
     public static void addIndexRequest(String key, String value)
     {   // this method add index entry
-
+    	
+    	String encr_cert = get_certificate();
+    	
     	if(key.equals(OverlayManagement.myNodeId))
         {
     		if(!myindex.containsKey(key))
@@ -69,6 +79,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     			myindex.put(key, value);
         		myIndexTable();
         		NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+        		
+        		EmailHashId_certificates.put(key, encr_cert);
+        		
         		SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
         		IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
         	}	
@@ -79,6 +92,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     		 myindex.put(key, value);
     		 myIndexTable();
              NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+             
+             EmailHashId_certificates.put(key, encr_cert);
+     		
              SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
     	}
 
@@ -92,6 +108,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
             	myindex.put(key, value);
             	myIndexTable();
             	NodeId_ip_of_myindex.put(value, PresentIP.MyPresentIP());
+            	
+            	EmailHashId_certificates.put(key, encr_cert);
+        		
             	SysOutCtrl.SysoutSet(" HashId stored at self node being responsible node");
             	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
             }
@@ -99,12 +118,28 @@ public class IndexManagementUtilityMethods extends IndexManagement
 
         else
         {
-            File file = IndexManagementUtilityMethods.createXmlAddIndexQuery(key, value);
+            File file = IndexManagementUtilityMethods.createXmlAddIndexQuery(key, value, encr_cert );
         //    CommunicationManager.TransmittingBuffer.add(file);
             com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(file);
         }
     }
 
+    private static  String own_encryptcert = null;
+    public static String get_certificate()
+    {
+    	X509Certificate cert;
+		try {
+			cert = ReadVerifyCert.returnClientCert();
+			byte[] certbyte = cert.getEncoded();
+	    	own_encryptcert = new String(Base64.getEncoder().encode(certbyte));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		return own_encryptcert;
+    }
+    
     public static void Change_In_IP_Check()
     {
         while (CheckIP==true)
@@ -208,6 +243,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
         	myindex.put(xml_info[1], xml_info[2]);
         	myIndexTable();
         	NodeId_ip_of_myindex.put(xml_info[2], xml_info[4]);
+        	
+        	EmailHashId_certificates.put(xml_info[1], xml_info[6]);
+        	
         	SysOutCtrl.SysoutSet("myIndex is "+myindex,2);
         	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
         }
@@ -477,28 +515,198 @@ public class IndexManagementUtilityMethods extends IndexManagement
     	if(ip_mypred_1 == "null")
     		check_1 =false;
     	else
+    	{	
     		check_1 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_1);
+    		if(!check_1)
+    		{
+    			if(CommunicationManager.myIpTable.containsKey(my_pred[4]))
+    			{	
+    				CommunicationManager.myIpTable.remove(my_pred[4], ip_mypred_1);
+    				OverlayManagement.updatPredSec();
+    				
+    				Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+    		   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+    		   													
+    		   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+    		   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+    		   		  CommunicationManager.lock.lock();
+    		   		  try
+    		   		  {
+    		   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+    		   		  }
+    		   		  finally
+    		   		  {
+    		   				CommunicationManager.lock.unlock();
+    		   		  }
+    			}
+    			if(RTUpdate9.Routing_Table.containsKey(my_pred[4]))
+    			{
+    				RTUpdate9.Routing_Table.remove(my_pred[4], ip_mypred_1);
+    				PurgeEntry.purge(my_pred[4]);
+    				
+    				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+    				save.Save_RTNow(); 
+    			}
+    		}
+    	}	
     	
     	if(ip_mypred_2 == "null")
     		check_2 =false;
     	else
+    	{	
     		check_2 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_2);
+    		if(!check_2)
+    		{
+    			if(CommunicationManager.myIpTable.containsKey(my_pred[3]))
+    			{	
+    				CommunicationManager.myIpTable.remove(my_pred[3], ip_mypred_2);
+    				OverlayManagement.updatPredSec();
+				
+    				Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+		   		  	Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+		   													
+		   		  	String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+		   		  	String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+		   		  	CommunicationManager.lock.lock();
+		   		  	try
+		   		  	{
+		   		  		XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+		   		  	}
+		   		  	finally
+		   		  	{
+		   				CommunicationManager.lock.unlock();
+		   		  	}
+    			}
+    			if(RTUpdate9.Routing_Table.containsKey(my_pred[3]))
+    			{
+    				RTUpdate9.Routing_Table.remove(my_pred[3], ip_mypred_2);
+    				PurgeEntry.purge(my_pred[3]);
+				
+    				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+    				save.Save_RTNow(); 
+    			}
+    		}
+    	}	
     	
     	if(ip_mypred_3 == "null")
     		check_3 =false;
     	else
+    	{	
     		check_3 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_3);
-    	
+    		if(!check_3)
+    		{
+    			if(CommunicationManager.myIpTable.containsKey(my_pred[2]))
+    			{	
+    				CommunicationManager.myIpTable.remove(my_pred[2], ip_mypred_3);
+    				OverlayManagement.updatPredSec();
+    				
+    				Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+    		   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+    		   													
+    		   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+    		   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+    		   		  CommunicationManager.lock.lock();
+    		   		  try
+    		   		  {
+    		   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+    		   		  }
+    		   		  finally
+    		   		  {
+    		   				CommunicationManager.lock.unlock();
+    		   		  }
+    			}
+    			if(RTUpdate9.Routing_Table.containsKey(my_pred[2]))
+    			{
+    				RTUpdate9.Routing_Table.remove(my_pred[4], ip_mypred_3);
+    				PurgeEntry.purge(my_pred[2]);
+    				
+    				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+    				save.Save_RTNow(); 
+    			}
+    		}
+    	}
+    		
     	if(ip_mypred_4 == "null")
     		check_4 =false;
     	else
+    	{
     		check_4 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_4);
-    	
+    		if(!check_4)
+    		{
+    			if(CommunicationManager.myIpTable.containsKey(my_pred[1]))
+    			{	
+    				CommunicationManager.myIpTable.remove(my_pred[1], ip_mypred_4);
+    				OverlayManagement.updatPredSec();
+    				
+    				Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+    		   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+    		   													
+    		   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+    		   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+    		   		  CommunicationManager.lock.lock();
+    		   		  try
+    		   		  {
+    		   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+    		   		  }
+    		   		  finally
+    		   		  {
+    		   				CommunicationManager.lock.unlock();
+    		   		  }
+    			}
+    			if(RTUpdate9.Routing_Table.containsKey(my_pred[1]))
+    			{
+    				RTUpdate9.Routing_Table.remove(my_pred[1], ip_mypred_4);
+    				PurgeEntry.purge(my_pred[4]);
+    				
+    				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+    				save.Save_RTNow(); 
+    			}
+    		}
+    	}	
+    		
     	if(ip_mypred_5 == "null")
     		check_5 =false;
     	else
+    	{	
     		check_5 = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip_mypred_5);
-    	
+    		if(!check_5)
+    		{
+    			if(CommunicationManager.myIpTable.containsKey(my_pred[0]))
+    			{	
+    				CommunicationManager.myIpTable.remove(my_pred[0], ip_mypred_5);
+    				OverlayManagement.updatPredSec();
+    				
+    				Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+    		   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+    		   													
+    		   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+    		   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+    		   		  CommunicationManager.lock.lock();
+    		   		  try
+    		   		  {
+    		   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+    		   		  }
+    		   		  finally
+    		   		  {
+    		   				CommunicationManager.lock.unlock();
+    		   		  }
+    			}
+    			if(RTUpdate9.Routing_Table.containsKey(my_pred[0]))
+    			{
+    				RTUpdate9.Routing_Table.remove(my_pred[0], ip_mypred_5);
+    				PurgeEntry.purge(my_pred[4]);
+    				
+    				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+    				save.Save_RTNow(); 
+    			}
+    		}
+    	}	
+    		
     	if(!check_1)
     		change =1;
     	
@@ -530,7 +738,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		    	Set<String> ip1 = nodeid_ip_myindex5.keySet();
 	            for(String key : ip1)
 		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex5.get(key));
-		    			
+	  		
 	            myIndexTable();
 	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
 				break;
@@ -553,7 +761,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		        Set<String> ip3 = nodeid_ip_myindex4.keySet();
 	            for(String key : ip3)
 		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex4.get(key));
-		    			
+	    		
 	            myIndexTable();
 	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
 				break;
@@ -584,7 +792,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		        Set<String> ip6 = nodeid_ip_myindex3.keySet();
 	            for(String key : ip6)
 		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex3.get(key));	
-		        
+	  
 	            myIndexTable();
 	            IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
 				break;
@@ -623,9 +831,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		        Set<String> ip10 = nodeid_ip_myindex2.keySet();
 		        for(String key : ip10)
 		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex2.get(key));
-		        
-		        myIndexTable();	            
-	           	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+		
+		        myIndexTable();	         
+		       	IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
 				break;	
 				
 			case 5:
@@ -670,7 +878,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		        Set<String> ip15 = nodeid_ip_myindex1.keySet();
 		        for(String key : ip15)
 		        	NodeId_ip_of_myindex.put(key, nodeid_ip_myindex1.get(key));
-				
+		        
 		        myIndexTable();
 		        IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
 	            break;
@@ -700,30 +908,38 @@ public class IndexManagementUtilityMethods extends IndexManagement
         String selfIp = getMyIp();
         String self_port_no = "2222";
         String toNodeId = "CopyOfIndexTable";
+        
+        List<String> Successors = new ArrayList<String>();
 
         for (int i = 0; i < 5; i++)
         {
         	SysOutCtrl.SysoutSet("my successor "+i+" "+PredecessorSuccessor.mySuccessors[i]);
         	String to_hash_id = PredecessorSuccessor.mySuccessors[i];
-        	SysOutCtrl.SysoutSet("successor[i]"+to_hash_id);
-        	File myIndexInXml = null;
-        	if(!to_hash_id.isEmpty())
-        	{
-        		try {
-        			myIndexInXml = convert_hashmap_of_indexTable_transmitted_toxml(myindex, "0010",to_hash_id, selfNodeId, toNodeId, selfIp, self_port_no, "NoAction");
-        		} catch (FileNotFoundException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		} catch (TransformerException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		} catch (ParserConfigurationException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
+        	
+        	if(!Successors.contains(to_hash_id) && !to_hash_id.equals(OverlayManagement.myNodeId) )
+        	{	
+        		Successors.add(to_hash_id);
+        		SysOutCtrl.SysoutSet("successor[i]"+to_hash_id);
+        	
+        		File myIndexInXml = null;
+        		if(!to_hash_id.isEmpty())
+        		{
+        			try {
+        				myIndexInXml = convert_hashmap_of_indexTable_transmitted_toxml(myindex,  "0010",to_hash_id, selfNodeId, toNodeId, selfIp, self_port_no, "NoAction");
+        			} catch (FileNotFoundException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			} catch (TransformerException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			} catch (ParserConfigurationException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			}
         			//     CommunicationManager.TransmittingBuffer.add(myIndexInXml);
-       			com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(myIndexInXml);
-       		}
+        			com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(myIndexInXml);
+        		}	
+        	}	
        }
     }
 
@@ -789,34 +1005,50 @@ public class IndexManagementUtilityMethods extends IndexManagement
                 	NodeId_ip_of_myindex.remove(nodeid_array[j], ip_of_email_hash_nodeid);
             }
             
+            String encr_cert;
+            
+            if(EmailHashId_certificates.containsKey(hashid_array[j]))
+            {
+            	encr_cert = EmailHashId_certificates.get(hashid_array[j]);
+        		
+        		Element encr_nodeid = doc.createElement("inter_ip");
+        		encr_nodeid.appendChild(doc.createTextNode((String) encr_cert));
+                codeele.appendChild(encr_nodeid);
+                
+                if(action == "DeleteNodeIdFromIndexIpTable")
+                	EmailHashId_certificates.remove(hashid_array[j], encr_cert);
+            }
+            
         }
-
+        
         Element hashidele = doc.createElement("to_hash_id");
         Element tonodeidele = doc.createElement("to_node_id");
         Element selfnodeidele = doc.createElement("self_node_id");
         Element ipele = doc.createElement("self_ip_address");
         Element ipele_emailhash_nodeid = doc.createElement("self_port_no");
+        Element encr_nodeid  = doc.createElement("inter_ip");
 
         Text t1 = doc.createTextNode(to_hash_id);
         Text t2 = doc.createTextNode(toNodeId);
         Text t3 = doc.createTextNode(selfNodeId);
         Text t4 = doc.createTextNode(selfIp);
-
         Text t5 = doc.createTextNode(self_port_no);
-
+        Text t6 = doc.createTextNode("inter_nodeid_ip");
+   
         hashidele.appendChild(t1);
         tonodeidele.appendChild(t2);
-
         selfnodeidele.appendChild(t3);
         ipele.appendChild(t4);
         ipele_emailhash_nodeid.appendChild(t5);
+        encr_nodeid.appendChild(t6);
 
         tagidele.appendChild(hashidele);
         tagidele.appendChild(tonodeidele);
         tagidele.appendChild(selfnodeidele);
         tagidele.appendChild(ipele);
         tagidele.appendChild(ipele_emailhash_nodeid);
-
+        tagidele.appendChild(encr_nodeid);
+        
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(doc);
@@ -1021,6 +1253,60 @@ public class IndexManagementUtilityMethods extends IndexManagement
 	    return tempIndexTable;
 	}
 
+	public static Map<String, String> convert_xml_to_Node_encrCert_table(File inFile) 
+	{
+		Map<String, String> node_cert = new LinkedHashMap<String, String>();
+	    // this method should convert the incoming xml file to myindex9hashmap)
+			
+	    SysOutCtrl.SysoutSet("you are in convertXmlToIndexTable method",2);
+	
+	    try {
+	
+	
+	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder db = dbf.newDocumentBuilder();
+	        Document doc = db.parse(inFile);
+	
+	
+	        NodeList nlist = doc.getElementsByTagName("indexentries");
+	        System.out.println("nlist lenght"+nlist.getLength());
+	
+	        for (int i = 0; i < nlist.getLength(); i++)
+	        {
+	            System.out.println("for loop i "+i);
+	            Node nNode = nlist.item(i);
+	
+	            if (nNode.getNodeType() == Node.ELEMENT_NODE)
+	            {
+	                Element eElement = (Element) nNode; // System.out.println(eElement.getAttribute("id"));
+	
+	                String record_no = eElement.getAttribute("record_no");
+	
+	                NodeList nodeList = eElement.getChildNodes();
+	
+	                for (int x = 0; x < 2; x++) // to get tag value from each xml file.
+	                {
+	                    Node n = nodeList.item(x);
+	                    if (n.getNodeType() == Node.ELEMENT_NODE)
+	                    {
+	                        Element name = (Element) n;
+	                        SysOutCtrl.SysoutSet("indexentries"+record_no+":"+name.getTagName()+"="+name.getTextContent());
+	                        String key = eElement.getElementsByTagName("hash_id").item(0).getTextContent();
+	                        String value = eElement.getElementsByTagName("inter_ip").item(0).getTextContent();
+	                        node_cert.put(key, value);
+	                        SysOutCtrl.SysoutSet("record_no: " + record_no + "   Hash_id: " + key + "  cert: " + value,2);
+	                    }
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	   
+	    return node_cert;
+		
+	}
+
 	public static File createXmlSearchQuery(String key, String inter_nodeid_ip, String selfNodeId, String selfIp)
 	{   // creating serach query xml file from other node's index table
 	
@@ -1156,6 +1442,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
         Map<String, String> fresh_index = new LinkedHashMap<String, String>();
         SysOutCtrl.SysoutSet("my index table size"+myindex.size());
 
+        
         if (myindex.containsKey(newlyJoinedNodeId)) // Returns true if this map contains a mapping for the specified key.
         {   // this is for a case when the newly joined node is root node for those entries
             // which were in its successor index table due to its absence
@@ -1187,6 +1474,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
                 // System.out.println(key_array[i]);
                 // now we will do the comparison
                 SysOutCtrl.SysoutSet(" "+((String) key_array[i]).compareToIgnoreCase(newlyJoinedNodeId));
+               	
                 if(CommunicationUtilityMethods.responsibleNode(OverlayManagement.myNodeId,newlyJoinedNodeId,(String) key_array[i]))
                 {
                     fresh_index.put((String) key_array[i], myindex.get(key_array[i])); // second argument will extract
@@ -1200,6 +1488,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
                     myIndexTable();
                     System.out.println("My index remove 2");
                 }
+                
             }
         }
         else
@@ -1357,8 +1646,10 @@ public class IndexManagementUtilityMethods extends IndexManagement
         // return (new File("SearchQueryReply.xml"));
 
     }
+    
+    
 
-    public static File createXmlAddIndexQuery(String key, String value) {// creating add index xml query
+    public static File createXmlAddIndexQuery(String key, String value, String encr_cert) {// creating add index xml query
 
         DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -1377,6 +1668,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
         Element selfnodeidele = doc.createElement("self_node_id");
         Element ipele = doc.createElement("self_ip_address");
         Element portele = doc.createElement("self_port_no");
+        Element intermediate_ipele = doc.createElement("inter_ip");
 
         /// randomly chooses the string index from the string array
 
@@ -1397,18 +1689,21 @@ public class IndexManagementUtilityMethods extends IndexManagement
         Text t4 = doc.createTextNode(selfIp);
         String selfPortNo = "2222";
         Text t5 = doc.createTextNode(selfPortNo);
+        Text t6 = doc.createTextNode(encr_cert);
 
         hashidele.appendChild(t1);
         tonodeidele.appendChild(t2);
         selfnodeidele.appendChild(t3);
         ipele.appendChild(t4);
         portele.appendChild(t5);
+        intermediate_ipele.appendChild(t6);
 
         codeele.appendChild(hashidele);
         codeele.appendChild(tonodeidele);
         codeele.appendChild(selfnodeidele);
         codeele.appendChild(ipele);
         codeele.appendChild(portele);
+        codeele.appendChild(intermediate_ipele);
 
         rootele.appendChild(codeele);
         doc.appendChild(rootele);
@@ -1785,7 +2080,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
         		SysOutCtrl.SysoutSet("creating search query.",2); 
         		emailSha1.put(sha1, email);
         		searchReply.put(sha1,"null");
-        		//searchReply.put(sha1, "127.0.0.1");
+        		
         		
         		System.out.println("find resposible node");
         		String inter_ip = "null";
@@ -1887,7 +2182,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
     public static void storeHashId()
     {
 
-        selfEmailid = emailid.getemaild();//method from authentication will come heere
+        selfEmailid = emailid.getemaild();//method from authentication will come here
 
 
         selfHashId=SHA1.getSha1(selfEmailid);

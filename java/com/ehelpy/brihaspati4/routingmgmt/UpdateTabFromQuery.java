@@ -7,23 +7,17 @@ public class UpdateTabFromQuery extends RTUpdate9
 {
 	
 //	this class updates the table from queries received, and pred and succ tables.
-	
 	public synchronized static void NextEntry(String a,String b)
 	{ 
 		//System.out.println	(OverlayManagement.myNodeId);
 	    String queryid = a; 
 	    String ipad=b;
 	    String Existingid = null;
-	   
+	    System.out.println("nextentry");
 	    // this converts the char to int for comparisons
 
 		char A=10;char B=11;char C=12;char D=13;char E=14;char F=15;// this converts the char to int
-		int HexA = Character.getNumericValue(A);
-	    int HexB = Character.getNumericValue(B); 
-	    int HexC = Character.getNumericValue(C); 
-	    int HexD = Character.getNumericValue(D);    
-	    int HexE = Character.getNumericValue(E);
-	    int HexF = Character.getNumericValue(F);
+		
 
 	    for(int n = 0; n < OverlayManagement.myNodeId.length();n=n+1)
 	    { 
@@ -34,6 +28,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        
 	        int HexNodeNib = Character.getNumericValue(NodeNib);
 	        int HexQueryNib = Character.getNumericValue(QueryNib);
+	        System.out.println("HexQueryNib is 1234 :"+HexQueryNib);
 	        int HexExistingNib;        
 	        double HalfwayNibHex;
 	        
@@ -62,12 +57,12 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        	System.out.println("we are in -ve loop");
 
 	        	System.out.println("HexNodeNib is :"+HexNodeNib);
-	        	System.out.println("HexQueryNib is :"+HexQueryNib);
+	        	System.out.println("HexQueryNib is 123 :"+HexQueryNib);
 		    	
 	        	System.out.println("PredRg is :"+PredRg);
 	        	System.out.println("SuccRg is :"+SuccRg);
 		        
-		        if(HexNodeNib>HexQueryNib||HexQueryNib >= 16+PredRg)
+		        if(HexQueryNib<HexNodeNib || HexQueryNib>=PredRg+16)
 		        {
 		        	System.out.println("we are in -ve loop 1");
 		        	int UpdPredRg = 16+PredRg;
@@ -88,11 +83,18 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        			Existingid = Pred[n][0];
 		        			ExistingNib = Existingid.charAt(n);
 		        			HexExistingNib = Character.getNumericValue(ExistingNib);
-		        			SysOutCtrl.SysoutSet("existing node  :"+HexExistingNib,3);
+		        			System.out.println("existing Nib  :"+HexExistingNib);
+		        			System.out.println("HexQueryNib" +HexQueryNib);
 	        			
 		        			if(HexQueryNib==HexExistingNib)
 	        				{
-	        				//n++;
+		        				if(queryid.compareTo( Existingid)>0)
+		        				{
+		        					Pred[n][0] = queryid;
+	        						Pred[n][1] = ipad;
+	        						RTUpdate9.Routing_Table.put(a,b);
+	    							break;
+		        				}
 	        				}
 	        				else 
 	        				{	
@@ -119,13 +121,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				}
 		  	    		}
 		  	    		break;
-	        			}
-		        	}
+		  	    	}
+		        	
 		    	
 		        	else if( HexQueryNib >= 16+PredRg)
 		        	{
 		        		System.out.println("we are in -ve loop 11");
-			    		int UpdPredRg = 16+PredRg;
+			    		UpdPredRg = 16+PredRg;
 			    		System.out.println("Updated Pred Rg is :"+UpdPredRg);
 			  	    	
 			  	    		if(Pred[n][0]==null)
@@ -145,7 +147,14 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        			
 			  	    			if(HexQueryNib==HexExistingNib)
 		        				{
-		        				//n++;
+			  	    				if(queryid.compareTo( Existingid)>0)
+			        				{
+			        					Pred[n][0] = queryid;
+		        						Pred[n][1] = ipad;
+		        						RTUpdate9.Routing_Table.put(a,b);
+		    							break;
+			        				}
+		        			
 		        				}
 		        				else 
 		        				{
@@ -172,11 +181,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 			  	    		break;
 		        	
 		        	}
+		        }
 		     
 		        
 		        	else if (HexQueryNib <= SuccRg && HexQueryNib > HexNodeNib)
 		        	{
 		        		System.out.println("we are in Normal loop 3");
+		        		
 	        		
 		        		if(Succ[n][0]==null)
 		        		{
@@ -192,10 +203,18 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        			ExistingNib = Existingid.charAt(n);
 		        			HexExistingNib = Character.getNumericValue(ExistingNib);
 		        			System.out.println("HexExistingNib :"+HexExistingNib);
+		        			System.out.println("existing Nib  :"+HexExistingNib);
+		        			System.out.println("HexQueryNib" +HexQueryNib);
 	        			
 		        			if(HexQueryNib==HexExistingNib)
 		        			{
-		        				//n++;
+		        				if(queryid.compareTo( Existingid)<0)
+		        				{
+		        					Succ[n][0] = queryid;
+	        						Succ[n][1] = ipad;
+	        						RTUpdate9.Routing_Table.put(a,b);
+	    							break;
+		        				}
 		        			}
 	        			
 		        			else if(HexQueryNib<HexExistingNib)
@@ -237,14 +256,21 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        			ExistingNib = Existingid.charAt(n);
 		        			HexExistingNib = Character.getNumericValue(ExistingNib);
 		        			HalfwayNibHex = HexNodeNib+8;
+		        			System.out.println("existing Nib  :"+HexExistingNib);
+		        			System.out.println("HexQueryNib" +HexQueryNib);
 	    			
 		        			System.out.println("Existing Nib :"+HexExistingNib);
 	        			
 		        			if(HexQueryNib==HexExistingNib)
 		        			{
 
-		        				//System.out.println("21");
-	        				
+		        				if(((queryid.compareTo( Existingid)>0) && (HexQueryNib<HalfwayNibHex))|| ((queryid.compareTo( Existingid)<0 &&(HexQueryNib>=HalfwayNibHex))))
+		        				{
+		        					Mid[n][0] = queryid;
+	        						Mid[n][1] = ipad;
+	        						RTUpdate9.Routing_Table.put(a,b);
+	    							break;
+		        				}
 		        			}
 
 		        			else
@@ -310,9 +336,15 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			SysOutCtrl.SysoutSet("HexExistingNib :"+HexExistingNib,3);
 	        			
 	        			if(HexQueryNib==HexExistingNib)
-	        			{
-	        				//n++;
-	        			}
+        				{
+	        				if(queryid.compareTo(Existingid)>0)
+	        				{
+	        					Pred[n][0] = queryid;
+        						Pred[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
+        				}
 	        			else if(HexQueryNib>HexExistingNib)
 	        			{
 	        				Pred[n][0] = queryid;
@@ -357,11 +389,21 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			System.out.println("Existing Nib :"+HexExistingNib);
 	        			
 	        			if(HexQueryNib==HexExistingNib)
-	        			{
-
-	        				System.out.println("21");
-	        				
-	        			}
+        				{
+	        				if(HexQueryNib>=10 && ((queryid.compareTo( Existingid)>0) && (HexQueryNib<HalfwayNibHex))|| ((queryid.compareTo( Existingid)<0 &&(HexQueryNib>=HalfwayNibHex))))
+	        				{
+	        					Mid[n][0] = queryid;
+        						Mid[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}else if(HexQueryNib>=0 && ((queryid.compareTo( Existingid)>0) && (HexQueryNib<(HexNodeNib-8)))|| ((queryid.compareTo( Existingid)<0 &&(HexQueryNib>=(HexNodeNib-8)))))
+	        				{
+	        					Mid[n][0] = queryid;
+        						Mid[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
+        				}
 	        			else if(0<=HexQueryNib &&  HexQueryNib<=6)//for node B the mid range is (0 to 6 )
 	        			{
 	        				HexQueryNib=HexQueryNib+16;
@@ -401,7 +443,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			
 	        			if(HexQueryNib==HexExistingNib)
 	        			{
-	        				//n++;
+	        				if(queryid.compareTo(Existingid)<0)
+	        				{
+	        					Succ[n][0] = queryid;
+        						Succ[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
 	        			}
 	        			
 	        			else if(HexQueryNib<HexExistingNib)
@@ -428,13 +476,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        else if (SuccRg > 15)
 	        {
 
-	        	SysOutCtrl.SysoutSet("We are in >15 loop",3);
+	        	System.out.println("We are in >15 loop");
 	        	
-	        	SysOutCtrl.SysoutSet("HexNodeNib is :"+HexNodeNib,3);
-		        SysOutCtrl.SysoutSet("HexQueryNib is :"+HexQueryNib,3);
+	        	System.out.println("HexNodeNib is :"+HexNodeNib);
+	        	System.out.println("HexQueryNib is :"+HexQueryNib);
 	        	
-		        SysOutCtrl.SysoutSet("PredRg is :"+PredRg,3);
-		        SysOutCtrl.SysoutSet("SuccRg is :"+SuccRg,3);
+	        	System.out.println("PredRg is :"+PredRg);
+	        	System.out.println("SuccRg is :"+SuccRg);
 		        int ValueToCompareQuery=HexQueryNib;;
 		        
 		        if(HexQueryNib<=3)
@@ -456,16 +504,22 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			Existingid = Succ[n][0];
 	        			ExistingNib = Existingid.charAt(n);
 	        			HexExistingNib = Character.getNumericValue(ExistingNib);
-	        			SysOutCtrl.SysoutSet("HexExistingNib :"+HexExistingNib,3);
+	        			System.out.println("HexExistingNib 456 :"+HexExistingNib);
 	        			int ValueToCompareExistingNib=HexExistingNib;
 	        			if(HexExistingNib<=3)
 	        	        {
 	        				ValueToCompareExistingNib=16+HexExistingNib;
 	        	        }
 	        			
-	        			if(HexQueryNib==HexExistingNib)
+	        			if( HexQueryNib==HexExistingNib)
 	        			{
-	        				//n++;
+	        				if(queryid.compareTo(Existingid)<0 )
+	        				{
+	        					Succ[n][0] = queryid;
+        						Succ[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
 	        			}
 	        			
 	        			else if(ValueToCompareQuery<ValueToCompareExistingNib)
@@ -484,7 +538,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        		}
 	        	}
 	        	
-	        	else if (HexQueryNib > PredRg)
+	        	else if (HexQueryNib >= PredRg)
 	        	{
 	        		if(Pred[n][0]==null)
 	        		{
@@ -503,7 +557,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			
 	        			if(HexQueryNib==HexExistingNib)
 	        			{
-	        				//n++;
+	        				if(queryid.compareTo(Existingid)>0 )
+	        				{
+	        					Pred[n][0] = queryid;
+        						Pred[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
 	        			}
 	        			
 	        			else if(HexQueryNib>HexExistingNib)
@@ -524,7 +584,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        	
 	        	else
 	        	{
-	        		SysOutCtrl.SysoutSet("mid",3);
+	        		System.out.println("mid");
 	        		
 	        		
 	        		if(Mid[n][0]==null)
@@ -543,15 +603,21 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			Existingid = Mid[n][0];
 		        		ExistingNib = Existingid.charAt(n);
 		        		HexExistingNib = Character.getNumericValue(ExistingNib);
-		        		int CentreOfMid=HexNodeNib+8-16;
-	        			SysOutCtrl.SysoutSet("2",3);
-	        			SysOutCtrl.SysoutSet("Existing Nib :"+HexExistingNib,3);
+		        		int CentreOfMid=HexNodeNib-8;
+	        			
+		        		System.out.println("CentreOfMid :"+CentreOfMid);
 	        	       			
 	        			if(HexQueryNib==HexExistingNib)
 	        			{
-
-	        				SysOutCtrl.SysoutSet("21",3);
-	        				break;
+	        				System.out.println("check");
+	        				if((HexQueryNib<CentreOfMid && queryid.compareTo(Existingid)>0 )||(HexQueryNib>CentreOfMid && queryid.compareTo(Existingid)<0 ))
+	        				{
+	        					System.out.println("check12");
+	        					Mid[n][0] = queryid;
+        						Mid[n][1] = ipad;
+        						RTUpdate9.Routing_Table.put(a,b);
+    							break;
+	        				}
 	        				
 	        			}
 	        			
@@ -573,74 +639,83 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        	}
 		        
 	        }
+	        break;
 	        		
 	    }	
+	
+	
+	
+	        			
 	   
 	   	try
-		{
-		boolean succ = false;
-		for(int k=0;k<40;k++)
-		{
-			for(int j=0;j<2;j++)
-			{
-				if(Succ[k][j].equals(queryid))
-				{	
-					Succ[k][j+1] = ipad;
-					succ = true;
-					RTUpdate9.Routing_Table.put(a,b);
-					break;
-				}
-			}	
-			if(succ)
-				break;
-		}
+	   	{
+	   		boolean succ = false;
+	   		for(int k=0;k<40;k++)
+	   		{
+	   			for(int j=0;j<2;j++)
+	   			{
+	   				if(Succ[k][j].equals(queryid))
+	   				{	
+	   					Succ[k][j+1] = ipad;
+	   					succ = true;
+	   					RTUpdate9.Routing_Table.put(a,b);
+	   					break;
+	   				}
+	   			}	
+	   			if(succ)
+	   				break;
+	   		}
 		
-		boolean mid = false;
-		for(int k=0;k<40;k++)
-		{
-			for(int j=0;j<2;j++)
-			{
-				if(Mid[k][j].equals(queryid))
-				{	
-					Mid[k][j+1] = ipad;
-					succ = true;
-					RTUpdate9.Routing_Table.put(a,b);
-					break;
-				}
-			}	
-			if(mid)
-				break;
-		}
+	   		boolean mid = false;
+	   		for(int k=0;k<40;k++)
+	   		{
+	   			for(int j=0;j<2;j++)
+	   			{
+	   				if(Mid[k][j].equals(queryid))
+	   				{	
+	   					Mid[k][j+1] = ipad;
+	   					succ = true;
+	   					RTUpdate9.Routing_Table.put(a,b);
+	   					break;
+	   				}
+	   			}	
+	   			if(mid)
+	   				break;
+	   		}
 		
-		boolean pred = false;
-		for(int k=0;k<40;k++)
-		{
-			for(int j=0;j<2;j++)
-			{
-				if(Pred[k][j].equals(queryid))
-				{	
-					Pred[k][j+1] = ipad;
-					pred = true;
-					RTUpdate9.Routing_Table.put(a,b);
-					break;
-				}
-			}	
-			if(pred)
-				break;
-		}
-		}
-		catch(NullPointerException e)
-		{
+	   		boolean pred = false;
+	   		for(int k=0;k<40;k++)
+	   		{
+	   			for(int j=0;j<2;j++)
+	   			{
+	   				if(Pred[k][j].equals(queryid))
+	   				{	
+	   					Pred[k][j+1] = ipad;
+	   					pred = true;
+	   					RTUpdate9.Routing_Table.put(a,b);
+	   					break;
+	   				}
+	   			}	
+	   			if(pred)
+	   				break;
+	   		}
+	   	}
+	   	catch(NullPointerException e)
+	   	{
 			
 		}
-
+		
+	//    PrintRT9 .PrintMatrix();
+	   	
+	//	RTUpdate9.Routing_Table.put(a,b);
+		
 		Save_Retrieve_RT.Save_RT save1 = new Save_Retrieve_RT.Save_RT();
 		save1.Save_RTNow();
 	    
 		}
 	}
 
-	class PrintRT9 extends test_one
+	class PrintRT9 extends RTUpdate9
 	{
 		public static void PrintMatrix()
 		{

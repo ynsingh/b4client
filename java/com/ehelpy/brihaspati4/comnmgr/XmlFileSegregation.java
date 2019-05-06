@@ -25,6 +25,8 @@ import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
 import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateTabFromQuery;
+import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 
 public class XmlFileSegregation extends CommunicationManager
@@ -157,6 +159,13 @@ public class XmlFileSegregation extends CommunicationManager
 							RxBufferIM.add(RxBufferIM.size(), file);
 						}
 					}
+					
+					else if (xmlParsedFields[0].equals("1011") || xmlParsedFields[0].equals("1012") 
+							|| xmlParsedFields[0].equals("1013") || xmlParsedFields[0].equals("1014") 
+							|| xmlParsedFields[0].equals("1015") || xmlParsedFields[0].equals("1017") )
+					{
+						RxBufferSMS.add(RxBufferSMS.size(), file);
+					}
 				}
 	
 				
@@ -170,6 +179,12 @@ public class XmlFileSegregation extends CommunicationManager
 			
 						RxBufferOM.add(RxBufferOM.size(), file);
 					}
+					
+					else if (xmlParsedFields[0].equals("1011") || xmlParsedFields[0].equals("1012") || xmlParsedFields[0].equals("1015") || xmlParsedFields[0].equals("1016"))
+					{
+						RxBufferSMS.add(RxBufferSMS.size(), file);
+					}
+					
 					else
 					{
 						SysOutCtrl.SysoutSet("Destination lies between me and my immediate predecessor", 2);

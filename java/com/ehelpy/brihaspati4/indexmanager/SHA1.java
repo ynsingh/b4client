@@ -9,7 +9,7 @@ public class SHA1 {
 
     public static void main(String[] argv) {
 
-        String value = "navleen@iitk.ac.in";
+        String value = "singhnk@iitk.ac.in";
         SysOutCtrl.SysoutSet( "The sha1 of \""+ value + "\" is:",2);
         String sha1=getSha1(value);
         System.out.println(""+sha1);

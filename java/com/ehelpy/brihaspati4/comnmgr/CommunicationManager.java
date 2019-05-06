@@ -32,6 +32,9 @@ public class CommunicationManager extends Thread
 	public static LinkedList<File> RxBufferRT = new LinkedList<File>();
 	
 	public static LinkedList<File> RxBufferIM = new LinkedList<File>();
+	
+	public static LinkedList<File> RxBufferSMS = new LinkedList<File>();
+	
 	public static Object lock_RxBufferIM = new Object();
 	
 	public static Map<String, String> myIpTable = new ConcurrentHashMap<>();	

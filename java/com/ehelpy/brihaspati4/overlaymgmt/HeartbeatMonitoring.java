@@ -37,12 +37,12 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
    	 
    	  if(!bool_iptable)
    	  {
+   		  System.out.println("node to be purged : "+key);
    		  CommunicationManager.myIpTable.remove(key, ip);
    		  OverlayManagement.updatPredSec();
-   		  Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet(); /// code to extract hash_id from array by first
-   			/// converting it into collection then to an array
+   		 
+   		  Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
    		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
-
    													
    		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
    		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
@@ -57,8 +57,8 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
    				CommunicationManager.lock.unlock();
    		  }
    			
-   	}	  
-	  }
+   	  }	  
+	 }
     
      //removing entries from suu and pred
  	for(int i = 0; i<CommunicationManager.succ.size(); i++)
@@ -218,6 +218,8 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
     	  }
       }
       
+      Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
+	  save.Save_RTNow();      
       
       
       
@@ -259,6 +261,22 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
 							  { 
 								  CommunicationManager.myIpTable.remove(purge, ipadd);
 								  OverlayManagement.updatPredSec();
+								  
+								  Set<String> nodeId_extracted = CommunicationManager.myIpTable.keySet();    			
+						   		  Collection<String> ip_extracted = CommunicationManager.myIpTable.values();
+						   													
+						   		  String[] nodeIdArr = nodeId_extracted.toArray(new String[nodeId_extracted.size()]);
+						   		  String[] ipAddArr = ip_extracted.toArray(new String[ip_extracted.size()]);
+
+						   		  CommunicationManager.lock.lock();
+						   		  try
+						   		  {
+						   				XmlFileSegregation.ipTableWriter(nodeIdArr,ipAddArr);
+						   		  }
+						   		  finally
+						   		  {
+						   				CommunicationManager.lock.unlock();
+						   		  }
 							  }
 								  
 							  RTUpdate9.Routing_Table.remove(purge, ipadd);
