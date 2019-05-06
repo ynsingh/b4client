@@ -37,6 +37,7 @@ import java.awt.Dialog.ModalityType;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.TableModel;
 
+import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.voip.B4services;
 import com.ehelpy.brihaspati4.voip.voip_call;
 import com.ehelpy.brihaspati4.voip.voip_rxcall;
@@ -264,7 +265,7 @@ public class Display_Window_After_Login extends JFrame{
                 if (popup != null) {
                     popup.hide();
                 }
-                JLabel text = new JLabel("MESSAGE");
+                JLabel text = new JLabel("SEND MESSAGE");
                 popup = PopupFactory.getSharedInstance().getPopup(e.getComponent(), text, e.getXOnScreen(), e.getYOnScreen());
                 popup.show();
 			}
@@ -286,10 +287,21 @@ public class Display_Window_After_Login extends JFrame{
 				}
 				
 				else
-					JOptionPane.showMessageDialog(null, "NOT YET ACTVE");
+				{	
+					TableModel model = table.getModel();
+					
+					Email_Id = model.getValueAt(i, 1).toString();
+										
+					dispose();
+					
+					Send_SMS_Window.get_email_id(Email_Id, "AddressBook");
+					
+					Send_SMS_Window obj = new Send_SMS_Window();
+					obj.setVisible(true);
+				}	
 			}
 		});
-		Image img1 = new ImageIcon(this.getClass().getResource("/message.png")).getImage();
+		Image img1 = new ImageIcon(this.getClass().getResource("/update.png")).getImage();
 		MESSAGE.setIcon(new ImageIcon(img1));
 		MESSAGE.setBounds(406, 143, 43, 23);
 		contentPane.add(MESSAGE);

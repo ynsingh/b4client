@@ -104,7 +104,7 @@ public class voip_receive extends Thread {
 		
 		if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
 		&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
-		&&!B4services.voip_gui_window)
+		&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
 		{
 			B4services.BServices.setVisible(false);
 			B4services.BServices.dispose();
@@ -189,7 +189,7 @@ public class voip_receive extends Thread {
 				
 				if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
 				&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
-				&&!B4services.voip_gui_window)
+				&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
 				{	
 					try 
 					{

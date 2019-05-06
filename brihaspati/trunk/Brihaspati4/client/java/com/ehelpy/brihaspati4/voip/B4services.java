@@ -6,6 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
 import com.ehelpy.brihaspati4.Address_Book.Display_Window_After_Login;
+import com.ehelpy.brihaspati4.sms.SMS_Window;
+import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.authenticate.emailid;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -36,7 +38,11 @@ public class B4services {
 	public static boolean address_book_search_window = false;
 	public static boolean address_book_delete_window = false;
 	public static boolean address_book_multiple_entries_window = false;
-	
+	public static boolean sms_send_window = false;
+	public static boolean sms_window = false;
+	public static boolean sms_reader_window = false;
+	public static boolean sms_sent_messages_window = false;
+		
 	/**
 	 * Launch the application.
 	 */
@@ -93,6 +99,8 @@ public class B4services {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+	
 		BServices = new JFrame();
 		BServices.setTitle("B4Server Services");
 		BServices.setBounds(100, 100, 450, 450);
@@ -103,6 +111,7 @@ public class B4services {
 		NewRadioButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				token = 1;
+				
 				}
 			
 		});
@@ -115,6 +124,7 @@ public class B4services {
 		JRadioButton NewRadioButton_1 = new JRadioButton("VOIP");
 		NewRadioButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				token=2;
 			}
 		});
@@ -127,6 +137,7 @@ public class B4services {
 		JRadioButton NewRadioButton_2 = new JRadioButton("SMS");
 		NewRadioButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				token = 3;
 			}
 		});
@@ -139,6 +150,7 @@ public class B4services {
 		JRadioButton NewRadioButton_3 = new JRadioButton("EMAIL");
 		NewRadioButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				token = 4;
 			}
 		});
@@ -180,7 +192,15 @@ public class B4services {
 					
 					}				
 					
-	    		
+	    		if (token == 3)
+	    		{
+	    			BServices.setVisible(false);
+					BServices.dispose();
+					
+					SMS_Window obj = new SMS_Window();
+					obj.setVisible(true);
+	    			
+	    		}
 	    		
 	    		
 			}

@@ -338,6 +338,9 @@ public class CommunicationUtilityMethods extends CommunicationManager {
         if(RTUpdate9.Routing_Table.containsKey(nodeId))
         	ip = RTUpdate9.Routing_Table.get(nodeId);
         
+        else if(nodeId.equals(OverlayManagement.myNodeId))
+        	ip = PresentIP.MyPresentIP();
+        
         else 
         {
         	if(CommunicationManager.myIpTable.containsKey(PredecessorSuccessor.mySuccessors[0]))
@@ -426,6 +429,16 @@ public class CommunicationUtilityMethods extends CommunicationManager {
             SysOutCtrl.SysoutSet("pred>self");
             if(list.indexOf(key)==2||list.indexOf(key)==0)
                 bool=true;
+        }
+        
+        if(list.indexOf(Pred)==1&&list.indexOf(Self)==1&&list.indexOf(key)==0)
+        {
+        	bool=true;
+        }
+        
+        if(list.indexOf(Pred)==0&&list.indexOf(Self)==0&&list.indexOf(key)==2)
+        {
+        	bool=true;
         }
           
         return bool;

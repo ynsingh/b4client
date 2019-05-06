@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -19,10 +20,12 @@ import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
+import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.Exception;
+import java.security.cert.X509Certificate;
 
 
 
@@ -45,6 +48,7 @@ public class IndexManagement extends Thread
     public static Map<String, String> nodeid_ip_myindex5 = new ConcurrentHashMap<String, String>();
     public static Map<String, String> fresh_index = new ConcurrentHashMap<String, String>();
     static Map<String, String>  searchReply = new ConcurrentHashMap<String, String>();
+    public static Map<String, String>  searchReply_cert = new ConcurrentHashMap<String, String>();
     static Map<String, String>  emailSha1 = new ConcurrentHashMap<String, String>();
     public static Map<String, String>  cached_index = new ConcurrentHashMap<String, String>();
     public static Map<String, String>  cached_NodeId_ip_index = new ConcurrentHashMap<String, String>();
@@ -60,6 +64,13 @@ public class IndexManagement extends Thread
     public static String IPAdd;
     public static boolean CheckIP=true;
     public static boolean timer_flag = false;
+    public static Map<String, String>  EmailHashId_certificates= new TreeMap<String, String>();
+    public static Map<String, String>  EmailHashId_certificates_cache1= new TreeMap<String, String>();
+    public static Map<String, String>  EmailHashId_certificates_cache2= new TreeMap<String, String>();
+    public static Map<String, String>  EmailHashId_certificates_cache3= new TreeMap<String, String>();
+    public static Map<String, String>  EmailHashId_certificates_cache4= new TreeMap<String, String>();
+    public static Map<String, String>  EmailHashId_certificates_cache5= new TreeMap<String, String>();
+    public static Map<String, String>  emailIdHash_cert= new TreeMap<String, String>();
            
     public void run()
     {
@@ -130,8 +141,13 @@ public class IndexManagement extends Thread
                 	{
                 		String value = myindex.get(index_entry);
                 		myindex.remove(index_entry, value);
+                		
                 		String value2 = NodeId_ip_of_myindex.get(value);
                 		NodeId_ip_of_myindex.remove(value, value2);
+                		
+                		String value3 = EmailHashId_certificates.get(index_entry);
+                		EmailHashId_certificates.remove(index_entry, value3);
+                		
                 		IndexManagementUtilityMethods.myIndexTable();
                 	}
                 }
@@ -160,7 +176,7 @@ public class IndexManagement extends Thread
         };
         get_index.schedule(task_get_index, 5000,60000);
         
-  /*      Timer publish_index_to_succ = new Timer();
+        Timer publish_index_to_succ = new Timer();
         TimerTask task_publish_index_to_succ= new TimerTask()
         {
         	@Override
@@ -170,7 +186,7 @@ public class IndexManagement extends Thread
         	}
         
         };
-        publish_index_to_succ.schedule(task_publish_index_to_succ, 90000, 60000);*/
+        publish_index_to_succ.schedule(task_publish_index_to_succ, 90000, 60000);
         
         Thread t3= new Thread
         (
@@ -179,13 +195,13 @@ public class IndexManagement extends Thread
             	@Override
             	public void run()
             	{
-            		while(true)// if OpBufferIM is not empty this if block will be executed
+            		while(true)
 
             		{
             			SysOutCtrl.SysoutSet("Index Management thread t3 is running",2);
             			synchronized(CommunicationManager.lock_RxBufferIM )
             			{
-            				while(!CommunicationManager.RxBufferIM.isEmpty())// if OpBufferIM is not empty this if block will be executed
+            				while(!CommunicationManager.RxBufferIM.isEmpty())
             				{
 
             					SysOutCtrl.SysoutSet("Getting next file "+" from RxBufferIM for parsing and deciding next course of action",3);
@@ -195,10 +211,11 @@ public class IndexManagement extends Thread
 
             					if(info_from_xml[0].equals( "0002"))
             					{
+            						String[] info2_from_xml = ParseXmlFile.ParseXml_0003(inFile);
             						try
             						{
             							System.out.println("Evaluating 0002");
-            							IndexManagementUtilityMethods.Add_in_Index(info_from_xml);
+            							IndexManagementUtilityMethods.Add_in_Index(info2_from_xml);
             						}
             						catch (Exception e)
             						{
@@ -210,22 +227,22 @@ public class IndexManagement extends Thread
 
             					else if(info_from_xml[0].equals( "0003"))
             					{
-            						String[] info_from_xml_003 = ParseXmlFile.ParseXml_0003(inFile);	
-            						
-            						String hashIdFromxml=info_from_xml_003[1];
+            						String[] info_from_xml_0003 = ParseXmlFile.ParseXml_0003(inFile);
+            						            						
+            						String hashIdFromxml=info_from_xml_0003[1];
                             
             						String Node_id_of_querried_hash = null;
             						
             						String selfIp = IndexManagementUtilityMethods.getMyIp();
-        							String selfNodeId = OverlayManagement.myNodeId;
+            						String selfNodeId = OverlayManagement.myNodeId;
         							                                                 
             						System.out.println("Received query email_hash : "+hashIdFromxml);
                             
             						Node_id_of_querried_hash= IndexManagementUtilityMethods.Search_in_Index(hashIdFromxml);
             						SysOutCtrl.SysoutSet("value after checking index table :"+Node_id_of_querried_hash);
             						
-                        			String caller= info_from_xml_003[3];
-                        			String caller_ip = info_from_xml_003[4];
+            						String caller= info_from_xml_0003[3];
+            						String caller_ip = info_from_xml_0003[4];
                             
             						boolean flag = true;
             						if(Node_id_of_querried_hash.equals("NoEntryInIndexTable"))
@@ -243,28 +260,27 @@ public class IndexManagement extends Thread
             							
             							String caheIp = NodeId_ip_of_myindex.get(Node_id_of_querried_hash);
 
-            							if(info_from_xml_003[6].equals("null"))
+            							if(info_from_xml_0003[6].equals("null"))
             							{
-            								IndexManagementUtilityMethods.createXmlForCacheEntry(info_from_xml_003[4],caheIp,info_from_xml_003[3],selfNodeId,selfIp,hashIdFromxml,Node_id_of_querried_hash);
+            								IndexManagementUtilityMethods.createXmlForCacheEntry(info_from_xml_0003[4],caheIp,info_from_xml_0003[3],selfNodeId,selfIp,hashIdFromxml,Node_id_of_querried_hash);
             							}	
             							else
             							{
-            								IndexManagementUtilityMethods.createXmlForCacheEntry(info_from_xml_003[4],caheIp,info_from_xml_003[3],selfNodeId,selfIp,hashIdFromxml,Node_id_of_querried_hash);
+            								IndexManagementUtilityMethods.createXmlForCacheEntry(info_from_xml_0003[4],caheIp,info_from_xml_0003[3],selfNodeId,selfIp,hashIdFromxml,Node_id_of_querried_hash);
             								
             								String Inter_nodeid_ip = info_from_xml[6];
             								
             								int number =0;
-                    						String Inter_nodeid = null;
-                    						String Inter_ip = null;
+            								String Inter_nodeid = null;
+            								String Inter_ip = null;
                     					
-                    						number = Inter_nodeid_ip.length();
-                    						Inter_nodeid = Inter_nodeid_ip.substring(0,40);
-                    						Inter_ip = Inter_nodeid_ip.substring(40,number);
+            								number = Inter_nodeid_ip.length();
+            								Inter_nodeid = Inter_nodeid_ip.substring(0,40);
+            								Inter_ip = Inter_nodeid_ip.substring(40,number);
                     						
-                    						IndexManagementUtilityMethods.createXmlForCacheEntry(Inter_ip, caheIp, Inter_nodeid, selfNodeId, selfIp, hashIdFromxml, Node_id_of_querried_hash);
-                    					}
-            						}
-            					
+            								IndexManagementUtilityMethods.createXmlForCacheEntry(Inter_ip, caheIp, Inter_nodeid, selfNodeId, selfIp, hashIdFromxml, Node_id_of_querried_hash);
+            							}
+            						}	
             					}
             					
             					else if(info_from_xml[0].equals( "0333"))
@@ -289,36 +305,35 @@ public class IndexManagement extends Thread
 
             					else if(info_from_xml[0].equals( "0004"))
             					{
-            						Map<String, String> generatedIdexing=IndexManagementUtilityMethods.generateIndexingForNewlyJoinedNode(info_from_xml);
+            						if(!OverlayManagement.myNodeId.equals(info_from_xml[3]))
+            				        {
+            							Map<String, String> generatedIdexing=IndexManagementUtilityMethods.generateIndexingForNewlyJoinedNode(info_from_xml);
             						
-            						String Ip_of_node_asking_for_index=info_from_xml[4];
-            						File generatedIndexingXml = null;
+            							String Ip_of_node_asking_for_index=info_from_xml[4];
+            							File generatedIndexingXml = null;
 
-            						try
-            						{
-            							generatedIndexingXml = IndexManagementUtilityMethods.convert_hashmap_of_indexTable_transmitted_toxml(generatedIdexing,"0019", info_from_xml[3], OverlayManagement.myNodeId, "IndexingReply", IndexManagementUtilityMethods.getMyIp(), "2222", "DeleteNodeIdFromIndexIpTable");
-            						}
-            						catch (FileNotFoundException e)
-            						{
-            							e.printStackTrace();
-            						}
-            						catch (TransformerException e)
-            						{
-            							e.printStackTrace();
-            						}
-            						catch (ParserConfigurationException e)
-            						{
-            							e.printStackTrace();
-            						}	
-            						// inform the sender about this value ie node id by setting up a socket.
-
-            						//    CommunicationManager.TransmittingBuffer.add(generatedIndexingXml);
-            					
+            							try
+            							{
+            								generatedIndexingXml = IndexManagementUtilityMethods.convert_hashmap_of_indexTable_transmitted_toxml(generatedIdexing,"0019", info_from_xml[3], OverlayManagement.myNodeId, "IndexingReply", IndexManagementUtilityMethods.getMyIp(), "2222", "DeleteNodeIdFromIndexIpTable");
+            							}
+            							catch (FileNotFoundException e)
+            							{
+            								e.printStackTrace();
+            							}
+            							catch (TransformerException e)
+            							{
+            								e.printStackTrace();
+            							}
+            							catch (ParserConfigurationException e)
+            							{
+            								e.printStackTrace();
+            							}	
+            							      					
             						
-            						OverlayManagementUtilityMethods.sendFileDirect(Ip_of_node_asking_for_index, generatedIndexingXml);
-            					//	com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(generatedIndexingXml);
-            						SysOutCtrl.SysoutSet("Indexing Generated and sent for newly joined node"+generatedIndexingXml.toPath());
-            					
+            							OverlayManagementUtilityMethods.sendFileDirect(Ip_of_node_asking_for_index, generatedIndexingXml);
+            							//	com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(generatedIndexingXml);
+            							SysOutCtrl.SysoutSet("Indexing Generated and sent for newly joined node"+generatedIndexingXml.toPath());
+            				        }
             					}
 
             					else if(info_from_xml[0].equals( "1111"))
@@ -339,8 +354,7 @@ public class IndexManagement extends Thread
             						SysOutCtrl.SysoutSet("Search query reply: nodeId "+querried_ip,2);
             					
             					}
-            					// 	inform the sender about this value ie node id by setting up a socket.
-
+            					
             					else if(info_from_xml[0].equals( "0019"))	// generate indexing query
             					{
             						SysOutCtrl.SysoutSet("index table before"+myindex,2);
@@ -362,16 +376,16 @@ public class IndexManagement extends Thread
         								if(!myindex.containsKey(emailhash[i]))
         								{	
         									myindex.put(emailhash[i], nodeid[i]);
+        									EmailHashId_certificates.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+        									NodeId_ip_of_myindex.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
         									entry_made = true;
         								}	
         							}
         							
         							IndexManagementUtilityMethods.myIndexTable();
-            						NodeId_ip_of_myindex.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            						
+            						            						
             						if(entry_made)
-        								IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
-            						
+        								IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();        						
             						temp.clear();
             						
             						SysOutCtrl.SysoutSet("index table received from my immdediate successor",2);
@@ -415,15 +429,21 @@ public class IndexManagement extends Thread
             					{
             						SysOutCtrl.SysoutSet("index table copy received from one of the my predecessors",2);
             						String from_node_id=info_from_xml[3];
-
+            					
             						if(from_node_id.equals(PredecessorSuccessor.myPredecessors[0]))
             						{
             							SysOutCtrl.SysoutSet("This file is the index table copy received from myPredecessor1 "+PredecessorSuccessor.myPredecessors[0],2);
             							SysOutCtrl.SysoutSet("Now converting this xml to index table and saving in myIndex1",2);
             							myindex1.clear();
-            							myindex1= IndexManagementUtilityMethods.convertXmlToIndexTable(inFile);
+            							myindex1.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex1.clear();
-            							nodeid_ip_myindex1 = IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile);
+            							nodeid_ip_myindex1.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
+            							EmailHashId_certificates_cache1.clear();
+            							EmailHashId_certificates_cache1.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache1);
+            							
             							SysOutCtrl.SysoutSet("myIndex1(myPredecessor1) index table saved successfully",2);
             						
             						}
@@ -433,9 +453,15 @@ public class IndexManagement extends Thread
             							SysOutCtrl.SysoutSet("This file is the index table copy received from myPredecessor2 "+PredecessorSuccessor.myPredecessors[1],2);
             							SysOutCtrl.SysoutSet(" Now converting this xml to index table and saving in myIndex2",2);
             							myindex2.clear();
-            							myindex2= IndexManagementUtilityMethods.convertXmlToIndexTable(inFile);
+            							myindex2.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex2.clear();
-            							nodeid_ip_myindex2 = IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile);
+            							nodeid_ip_myindex2.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
+            							EmailHashId_certificates_cache2.clear();
+            							EmailHashId_certificates_cache2.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache2);
+            							
             							SysOutCtrl.SysoutSet("myIndex2(myPredecessor2) index table saved successfully",2);
             						
             						}
@@ -445,9 +471,15 @@ public class IndexManagement extends Thread
             							SysOutCtrl.SysoutSet("This file is the index table copy received from myPredecessor3 "+PredecessorSuccessor.myPredecessors[2],2);
             							SysOutCtrl.SysoutSet("Now converting this xml to index table and saving in myIndex3",2);
             							myindex3.clear();
-            							myindex3= IndexManagementUtilityMethods.convertXmlToIndexTable(inFile);
+            							myindex3.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex3.clear();
-            							nodeid_ip_myindex3 = IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile);
+            							nodeid_ip_myindex3.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
+            							EmailHashId_certificates_cache3.clear();
+            							EmailHashId_certificates_cache3.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache3);
+            							
             							SysOutCtrl.SysoutSet("myIndex3(myPredecessor3) index table saved successfully",2);
             						
             						}
@@ -458,9 +490,15 @@ public class IndexManagement extends Thread
             							SysOutCtrl.SysoutSet("This file is the index table copy received from myPredecessor4 "+PredecessorSuccessor.myPredecessors[3],2);
             							SysOutCtrl.SysoutSet("Now converting this xml to index table and saving in myIndex4",2);
             							myindex4.clear();
-            							myindex4= IndexManagementUtilityMethods.convertXmlToIndexTable(inFile);
+            							myindex4.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex4.clear();
-            							nodeid_ip_myindex4 = IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile);
+            							nodeid_ip_myindex4.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
+            							EmailHashId_certificates_cache4.clear();
+            							EmailHashId_certificates_cache4.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache4);
+            				            
             							SysOutCtrl.SysoutSet("myIndex4(myPredecessor4) index table saved successfully",2);
             						}
 
@@ -469,9 +507,15 @@ public class IndexManagement extends Thread
             							SysOutCtrl.SysoutSet("This file is the index table copy received from myPredecessor5 "+PredecessorSuccessor.myPredecessors[4],2);
             							SysOutCtrl.SysoutSet("Now converting this xml to index table and saving in myIndex5",2);
             							myindex5.clear();
-            							myindex5= IndexManagementUtilityMethods.convertXmlToIndexTable(inFile);
+            							myindex5.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex5.clear();
-            							nodeid_ip_myindex5 = IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile);
+            							nodeid_ip_myindex5.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
+            							EmailHashId_certificates_cache5.clear();
+            							EmailHashId_certificates_cache5.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache5);
+            				            	
             							SysOutCtrl.SysoutSet("myIndex5(myPredecessor5) index table saved successfully",2);
             						}
             					}
@@ -549,7 +593,11 @@ public class IndexManagement extends Thread
             @Override
             public void run()
             {
-            	IndexManagementUtilityMethods.printMap(myindex);
+            	System.out.println("Iam resposible for these email hashes : ");
+            	System.out.println(myindex);
+            	System.out.println("my index node id and ip : "+NodeId_ip_of_myindex);
+            	System.out.println("my index of imm pred : "+myindex5);
+        		System.out.println("my index of farthest pred : "+myindex1);
         		String my_immediate_predecessor = PredecessorSuccessor.myPredecessors[4];
         		String my_immediate_successor = PredecessorSuccessor.mySuccessors[0];
         		System.out.println("my pred imm : "+my_immediate_predecessor);
@@ -558,14 +606,17 @@ public class IndexManagement extends Thread
         		System.out.println("My Trans Buf : "+CommunicationManager.TransmittingBuffer);
         		System.out.println("My Rec Buf : "+CommunicationManager.ReceivingBuffer);
         		System.out.println("My Index Rec Buff : "+CommunicationManager.RxBufferIM);
-        		System.out.println("my index of imm pred : "+myindex5);
-        		System.out.println("my index of farthest pred : "+myindex1);
-        		System.out.println("my index node id and ip : "+NodeId_ip_of_myindex);
+        		System.out.println("My SMS Rec Buff : "+CommunicationManager.RxBufferSMS);
+        		System.out.println("Iam resposible for these Email Hash Id's and their cert : ");
+        		System.out.println(EmailHashId_certificates);
+        		System.out.println("my cached node cert of imm pred : "+EmailHashId_certificates_cache5);
+        		System.out.println("my cached node cert of farthest pred : "+EmailHashId_certificates_cache1);
         		System.out.println("my cached index : "+cached_index);
         		System.out.println("my cached ip table : "+cached_NodeId_ip_index);
         		System.out.println("my routing table : "+RTUpdate9.Routing_Table);
         		Map<String, String> Alive_nodes = OverlayManagement.AliveNodes;
         		System.out.println("my alive nodes : "+Alive_nodes );
+        		System.out.println("search reply: "+searchReply_cert);
         		
         		System.out.println("pred, mid, succ range: ");
         		for (int i = 0; i < RTUpdate9.Pred.length; i++)

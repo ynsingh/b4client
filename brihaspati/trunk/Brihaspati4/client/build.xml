@@ -3,7 +3,8 @@
               Any modifications will be overwritten.
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="src">
+	      as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="src">
     <property environment="env"/>
     <!--    <property name="ECLIPSE_HOME" value="../../../../eclipse/eclipse/"/> -->
     <property name="debuglevel" value="source,lines,vars"/>
@@ -13,7 +14,16 @@
         <pathelement location="build"/>
 	<!--	<pathelement location="C:/Program Files/Java/jre1.8.0_151/lib/rt.jar"/> -->
 	<pathelement location="/usr/lib/jvm/java-1.8.0-openjdk/jre/lib/rt.jar"/>
-    </path>
+	 <fileset dir="driver">
+                        <include name="**/*.jar"/>
+         </fileset>
+   </path>
+   <!--	<path id="build.classpath">
+  		<fileset dir="driver">
+    			<include name="**/*.jar"/>
+  		</fileset>
+	   </path>
+   -->
     <target name="init">
 	    <mkdir dir="build"/>
         <copy includeemptydirs="false" todir="build">
@@ -51,29 +61,47 @@
 	 </javac>
 	<copy
       file="client.properties"
-      tofile="build/client.properties"
+      tofile="b4jar/client.properties"
       overwrite="yes"
       filtering="yes"
       />
 	<copy
       file="Debug.txt"
-      tofile="build/Debug.txt"
+      tofile="b4jar/Debug.txt"
       overwrite="yes"
       filtering="yes"
       />
 	<copy
       file="RTP2P.xml"
-      tofile="build/RTP2P.xml"
+      tofile="b4jar/RTP2P.xml"
       overwrite="yes"
       filtering="yes"
       />
 	<copy
       file="IpTable.txt"
+      tofile="b4jar/IpTable.txt"
+      overwrite="yes"
+      filtering="yes"
+		/>
+		<!--	 <copy
+      file="IpTable.txt"
       tofile="build/IpTable.txt"
       overwrite="yes"
       filtering="yes"
       />
-	 
+        <copydir src="driver"
+                dest="build/driver"
+         includes="**/*.jar"
+        />
+		-->
+
+	<copydir src="driver"
+		dest="b4jar/driver"
+         includes="**/*.jar"
+        />	 
+	<copydir src="reources_address_book"
+		dest="b4jar/reources_address_book"
+        />	 
 <!--	 <copy todir="build">
       	<fileset dir=".">
         <include name="build.properties"/>
@@ -85,19 +113,25 @@
                 <echo message="Deleting b4.jar file"/>
                 <delete>
                     <fileset dir="">
-                        <include name="b4.jar"/>
+			    <include name="b4jar/b4.jar"/>
                     </fileset>
                 </delete>
         </target>
 
         <target name="b4jar" description="Package into B4 JAR" depends="deletejar,build">
-                <jar destfile="b4.jar" compress="true">
+		<jar destfile="b4jar/b4.jar" compress="true">
 		<manifest>
     			<attribute name="Main-Class" value="com.ehelpy.brihaspati4.authenticate.ClientMain"/>
   		</manifest>
                         <fileset dir="build" />
 		</jar>
         </target>
+	<target name="b4zip" description="Package into B4 JAR AS ZIP" depends="b4jar">
+		<zip destfile="b4jar.zip"
+     			basedir="b4jar"
+			update="true"/>
+		</zip>
+	</target>
 
 	 <target name="javadoc" description="javadoc documentation">
 		 <!--                <javadoc destdir="build/javadoc" version="true" author="true" access="public" -->

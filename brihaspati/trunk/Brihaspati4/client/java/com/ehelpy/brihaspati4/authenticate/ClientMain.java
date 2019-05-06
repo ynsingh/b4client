@@ -6,7 +6,6 @@ import java.security.cert.X509Certificate;
 
 import com.ehelpy.brihaspati4.voip.B4services;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
-import com.ehelpy.brihaspati4.Address_Book.Main_Login_Window;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
@@ -15,10 +14,13 @@ import com.ehelpy.brihaspati4.routingmgmt.RMThreadPrimary;
 import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
+import com.ehelpy.brihaspati4.sms.sms_methods;
+import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 
 
 public class ClientMain extends Thread {
-
+		
     private static X509Certificate client_cert = null;
     private static X509Certificate server_cert = null;
     private static boolean flagset = false;
@@ -26,7 +28,7 @@ public class ClientMain extends Thread {
 
     public static void main(String args[]) throws Exception
     {
-
+    	
         GlobalObject global_object = GlobalObject.getGlobalObject();
         global_object.setRunStatus(true);
         // GlobalObject will keep status of various threads and run status. This will be used
@@ -85,11 +87,13 @@ public class ClientMain extends Thread {
         {
             if(flagset) 
             {
-                debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
+            	debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
 
-                // call objects and methods from classes of - routing and overlay mangement
-               
-                IndexManagementUtilityMethods.Ip_txt_empty();
+                sms_methods.choose_loc();
+            	sms_send_rec_management.empty_cache_folder();
+            	sms_send_rec_management.empty_rec_folder();
+                
+            	IndexManagementUtilityMethods.Ip_txt_empty();
                 
                 // call objects and methods from classes of - communication
                 CommunicationManager cm= new CommunicationManager();
@@ -113,7 +117,12 @@ public class ClientMain extends Thread {
                 OverlayManagement olay = new OverlayManagement();
                 olay.start();
                 
-                Thread.sleep(5000);
+                try {
+        			Thread.sleep(5000);
+        		} catch (InterruptedException e1) {
+        			// TODO Auto-generated catch block
+        			e1.printStackTrace();
+        		}
             
                 // call objects and methods from classes of - routing  mangement
                 RMThreadPrimary RM = new RMThreadPrimary();
@@ -133,6 +142,9 @@ public class ClientMain extends Thread {
                 OverlayManagement.iAmNewlyJoinedNode = true;
               //  Main_Login_Window.main(null);
                 
+                sms_retrival_thread sms= new sms_retrival_thread();
+                sms.start();
+                
                 B4services.service();
               
                 // start user specific services
@@ -142,8 +154,9 @@ public class ClientMain extends Thread {
 
                 // All generic services Interface
                 // VOIP call, storage services, messaging service
-
-           }
+            
+                    	
+            }
 
         }
         else
@@ -153,5 +166,7 @@ public class ClientMain extends Thread {
 
         }
     }
+    
+    
 }
 

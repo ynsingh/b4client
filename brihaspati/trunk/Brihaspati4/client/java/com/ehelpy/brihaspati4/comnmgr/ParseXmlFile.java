@@ -20,6 +20,7 @@ public class ParseXmlFile extends CommunicationManager {
 
     public static String[] details = {"","","","","",""};
     public static String[] details_0003 = {"","","","","","",""};
+    public static String[] details_1011 = {"","","","","","","",""};
     static int k =0;
    
     public static String[] ParseXml(File filetoparse)
@@ -123,6 +124,61 @@ public class ParseXmlFile extends CommunicationManager {
         }
       
         return details_0003;
+  
+    }
+    
+    public static String[] ParseXml_1011(File filetoparse)
+    {
+        SysOutCtrl.SysoutSet("you are in ParseXml method",2);
+        SysOutCtrl.SysoutSet("Xml Parsed, Details are ",2);
+         
+        try {
+
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(filetoparse);
+   
+            NodeList nlist = doc.getElementsByTagName("Query_");
+
+            for(int i=0; i<nlist.getLength(); i++)
+            {
+                Node nNode = nlist.item(i);
+
+                if(nNode.getNodeType() == Node.ELEMENT_NODE)
+                {
+                    Element eElement = (Element) nNode;					
+                    
+                    NodeList nodeList = doc.getElementsByTagName("Query_");
+                    for(int x=0,size= nodeList.getLength(); x<size; x++) 			
+                    {
+                        details_1011[0] = nodeList.item(x).getAttributes().getNamedItem("tag").getNodeValue();
+
+                        details_1011[1] = eElement.getElementsByTagName("to_hash_id").item(0).getTextContent();				
+                        details_1011[2] = eElement.getElementsByTagName("to_node_id").item(0).getTextContent();				
+                        details_1011[3] = eElement.getElementsByTagName("self_node_id").item(0).getTextContent();
+                        details_1011[4] = eElement.getElementsByTagName("self_ip_address").item(0).getTextContent();
+                        details_1011[5] = eElement.getElementsByTagName("self_port_no").item(0).getTextContent();
+                        details_1011[6] = eElement.getElementsByTagName("inter_ip").item(0).getTextContent();
+                        details_1011[7] = eElement.getElementsByTagName("key").item(0).getTextContent();
+             
+                        SysOutCtrl.SysoutSet("tag: "+details_1011[0]);
+                        SysOutCtrl.SysoutSet("to_hash_id: "+details_1011[1]);
+                        SysOutCtrl.SysoutSet("to_node_id: "+details_1011[2]);
+                        SysOutCtrl.SysoutSet("self_node_id: "+details_1011[3]);
+                        SysOutCtrl.SysoutSet("ip_address: "+details_1011[4]);
+                        SysOutCtrl.SysoutSet("port_no: "+details_1011[5]);
+                        SysOutCtrl.SysoutSet("inter_ip: "+details_1011[6]);
+                        SysOutCtrl.SysoutSet("key: "+details_1011[7]);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+      
+        return details_1011;
   
     }
 }
