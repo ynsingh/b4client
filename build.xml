@@ -129,7 +129,7 @@
 	<target name="b4zip" description="Package into B4 JAR AS ZIP" depends="b4jar">
 		<zip destfile="b4jar.zip"
      			basedir="b4jar"
-			update="true"/>
+			update="true">
 		</zip>
 	</target>
 
