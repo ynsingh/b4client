@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JTable;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
@@ -26,6 +29,8 @@ import java.awt.Image;
 import java.awt.Window;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.TableModel;
+
+import com.ehelpy.brihaspati4.Address_Book.ProgressBar;
 import com.ehelpy.brihaspati4.Address_Book.import_database;
 import com.ehelpy.brihaspati4.Address_Book.sqlite_connection;
 import com.ehelpy.brihaspati4.Address_Book.upload_csv;
@@ -187,56 +192,18 @@ public class voip_gui extends JFrame{
 				
 				else
 				{ 
+					B4services.voip_gui_window = false;
+					
 					voip_rxcall.flag = false;
 					TableModel model = table.getModel();
 					Email_Id = model.getValueAt(i, 1).toString();
 					import_database.main(null);
 					dispose();
 
-					SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>()
-				     {
-				         @Override
-				         protected Void doInBackground() throws Exception {
-
-				            // mimic some long-running process here...
-				        	voip_call.callstart_waiting(Email_Id); 
-				            return null;
-				         }
-				     };
-
-				     Window win = SwingUtilities.getWindowAncestor((AbstractButton)e.getSource());
-				     final JDialog dialog = new JDialog(win, "Brihaspati 4", ModalityType.APPLICATION_MODAL);
-
-				     mySwingWorker.addPropertyChangeListener
-				     (
-				    		 new PropertyChangeListener() 
-				    		 {
-
-				    			 @Override
-				    			 public void propertyChange(PropertyChangeEvent evt)
-				    			 {
-				    				 if (evt.getPropertyName().equals("state"))
-				    				 {
-				    					 if (evt.getNewValue() == SwingWorker.StateValue.DONE)
-				    					 {
-				    						 dialog.dispose();
-				    					 }
-				    				 }
-				    			 }
-				    		 }
-				      );
-				      mySwingWorker.execute();
-
-				      JProgressBar progressBar = new JProgressBar();
-				      progressBar.setIndeterminate(true);
-				      JPanel panel = new JPanel();
-				      panel.add(new JLabel("Please wait while we connect you...."), BorderLayout.PAGE_START);
-				      panel.add(progressBar, BorderLayout.PAGE_END);
-				      dialog.add(panel);
-				      dialog.setPreferredSize(new Dimension(300,100));
-				      dialog.pack();
-				      dialog.setLocationRelativeTo(win);
-				      dialog.setVisible(true);
+					ProgressBar.get_email(Email_Id); 
+					
+					ProgressBar obj = new ProgressBar();
+					obj.setVisible(true);
 					
 				}
            	}

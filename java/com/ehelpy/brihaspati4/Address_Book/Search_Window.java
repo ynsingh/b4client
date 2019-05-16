@@ -38,6 +38,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -280,50 +282,10 @@ public class Search_Window extends JFrame {
 					import_database.main(null);
 					dispose();
 					
-					SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>()
-				     {
-				         @Override
-				         protected Void doInBackground() throws Exception {
-
-				            // mimic some long-running process here...
-				        	voip_call.callstart_waiting(email_id); 
-				            return null;
-				         }
-				     };
-
-				     Window win = SwingUtilities.getWindowAncestor((AbstractButton)e.getSource());
-				     final JDialog dialog = new JDialog(win, "Brihaspati 4", ModalityType.APPLICATION_MODAL);
-
-				     mySwingWorker.addPropertyChangeListener
-				     (
-				    		 new PropertyChangeListener() 
-				    		 {
-
-				    			 @Override
-				    			 public void propertyChange(PropertyChangeEvent evt)
-				    			 {
-				    				 if (evt.getPropertyName().equals("state"))
-				    				 {
-				    					 if (evt.getNewValue() == SwingWorker.StateValue.DONE)
-				    					 {
-				    						 dialog.dispose();
-				    					 }
-				    				 }
-				    			 }
-				    		 }
-				      );
-				      mySwingWorker.execute();
-
-				      JProgressBar progressBar = new JProgressBar();
-				      progressBar.setIndeterminate(true);
-				      JPanel panel = new JPanel();
-				      panel.add(new JLabel("Please wait while we connect you...."), BorderLayout.PAGE_START);
-				      panel.add(progressBar, BorderLayout.PAGE_END);
-				      dialog.add(panel);
-				      dialog.setPreferredSize(new Dimension(300,100));
-				      dialog.pack();
-				      dialog.setLocationRelativeTo(win);
-				      dialog.setVisible(true);
+					ProgressBar.get_email(email_id); 
+					
+					ProgressBar obj = new ProgressBar();
+					obj.setVisible(true);
 				}
 			}
 		});
@@ -355,8 +317,10 @@ public class Search_Window extends JFrame {
 		btnMessage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				String email_id = email_text.getText();
+					
 				Search_Info obj=new 	Search_Info();
-				obj.message();;
+				obj.message(email_id);;
 			}
 		});
 		btnMessage.setBounds(478, 137, 44, 23);

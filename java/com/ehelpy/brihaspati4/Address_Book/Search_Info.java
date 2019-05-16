@@ -10,6 +10,7 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
+import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.voip.voip_call;
 
 import net.proteanit.sql.DbUtils;
@@ -19,6 +20,7 @@ public class Search_Info {
 	{
 		try 
 		{
+						
 			String col_name = flag;
 			
 			Connection con = null;//new
@@ -376,9 +378,12 @@ public class Search_Info {
 		}
 	}
 	
-	void message()
+	void message(String Email_Id)
 	{
-		JOptionPane.showMessageDialog(null, "NOT YET ACTVE");
+		Send_SMS_Window.get_email_id(Email_Id, "AddressBook");
+		
+		Send_SMS_Window obj = new Send_SMS_Window();
+		obj.setVisible(true);
 	}
 }
 		
