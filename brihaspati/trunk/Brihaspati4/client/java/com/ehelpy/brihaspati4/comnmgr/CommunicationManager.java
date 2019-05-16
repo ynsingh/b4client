@@ -147,13 +147,13 @@ public class CommunicationManager extends Thread
 							@Override
 							public void run()
 							{
-								while(true)
-								{
+							//	while(true)
+							//	{
 									SysOutCtrl.SysoutSet( "Thread-t9 (Application Running Status) ",1);
 															
-									CommunicationUtilityMethods.Application_Alive_Response_ByReciever();
-						
-								}
+								//	CommunicationUtilityMethods.Application_Alive_Response_ByReciever();
+									Applivation_alive_response.main(null);
+								//}
 							}
 						}
 				);

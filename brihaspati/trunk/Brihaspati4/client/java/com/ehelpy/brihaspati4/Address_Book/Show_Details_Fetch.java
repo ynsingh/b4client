@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import com.ehelpy.brihaspati4.Address_Book.Show_Details_Window;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
+import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.voip.voip_call;
 import com.ehelpy.brihaspati4.voip.voip_rxcall;
 
@@ -24,6 +25,7 @@ public class Show_Details_Fetch
 	public static ServerSocketChannel ss = null;
 	void Upload_Details_In_Window(String Email_Id)
 	{
+				
 		email_id = Email_Id;
 		try 
 		{
@@ -61,13 +63,17 @@ public class Show_Details_Fetch
 		}
 	}
 	
-	void message()
+	void message(String Email_Id)
 	{
-		JOptionPane.showMessageDialog(null, "NOT YET ACTVE");
+		Send_SMS_Window.get_email_id(Email_Id, "AddressBook");
+		
+		Send_SMS_Window obj = new Send_SMS_Window();
+		obj.setVisible(true);
 	}
 	
 	void delete()
 	{
+				
 		Connection con = null;//new
 		
 		con = sqlite_connection.db_connector();//new

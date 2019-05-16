@@ -71,7 +71,7 @@
       overwrite="yes"
       filtering="yes"
       />
-	<copy
+		<!--	<copy
       file="RTP2P.xml"
       tofile="b4jar/RTP2P.xml"
       overwrite="yes"
@@ -82,7 +82,8 @@
       tofile="b4jar/IpTable.txt"
       overwrite="yes"
       filtering="yes"
-		/>
+			/>
+		-->
 		<!--	 <copy
       file="IpTable.txt"
       tofile="build/IpTable.txt"
@@ -95,13 +96,15 @@
         />
 		-->
 
-	<copydir src="driver"
+		<!--	<copydir src="driver"
 		dest="b4jar/driver"
          includes="**/*.jar"
-        />	 
+			/>	 
+		
 	<copydir src="reources_address_book"
 		dest="b4jar/reources_address_book"
-        />	 
+		/>	
+		-->	
 <!--	 <copy todir="build">
       	<fileset dir=".">
         <include name="build.properties"/>

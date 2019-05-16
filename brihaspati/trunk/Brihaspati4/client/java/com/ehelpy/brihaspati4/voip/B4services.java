@@ -31,6 +31,7 @@ public class B4services {
 	public static JFrame BServices;
 	private static int token = 0; //the token can be initiated and value can be assigned for start of any particular service
 	public static ServerSocketChannel ss = null;
+	public static boolean b4services_window_open = false;
 	public static boolean display_window_open = false;
 	public static boolean voip_gui_window = false;
 	public static boolean address_book_new_entry_window = false;
@@ -65,6 +66,8 @@ public class B4services {
 	 */
 	public B4services() {
 		initialize();
+		
+		b4services_window_open = true;
 		
 		try {
 			ss = ServerSocketChannel.open();
@@ -175,6 +178,7 @@ public class B4services {
 	    		
 	    		if (token == 1 ) 
     		    {
+	    			b4services_window_open = false;
     			BServices.setVisible(false);
 				BServices.dispose();
 				
@@ -185,6 +189,7 @@ public class B4services {
 				
 	    		if (token == 2 ) 
 	    		    {
+	    			b4services_window_open = false;
 	    			BServices.setVisible(false);
 					BServices.dispose();
 					
@@ -194,6 +199,7 @@ public class B4services {
 					
 	    		if (token == 3)
 	    		{
+	    			b4services_window_open = false;
 	    			BServices.setVisible(false);
 					BServices.dispose();
 					

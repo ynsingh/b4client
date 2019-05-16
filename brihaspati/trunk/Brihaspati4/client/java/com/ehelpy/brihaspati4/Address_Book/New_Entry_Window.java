@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 
+import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.voip.B4services;
 import com.ehelpy.brihaspati4.voip.voip_call;
 import com.ehelpy.brihaspati4.voip.voip_rxcall;
@@ -30,6 +31,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JTextField;
 import javax.swing.Popup;
@@ -255,51 +258,10 @@ public class New_Entry_Window extends JFrame {
 					String email_id = email_id_text.getText();
 					import_database.main(null);
 					dispose();
-				
-					SwingWorker<Void, Void> mySwingWorker = new SwingWorker<Void, Void>()
-				     {
-				         @Override
-				         protected Void doInBackground() throws Exception {
-
-				            // mimic some long-running process here...
-				        	voip_call.callstart_waiting(email_id); 
-				            return null;
-				         }
-				     };
-
-				     Window win = SwingUtilities.getWindowAncestor((AbstractButton)e.getSource());
-				     final JDialog dialog = new JDialog(win, "Brihaspati 4", ModalityType.APPLICATION_MODAL);
-
-				     mySwingWorker.addPropertyChangeListener
-				     (
-				    		 new PropertyChangeListener() 
-				    		 {
-
-				    			 @Override
-				    			 public void propertyChange(PropertyChangeEvent evt)
-				    			 {
-				    				 if (evt.getPropertyName().equals("state"))
-				    				 {
-				    					 if (evt.getNewValue() == SwingWorker.StateValue.DONE)
-				    					 {
-				    						 dialog.dispose();
-				    					 }
-				    				 }
-				    			 }
-				    		 }
-				      );
-				      mySwingWorker.execute();
-
-				      JProgressBar progressBar = new JProgressBar();
-				      progressBar.setIndeterminate(true);
-				      JPanel panel = new JPanel();
-				      panel.add(new JLabel("Please wait while we connect you...."), BorderLayout.PAGE_START);
-				      panel.add(progressBar, BorderLayout.PAGE_END);
-				      dialog.add(panel);
-				      dialog.setPreferredSize(new Dimension(300,100));
-				      dialog.pack();
-				      dialog.setLocationRelativeTo(win);
-				      dialog.setVisible(true);
+					ProgressBar.get_email(email_id); 
+					
+					ProgressBar obj = new ProgressBar();
+					obj.setVisible(true);
 				}
 			}
 		});
@@ -335,7 +297,12 @@ public class New_Entry_Window extends JFrame {
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(null, "NOT YET ACTIVE.");
+					String email_id = email_id_text.getText();
+					
+					Send_SMS_Window.get_email_id(email_id, "AddressBook");
+					
+					Send_SMS_Window obj = new Send_SMS_Window();
+					obj.setVisible(true);
 				}
 			}
 		});

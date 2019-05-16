@@ -187,14 +187,19 @@ public class voip_start extends Thread  {
 				frame.dispose();
 				debug_level.debug(0,"The client main started");
 				voip_rxcall.flag = true;
-								
-				try {
-					B4services.ss.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					
+				if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
+						&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
+						&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
+				{
+					try {
+						B4services.ss.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					B4services.service();
 				}
-				B4services.service();
 				
 				
 			}
