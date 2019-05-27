@@ -15,6 +15,4 @@ public class debug_level {
             return;
         }
     }
-
-
 }

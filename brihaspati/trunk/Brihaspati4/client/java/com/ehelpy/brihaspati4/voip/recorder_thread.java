@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.sound.sampled.TargetDataLine;
 import com.ehelpy.brihaspati4.authenticate.debug_level;
 
@@ -18,7 +19,7 @@ public class recorder_thread extends Thread {
 	public static String message= null;
 	private static SecretKey seckeynew = null;
 	private SecretKey sec_key = null;
-	private static boolean changepwdflag = true;
+	private static long symkeynew;
 	public recorder_thread(SecretKey sec_key) {
 		this.sec_key = sec_key;
 	}
@@ -27,6 +28,7 @@ public class recorder_thread extends Thread {
 	public void run() 
 	  {
 		Long pack = 0l;
+	    
 		
 			try 
 			   {  
@@ -45,14 +47,15 @@ public class recorder_thread extends Thread {
 				           }
 				        else 
 				           {
-					         /*	   if (pack==1000) 
+					               if(pack==1500) 
 					         	     {
-					         		    changepwdflag=true; 
-					         		    sec_key=seckeynew;
-					         		   debug_level.debug(0,"new secret key is"+ sec_key);
+					            	   changekey_server chks= new changekey_server(6666);
+					                   Thread c= new Thread(chks);
+					                   c.start();
 					         		   pack=(long) 01;
-					         	     }*/
-				               	   audio_in.read(byte_buff, 0, byte_buff.length);
+					         	     }
+				               	   
+				        	       audio_in.read(byte_buff, 0, byte_buff.length);
 						           DatagramPacket data = new DatagramPacket(byte_buff, byte_buff.length, far_endip, comn_port);
 						           data_send = data.getData();
 						           debug_level.debug(0,"secret key is"+ sec_key);
@@ -60,21 +63,28 @@ public class recorder_thread extends Thread {
 						           data = new DatagramPacket(enc_data, enc_data.length,player_thread.incoming.getAddress(), player_thread.incoming.getPort()  );
 						           debug_level.debug(1,"#####   send voice packet no : #"+ pack++);
 						           player_thread.din.send(data);
-						           debug_level.debug(1, "thread is running");
-						           
-						    /*       if(changepwdflag==true) {
-						           symkeynew=changekey_server.change_server();
-						           debug_level.debug(1, "New symkey at Caller end is - "+symkeynew);
-						           
-						           byte[] sym_byte_key = longtobyte_bytetolongarray.longtobytearraysymkey(symkeynew);
-								   seckeynew = new SecretKeySpec(sym_byte_key, "AES");
-						           changepwdflag=false;
-						            
-						           }*/
+						           debug_level.debug(1, "caller thread 1 is running");
 						           
 						           
-				
-			               }
+						           if(changekey_server.changekeysflag==true) 
+						            {
+						             try {
+									      symkeynew=changekey_server.get();
+									      byte[] sym_byte_key = longtobyte_bytetolongarray.longtobytearraysymkey(symkeynew);
+										  seckeynew = new SecretKeySpec(sym_byte_key, "AES");
+										  this.sec_key=seckeynew;
+										  System.out.println("/////// New secret key for encryption at caller end is "+sec_key);
+										  player_thread.seckey2 = seckeynew;
+										  changekey_server.changekeysflag=false;
+								         }
+						            catch (InterruptedException e) {
+									      // TODO Auto-generated catch block
+									      e.printStackTrace();
+								         }
+						          
+						           }
+						           
+						  }
 			        }
 			   }				  
 				catch (IOException e) {
