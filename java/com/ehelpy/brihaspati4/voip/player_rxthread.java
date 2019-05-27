@@ -1,19 +1,14 @@
 package com.ehelpy.brihaspati4.voip;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.crypto.SecretKey;
 import javax.sound.sampled.SourceDataLine;
-
 import com.ehelpy.brihaspati4.authenticate.Gui;
 import com.ehelpy.brihaspati4.authenticate.debug_level;
 
@@ -24,11 +19,12 @@ public class player_rxthread extends Thread {
 	public static boolean status = false;
 	byte[] buffer= new byte[512];
 	byte[] buffer_dat = null;
-	SecretKey seckey = null;
+	private static SecretKey seckey1 = null;
+	static SecretKey seckey2 = null;
 	private static DatagramPacket incoming = null;
 
 	    public player_rxthread(SecretKey sec_key) {
-		seckey= sec_key;
+		seckey1 = sec_key;
 	}
 	    public void stopRunning()
 	    {
@@ -47,8 +43,17 @@ public class player_rxthread extends Thread {
 	        	
 	        		din.receive(incoming);
 	 	            buffer = incoming.getData();
-	 	            debug_level.debug(0,"secret key is " + seckey);
-	 	            buffer_dat = decrypt_msg.decrypt_calldata(seckey, buffer);
+	 	            debug_level.debug(0,"secret key is " + seckey1);
+	 	            if(seckey2==null) 
+	 	             {
+	 	               buffer_dat = decrypt_msg.decrypt_calldata(seckey1, buffer);
+	 	             }
+	 	            else 
+	 	             {
+	 	            	buffer_dat = decrypt_msg.decrypt_calldata(seckey2, buffer);
+	 	            	seckey1=seckey2;
+	 	            	seckey2=null;
+	 	             }
 	 	            audio_out.write(buffer_dat, 0, buffer_dat.length);
 	 	        
 	        	}

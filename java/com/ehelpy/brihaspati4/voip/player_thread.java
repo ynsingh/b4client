@@ -25,11 +25,12 @@ public class player_thread extends Thread
   public static boolean status = false;
   byte[] buffer= new byte[512];
   byte[] buffer_dat = null;
-  private static SecretKey seckey = null;
+  private static SecretKey seckey1 = null;
+  static SecretKey seckey2 = null;
   public static DatagramPacket incoming = null;
     public player_thread(SecretKey sec_key) 
     {
-	seckey= sec_key;
+	seckey1= sec_key;
      }
     public void stopRunning()
     {
@@ -51,10 +52,22 @@ public class player_thread extends Thread
         		debug_level.debug(0, "Entered player thread");
                 din.receive(incoming);
                 buffer = incoming.getData();
-                debug_level.debug(0,"secret key  for decryption is " + seckey);
-                buffer_dat = decrypt_msg.decrypt_calldata(seckey, buffer);
+                debug_level.debug(0,"secret key  for decryption is " + seckey1);
+                if(seckey2==null) 
+	                {
+	                  buffer_dat = decrypt_msg.decrypt_calldata(seckey1, buffer);
+	                }
+	            else 
+	               {
+	            	buffer_dat = decrypt_msg.decrypt_calldata(seckey2, buffer);
+	            	seckey1=seckey2;
+	            	System.out.println("/////// New secret key for decryption at caller end is "+seckey1);
+	            	seckey2=null;
+	               }
+                
                 audio_out.write(buffer_dat, 0, buffer_dat.length);
-                           	            
+                
+                
             }
             
       }

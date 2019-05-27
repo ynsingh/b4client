@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.sound.sampled.TargetDataLine;
 
 import com.ehelpy.brihaspati4.authenticate.debug_level;
@@ -19,11 +20,9 @@ public class recorder_rxthread extends Thread
 	public InetAddress far_endip;
 	public int comn_port;
 	public static boolean flag = true;
-	private static boolean changepwdflag = true;
 	public static boolean status = false;
 	private static long symkeynew = 0;
 	private SecretKey sec_key = null;
-	private static voip_key enc_key = null;
 	private static SecretKey seckeynew = null;
 	public recorder_rxthread(SecretKey sec_key) 
 	  {
@@ -41,13 +40,14 @@ public class recorder_rxthread extends Thread
 				
 				while (voip_receive.calling) 
 					{
-					  /*   if (pack==1000) 
+					     if (pack==1500) 
 	         	          {
-	         		        changepwdflag=true; 
-	         		        sec_key=seckeynew;
-	         		        debug_level.debug(0,"new secret key is"+ sec_key);
-	         	            pack=(long)01;
-	         	          }*/
+					    	   changekey_client chkc= new changekey_client(far_endip.getHostAddress());
+			                   Thread d= new Thread(chkc);
+			                   d.start();
+			         		   pack=(long) 01;
+	         	            
+	         	          }
 					        audio_in.read(byte_buff, 0, byte_buff.length);
 							DatagramPacket data = new DatagramPacket(byte_buff, byte_buff.length, far_endip, comn_port);
 							data_send = data.getData();
@@ -56,28 +56,28 @@ public class recorder_rxthread extends Thread
 							data = new DatagramPacket(enc_data, enc_data.length,far_endip, comn_port );
 							debug_level.debug(1,"#####  send voice packet no : #"+ pack++);
 							line.send(data);
-							debug_level.debug(1, "thread is running");
+							debug_level.debug(1, "recorder thread is running");
 							
-							
-						//	String farendip = far_endip.getHostAddress() ;
-						/*	if(changepwdflag==true) 
-							   {
-						    	symkeynew=changekey_client.change_client(farendip);
-								enc_key=new voip_key(symkeynew);
-								try {
-								    seckeynew = enc_key.get();
-							       } 
-							   catch (InterruptedException e) 
-							      {
-								    e.printStackTrace();
-							      }
-								
-						            changepwdflag=false;
-						       }*/
-							
+							 if(changekey_client.changekeycflag==true) 
+							    {
+						           try {
+									      symkeynew=changekey_client.get();
+									      byte[] sym_byte_key = longtobyte_bytetolongarray.longtobytearraysymkey(symkeynew);
+										  seckeynew = new SecretKeySpec(sym_byte_key, "AES");
+										  this.sec_key=seckeynew;
+										  System.out.println("/////// New secret key for encryption at reciever end is "+sec_key);
+										  player_rxthread.seckey2 = seckeynew;
+										  changekey_client.changekeycflag=false;
+								       }
+						           catch (InterruptedException e) {
+									      // TODO Auto-generated catch block
+									      e.printStackTrace();
+								       }
+						
+					              }
 					}
-				
 			 }
+			 
 			catch (IOException e) 
 			   {
 					voip_receive.calling = false;

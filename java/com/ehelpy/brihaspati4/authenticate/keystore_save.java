@@ -5,14 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-
-import sun.security.tools.keytool.CertAndKeyGen;
 
 public class keystore_save {
     static int datacesstype;
@@ -21,13 +22,16 @@ public class keystore_save {
 
     @SuppressWarnings("static-access")
     public static void main(String args[]) {
+    	
         keystore_save adam = new keystore_save();
         try {
             String path = properties_access.read_property("client.properties", "home");
-            sun.security.tools.keytool.CertAndKeyGen keypair = null;
-            keypair = new sun.security.tools.keytool.CertAndKeyGen("RSA", "SHA1WithRSA", null);
-
-            keypair.generate(1024);
+            KeyPair keypair = null;
+            try {
+        		keypair = generateRSAKeyPair();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
 
             debug_level.debug(0, "Generated Key Pair");
             adam.dumpKeyPair(keypair);
@@ -41,12 +45,16 @@ public class keystore_save {
             return;
         }
     }
-
-    public static void dumpKeyPair(CertAndKeyGen loadedKeyPair) {
-        PublicKey pub = loadedKeyPair.getPublicKey();
+    public static KeyPair generateRSAKeyPair() throws Exception {
+        KeyPairGenerator kpGen = KeyPairGenerator.getInstance("RSA", "BC");
+        kpGen.initialize(2048, new SecureRandom());
+        return kpGen.generateKeyPair();
+      }
+    public static void dumpKeyPair(KeyPair loadedKeyPair) {
+        PublicKey pub = loadedKeyPair.getPublic();
         debug_level.debug(0,"Public Key: " + getHexString(pub.getEncoded()));
 
-        PrivateKey priv = loadedKeyPair.getPrivateKey();
+        PrivateKey priv = loadedKeyPair.getPrivate();
         debug_level.debug(0,"Private Key: " + getHexString(priv.getEncoded()));
     }
 
@@ -58,9 +66,9 @@ public class keystore_save {
         return result;
     }
 
-    public void SaveKeyPair(String path, CertAndKeyGen key) throws IOException {
-        PrivateKey privateKey = key.getPrivateKey();
-        PublicKey publicKey = key.getPublicKey();
+    public void SaveKeyPair(String path, KeyPair key) throws IOException {
+        PrivateKey privateKey = key.getPrivate();
+        PublicKey publicKey = key.getPublic();
 
         // Store Public Key.
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
