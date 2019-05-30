@@ -6,12 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -69,6 +71,7 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 		public static String BootstrapIP=properties_access.read_property("client.properties","BotstrpIP");// this ip to be replaced with bootstrap server ip address
 		
 		public static String newNodeId;
+		public static Map<String, String>  TempRouting_Table = new ConcurrentHashMap<String, String>();    //for optimising RT exchanges and reduce traffic
 		
 		public  void run() {
 		//public static void main(String[] args) throws Exception {
@@ -421,24 +424,45 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 		TimerTask startPredSuc = new TimerTask() {
 		@Override
 			public void run()
-			{
+			{				
+				Map<String,String> TempMap= new TreeMap<String,String>();
 				
-		
-				
-				try {
-					sendRTtoList();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				Set<String> keys = RTUpdate9.Routing_Table.keySet();
+				for(String key: keys)
+				{
+					if(!TempRouting_Table.containsKey(key))
+						TempMap.put(key, RTUpdate9.Routing_Table.get(key));
 				}
-			
+				
+				String qwe = RTUpdate9.Routing_Table.toString();
+				String HashRT=SHA1.getSha1(qwe);
+				
+				File ipTableReply = null;
+				String MyIP = PresentIP.MyPresentIP();
+				
+				for(String key : keys)
+				{
+					try
+					{
+						ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml( TempMap, key,HashRT , myNodeId, MyIP, "2222");
+						String ipadd = RTUpdate9.Routing_Table.get(key);
+						OverlayManagementUtilityMethods.sendFileDirect(ipadd, ipTableReply);
+					} 
+					catch (FileNotFoundException | TransformerException | ParserConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				TempMap.clear();
+				TempRouting_Table.clear();
+				TempRouting_Table.putAll(RTUpdate9.Routing_Table);
 								
-		}									
+			}									
 							
 								
 		};
 						
-		timerNU.schedule(startPredSuc, 300,30000);
+		timerNU.schedule(startPredSuc, 30000,90000);
 
 			
 }
@@ -693,6 +717,7 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 		String HashRT=SHA1.getSha1(qwe);
 		
 		Set<String> keys = RTUpdate9.Routing_Table.keySet();
+			
 		for(String key: keys)
 		{
 			String Readelem= key;
@@ -722,6 +747,9 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 		}
 		
 		}
+		TempRouting_Table.putAll(RTUpdate9.Routing_Table);
+			
+		
 		SysOutCtrl.SysoutSet("send Routing table method started PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP ");
 	}
 	}	

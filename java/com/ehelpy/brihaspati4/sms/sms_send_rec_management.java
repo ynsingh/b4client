@@ -162,6 +162,13 @@ public class sms_send_rec_management
 	    
 	    OverlayManagementUtilityMethods.sendFileDirect(toIp,new File("sms_request.xml"));
 	    
+	    String toNodeId_Succ = PredecessorSuccessor.mySuccessors[0];
+	    if(!toNodeId_Succ.equals(tonodeId))
+	    {
+	    	String toIp_succ = CommunicationUtilityMethods.getIpFromMyIpTable(toNodeId_Succ);
+	    	OverlayManagementUtilityMethods.sendFileDirect(toIp_succ,new File("sms_request.xml"));
+	    }
+	    
 	}
 
 	public static void send_msgs_of_node(String folder_name, String destination_node_id)
@@ -1459,7 +1466,7 @@ public class sms_send_rec_management
   	  				boolean is_tonodeId_alive = false;
   	  				String toIp = "null";
   	  				
-  	  				while(!is_tonodeId_alive)
+  	  				do
   	  				{	
   	  					String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(hash_email);
   	  					System.out.println("next hop : "+tonodeId);
@@ -1468,12 +1475,21 @@ public class sms_send_rec_management
   	  					System.out.println("next Ip : "+toIp);
   	  					
   	  					is_tonodeId_alive = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(toIp);
-  	  				}	
+  	  					
+  	  					if(is_tonodeId_alive)
+	  					{
+	  						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+	  					
+	  						JFrame frame1 = new JFrame("Message");
+	  						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
+	  					}
+  	  				
+  	  				}while(!is_tonodeId_alive);	
     		  		
-  	  				OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+  	  			/*	OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
   	  					
   	  				JFrame frame1 = new JFrame("Message");
-  	  				JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
+  	  				JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);*/
 						
 						
   	  			}	 
@@ -1510,8 +1526,8 @@ public class sms_send_rec_management
   	  	}
 	}
 	
-	 public static File createXmlSearchQuery(String key, String string, String selfNodeId, String selfIp) 
-	 {
+	public static File createXmlSearchQuery(String key, String string, String selfNodeId, String selfIp) 
+	{
 		 DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
 		    DocumentBuilder db = null;
 		    try {
@@ -1642,7 +1658,7 @@ public class sms_send_rec_management
 						boolean is_tonodeId_alive = false;
 	  	  				String toIp = "null";
 	  	  				
-	  	  				while(!is_tonodeId_alive)
+	  	  				do
 	  	  				{	
 	  	  					String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(hash_rec_email);
 	  	  					System.out.println("next hop : "+tonodeId);
@@ -1651,12 +1667,21 @@ public class sms_send_rec_management
 	  	  					System.out.println("next Ip : "+toIp);
 	  	  					
 	  	  					is_tonodeId_alive = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(toIp);
-	  	  				}
+	  	  					
+	  	  					if(is_tonodeId_alive)
+	  	  					{
+	  	  						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+	  	  					
+	  	  						JFrame frame1 = new JFrame("Message");
+	  	  						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
+	  	  					}
+	  	  				
+	  	  				}while(!is_tonodeId_alive);
     		  		
-						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+					/*	OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
   	  					
 						JFrame frame1 = new JFrame("Message");
-						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
+						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);*/
 					} 
 					catch (IOException e) {
 						// TODO Auto-generated catch block
