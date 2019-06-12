@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
@@ -65,11 +66,6 @@ public class IndexManagement extends Thread
     public static boolean CheckIP=true;
     public static boolean timer_flag = false;
     public static Map<String, String>  EmailHashId_certificates= new TreeMap<String, String>();
-    public static Map<String, String>  EmailHashId_certificates_cache1= new TreeMap<String, String>();
-    public static Map<String, String>  EmailHashId_certificates_cache2= new TreeMap<String, String>();
-    public static Map<String, String>  EmailHashId_certificates_cache3= new TreeMap<String, String>();
-    public static Map<String, String>  EmailHashId_certificates_cache4= new TreeMap<String, String>();
-    public static Map<String, String>  EmailHashId_certificates_cache5= new TreeMap<String, String>();
     public static Map<String, String>  emailIdHash_cert= new TreeMap<String, String>();
            
     public void run()
@@ -112,11 +108,12 @@ public class IndexManagement extends Thread
         	@Override
         	public void run()
         	{
-        		IndexManagementUtilityMethods.addIndexRequest(selfHashId, myNodeId);//Publishing self hash id of email  at responsible node
+       			if(GlobalObject.getRunStatus())
+       			{
+       				IndexManagementUtilityMethods.addIndexRequest(selfHashId, myNodeId);//Publishing self hash id of email  at responsible node
+       			}
         	}
-        
         };
-                
         publish.schedule(task_publish, 2000, 60000);
         
         Timer check_own_index = new Timer();
@@ -125,32 +122,35 @@ public class IndexManagement extends Thread
         	@Override
         	public void run()
         	{
-        		Set<String> keys_myindex = myindex.keySet();
+        		if(GlobalObject.getRunStatus())
+       			{
+        			Set<String> keys_myindex = myindex.keySet();
                 
-        		for(String index_entry: keys_myindex)
-                {
-                   	if(index_entry.equals(OverlayManagement.myNodeId))
-                	{
-                		System.out.println("No Action");
-                	}
-                	else if(PredecessorSuccessor.myPredecessors[4].equals(OverlayManagement.myNodeId)&&PredecessorSuccessor.mySuccessors[0].equals(OverlayManagement.myNodeId))
-                	{
-                		System.out.println("No Action");
-                	}
-                	else if(!CommunicationUtilityMethods.responsibleNode(PredecessorSuccessor.myPredecessors[4],OverlayManagement.myNodeId,index_entry))
-                	{
-                		String value = myindex.get(index_entry);
-                		myindex.remove(index_entry, value);
+        			for(String index_entry: keys_myindex)
+        			{
+        				if(index_entry.equals(OverlayManagement.myNodeId))
+        				{
+        					System.out.println("No Action");
+        				}
+        				else if(PredecessorSuccessor.myPredecessors[4].equals(OverlayManagement.myNodeId)&&PredecessorSuccessor.mySuccessors[0].equals(OverlayManagement.myNodeId))
+        				{
+        					System.out.println("No Action");
+        				}
+        				else if(!CommunicationUtilityMethods.responsibleNode(PredecessorSuccessor.myPredecessors[4],OverlayManagement.myNodeId,index_entry))
+        				{
+        					String value = myindex.get(index_entry);
+        					myindex.remove(index_entry, value);
                 		
-                		String value2 = NodeId_ip_of_myindex.get(value);
-                		NodeId_ip_of_myindex.remove(value, value2);
+        					String value2 = NodeId_ip_of_myindex.get(value);
+        					NodeId_ip_of_myindex.remove(value, value2);
                 		
-                		String value3 = EmailHashId_certificates.get(index_entry);
-                		EmailHashId_certificates.remove(index_entry, value3);
+        					String value3 = EmailHashId_certificates.get(index_entry);
+        					EmailHashId_certificates.remove(index_entry, value3);
                 		
-                		IndexManagementUtilityMethods.myIndexTable();
-                	}
-                }
+        					IndexManagementUtilityMethods.myIndexTable();
+        				}
+        			}
+       			}	
         	}
         
         };
@@ -165,14 +165,17 @@ public class IndexManagement extends Thread
         	@Override
         	public void run()
         	{
-        		try {
-					IndexManagementUtilityMethods.getIndexing();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+        		if(GlobalObject.getRunStatus())
+        		{
+        			try {
+        				IndexManagementUtilityMethods.getIndexing();
+        			} catch (Exception e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			}
+        					
+        		}
         	}
-        
         };
         get_index.schedule(task_get_index, 5000,60000);
         
@@ -182,7 +185,11 @@ public class IndexManagement extends Thread
         	@Override
         	public void run()
         	{
-        		IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+        		if(GlobalObject.getRunStatus())
+				{
+					IndexManagementUtilityMethods.TransmitMyIndexXmlFileToSuccessors();
+				}	
+        		
         	}
         
         };
@@ -195,7 +202,7 @@ public class IndexManagement extends Thread
             	@Override
             	public void run()
             	{
-            		while(true)
+            		while(GlobalObject.getRunStatus()||!CommunicationManager.RxBufferIM.isEmpty())
 
             		{
             			SysOutCtrl.SysoutSet("Index Management thread t3 is running",2);
@@ -336,7 +343,7 @@ public class IndexManagement extends Thread
             				        }
             					}
 
-            					else if(info_from_xml[0].equals( "1111"))
+            					else if(info_from_xml[0].equals("1111"))
             					{
 
             						IndexManagementUtilityMethods.removeIndexing(info_from_xml[3]);
@@ -438,12 +445,13 @@ public class IndexManagement extends Thread
             							myindex1.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex1.clear();
             							nodeid_ip_myindex1.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            							EmailHashId_certificates_cache1.clear();
-            							EmailHashId_certificates_cache1.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache1);
-            							
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            						            							
             							SysOutCtrl.SysoutSet("myIndex1(myPredecessor1) index table saved successfully",2);
             						
             						}
@@ -456,11 +464,12 @@ public class IndexManagement extends Thread
             							myindex2.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex2.clear();
             							nodeid_ip_myindex2.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            							EmailHashId_certificates_cache2.clear();
-            							EmailHashId_certificates_cache2.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            	            							
+            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache2);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
             							
             							SysOutCtrl.SysoutSet("myIndex2(myPredecessor2) index table saved successfully",2);
             						
@@ -474,11 +483,12 @@ public class IndexManagement extends Thread
             							myindex3.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex3.clear();
             							nodeid_ip_myindex3.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            							EmailHashId_certificates_cache3.clear();
-            							EmailHashId_certificates_cache3.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							            							
+            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache3);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
             							
             							SysOutCtrl.SysoutSet("myIndex3(myPredecessor3) index table saved successfully",2);
             						
@@ -493,11 +503,12 @@ public class IndexManagement extends Thread
             							myindex4.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex4.clear();
             							nodeid_ip_myindex4.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            							EmailHashId_certificates_cache4.clear();
-            							EmailHashId_certificates_cache4.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							            							
+            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache4);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
             				            
             							SysOutCtrl.SysoutSet("myIndex4(myPredecessor4) index table saved successfully",2);
             						}
@@ -510,11 +521,12 @@ public class IndexManagement extends Thread
             							myindex5.putAll(IndexManagementUtilityMethods.convertXmlToIndexTable(inFile));
             							nodeid_ip_myindex5.clear();
             							nodeid_ip_myindex5.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
-            							EmailHashId_certificates_cache5.clear();
-            							EmailHashId_certificates_cache5.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile));
+            							
+            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) EmailHashId_certificates_cache5);
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
             				            	
             							SysOutCtrl.SysoutSet("myIndex5(myPredecessor5) index table saved successfully",2);
             						}
@@ -531,6 +543,8 @@ public class IndexManagement extends Thread
     					{
     						e.printStackTrace();
     					}
+    					
+    					
             		}
             	}
             }
@@ -566,7 +580,7 @@ public class IndexManagement extends Thread
             @Override
             public void run()
             {
-                while(true)// if OpBufferIM is not empty this if block will be executed
+                while(GlobalObject.getRunStatus())
                 {
                     SysOutCtrl.SysoutSet(" thread t5 index manager is waiting for predecessor update",2);
                     
@@ -593,6 +607,8 @@ public class IndexManagement extends Thread
             @Override
             public void run()
             {
+            if(GlobalObject.getRunStatus())
+            {	
             	System.out.println("Iam resposible for these email hashes : ");
             	System.out.println(myindex);
             	System.out.println("my index node id and ip : "+NodeId_ip_of_myindex);
@@ -609,8 +625,6 @@ public class IndexManagement extends Thread
         		System.out.println("My SMS Rec Buff : "+CommunicationManager.RxBufferSMS);
         		System.out.println("Iam resposible for these Email Hash Id's and their cert : ");
         		System.out.println(EmailHashId_certificates);
-        		System.out.println("my cached node cert of imm pred : "+EmailHashId_certificates_cache5);
-        		System.out.println("my cached node cert of farthest pred : "+EmailHashId_certificates_cache1);
         		System.out.println("my cached index : "+cached_index);
         		System.out.println("my cached ip table : "+cached_NodeId_ip_index);
         		System.out.println("my routing table : "+RTUpdate9.Routing_Table);
@@ -633,30 +647,14 @@ public class IndexManagement extends Thread
         		
         		System.out.println("My succ list: "+CommunicationManager.succ);
         		System.out.println("My Pred list: "+CommunicationManager.pred);
+            }
         	}
 
         };
 
         check.schedule(task, 3000, 3000);
-       
-      
+        
+            
     }
-    
-      public static void timerAction()
-    {
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                SysOutCtrl.SysoutSet("resetting iAmNewlyJoinedNode ");
-                OverlayManagement.iAmNewlyJoinedNode=true;
-
-            }
-
-        };
-
-        timer.schedule(task, 3000,30000);
-    }
+          
 }

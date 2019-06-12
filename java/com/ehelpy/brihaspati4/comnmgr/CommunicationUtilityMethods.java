@@ -23,6 +23,16 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,15 +40,49 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import com.ehelpy.brihaspati4.authenticate.ConvertStringCertToX509;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
+import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 import com.ehelpy.brihaspati4.indexmanager.SHA1;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
+import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
 import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
+import com.ehelpy.brihaspati4.voip.encrypt_msg;
+import com.ehelpy.brihaspati4.voip.longtobyte_bytetolongarray;
 
 public class CommunicationUtilityMethods extends CommunicationManager {
 
@@ -308,27 +352,25 @@ public class CommunicationUtilityMethods extends CommunicationManager {
         	  String tohashId="";
         	  
         	  tohashId = xmlParsed[1];
+                	  
+        	  String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(tohashId);
             
-              String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(tohashId);
-            
-              SysOutCtrl.SysoutSet("NextHop  from RoutingManagement for " + file + ":" + tonodeId,2);
-              System.out.println("Querry hash : "+tohashId);
-              System.out.println("Next Hop : "+tonodeId);
+        	  SysOutCtrl.SysoutSet("NextHop  from RoutingManagement for " + file + ":" + tonodeId,2);
+        	  System.out.println("Querry hash : "+tohashId);
+        	  System.out.println("Next Hop : "+tonodeId);
               
-              String toIp = getIpFromMyIpTable(tonodeId); // calling function to get the ip address of the root node id
+        	  String toIp = getIpFromMyIpTable(tonodeId); // calling function to get the ip address of the root node id
 
-              System.out.println("Ip from Ip Table"+toIp);
+        	  System.out.println("Ip from Ip Table"+toIp);
   
-              SysOutCtrl.SysoutSet("Destination Ip Add for " + file + ":" + toIp,2);
-              SysOutCtrl.SysoutSet("Calling File Sender Method " ,2);
+        	  SysOutCtrl.SysoutSet("Destination Ip Add for " + file + ":" + toIp,2);
+        	  SysOutCtrl.SysoutSet("Calling File Sender Method " ,2);
          
-              fileSender(toIp, s);
+        	  fileSender(toIp, s);
           
-          }
-      SysOutCtrl.SysoutSet("Thread t2 reply-Transmitting Buffer found empty",2);
+        	  SysOutCtrl.SysoutSet("Thread t2 reply-Transmitting Buffer found empty",2);
+        	}	  
     }
-
-
    
     public static String getIpFromMyIpTable(String nodeId) {
         
@@ -371,6 +413,10 @@ public class CommunicationUtilityMethods extends CommunicationManager {
         return ip;
     }
     
+    
+   
+   
+    
     public static void fillReceiveBuffer() {
         // TODO Auto-generated method stub
         SysOutCtrl.SysoutSet("you are in FillReceiveBuffer method",2);
@@ -396,6 +442,7 @@ public class CommunicationUtilityMethods extends CommunicationManager {
         }
         return fileName;
     }
+    
     public static boolean responsibleNode(String Pred,String Self,String key)
     {
         boolean bool=false;
@@ -443,7 +490,4 @@ public class CommunicationUtilityMethods extends CommunicationManager {
           
         return bool;
     }
-
-    
-   
 }

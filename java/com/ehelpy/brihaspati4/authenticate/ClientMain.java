@@ -21,7 +21,6 @@ public class ClientMain extends Thread {
     public static int CtrlConsoleOut=0;
     public static void main(String args[]) throws Exception
     {    	
-        GlobalObject global_object = GlobalObject.getGlobalObject();
         GlobalObject.setRunStatus(true);
         // GlobalObject will keep status of various threads and run status. This will be used
         // for proper closure of threads when closing the application.
@@ -61,7 +60,7 @@ public class ClientMain extends Thread {
                 System.exit(0);
             }
         }
-        if(global_object.getRunStatus())
+        if(GlobalObject.getRunStatus())
         {
             if(flagset) 
             {
@@ -94,23 +93,19 @@ public class ClientMain extends Thread {
         			// TODO Auto-generated catch block
         			e1.printStackTrace();
         		}
-                // call objects and methods from classes of - routing  mangement
-                RMThreadPrimary RM = new RMThreadPrimary();
-                RM.start();
-                try {
-                    RM.join(9000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                // call objects of routing  mangement
+                
+                RMThreadPrimary.update_rt();
+                
                 System.out.println("Starting IndexManagement thread");
+               
                 // call objects and methods from classes of - index management
                 IndexManagement indmgt= new IndexManagement();
                 indmgt.start();
-                OverlayManagement.iAmNewlyJoinedNode = true;
-                //  Main_Login_Window.main(null);
+               
                 sms_retrival_thread sms= new sms_retrival_thread();
                 sms.start();
+               
                 B4services.service();
                 // start user specific services
                 // user specific DFS mount service,

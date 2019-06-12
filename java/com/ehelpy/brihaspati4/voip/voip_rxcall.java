@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import javax.crypto.SecretKey;
+
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.debug_level;
 
 public class voip_rxcall extends Thread 
@@ -41,6 +43,8 @@ public class voip_rxcall extends Thread
 	            
 	            try
 	            {
+	            if(GlobalObject.getRunStatus())	
+	            {	
 	                // socket object to receive incoming client requests
 	                s = ss.accept();
 	                // keep on checking the inputstream every 1 millisecond for any calling request
@@ -68,7 +72,7 @@ public class voip_rxcall extends Thread
 	                  }
 	            
 	            }
-	            
+	            }
 	          catch (Exception e)
 	               {
 	                	e.printStackTrace();

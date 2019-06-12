@@ -4,13 +4,21 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import com.ehelpy.brihaspati4.authenticate.properties_access;
+import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.Address_Book.Display_Window_After_Login;
+import com.ehelpy.brihaspati4.Address_Book.import_database;
 import com.ehelpy.brihaspati4.sms.SMS_Window;
 import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.emailid;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.ButtonGroup;
@@ -107,7 +115,45 @@ public class B4services {
 		BServices = new JFrame();
 		BServices.setTitle("B4Server Services");
 		BServices.setBounds(100, 100, 450, 450);
-		BServices.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+		BServices.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				
+				GlobalObject.setRunStatus(false);	
+												
+				BServices.dispose();
+				
+				try {
+					voip_rxcall.ss.close();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if(sms_send_rec_management.sending_message||!CommunicationManager.ReceivingBuffer.isEmpty())
+				{
+					try {
+						Thread.sleep(30000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+		    	
+				System.out.println("ALL THREADS, TIMERS AND SOCKETS ARE CLOSED");
+		    	System.exit(0);
+			}
+		});
+		
 		BServices.getContentPane().setLayout(null);
 		
 		JRadioButton NewRadioButton = new JRadioButton("ADDRESS BOOK");
@@ -221,6 +267,36 @@ public class B4services {
 	    JButton btnCancel = new JButton("CANCEL");
 	    btnCancel.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
+	    	
+	    	GlobalObject.setRunStatus(false);	
+	    		    		    	
+	    	BServices.dispose();
+	    	
+	    	try {
+				voip_rxcall.ss.close();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			if(sms_send_rec_management.sending_message||!CommunicationManager.ReceivingBuffer.isEmpty()||!CommunicationManager.RxBufferSMS.isEmpty())
+			{
+				try {
+					Thread.sleep(30000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+	    	System.out.println("ALL THREADS, TIMERS AND SOCKETS ARE CLOSED AND BUFFERS CLEARED");	    	
 	    	System.exit(0);
 	    	}
 	    });

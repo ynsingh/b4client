@@ -3,16 +3,16 @@ package com.ehelpy.brihaspati4.comnmgr;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+
 
 public class file_receiver extends Thread {
 	
@@ -51,8 +51,8 @@ public class file_receiver extends Thread {
     @Override
     public void run()
     {
-        running = true;
-        while( running )
+     //   running = true;
+        while(GlobalObject.getRunStatus()||sms_send_rec_management.sending_message)
         {
             try
             {
@@ -94,6 +94,7 @@ class RequestHandler extends Thread
             byte[] mybytearray = new byte[4096];
             
             InputStream is = socket.getInputStream();
+            
             String fileName=CommunicationUtilityMethods.getFileName();
             FileOutputStream fos = new FileOutputStream(fileName);
 

@@ -2,6 +2,10 @@ package com.ehelpy.brihaspati4.comnmgr;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
+
 import java.io.IOException;
 
 
@@ -41,8 +45,8 @@ public class Applivation_alive_response extends Thread {
 	 @Override
 	 public void run()
 	 {
-		 running = true;
-		 while( running )
+	//	 running = true;
+		 while( GlobalObject.getRunStatus()||sms_send_rec_management.sending_message )
 		 {
 			 try
 			 {

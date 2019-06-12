@@ -8,11 +8,9 @@ import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 
 
-public class RMThreadPrimary extends Thread
+public class RMThreadPrimary
 {
-
-
-	public void run()
+	public static void update_rt()
 	{
 		SysOutCtrl.SysoutSet("Starting Routing Module...", 1);
 
@@ -37,7 +35,7 @@ public class RMThreadPrimary extends Thread
 		SysOutCtrl.SysoutSet("------------------------------------------------", 3);
 		SysOutCtrl.SysoutSet("------------------------------------------------", 3);
 			
-	
 	}
+	
 }
 

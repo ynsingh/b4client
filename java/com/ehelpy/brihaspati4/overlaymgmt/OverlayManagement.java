@@ -25,6 +25,7 @@ import com.ehelpy.brihaspati4.comnmgr.XmlFileSegregation;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 import com.ehelpy.brihaspati4.indexmanager.SHA1;
 import com.ehelpy.brihaspati4.routingmgmt.*;
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
 	//Major Piyush Tiwari Dated: 
 	//This class is the main class of the overlay management in which all the methods of OM are called.
@@ -119,7 +120,7 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 				@Override
 				public void run()
 				{
-					while(true)// if OpBufferIM is not empty this if block will be executed
+					while(GlobalObject.getRunStatus()||!CommunicationManager.RxBufferOM.isEmpty())// if OpBufferIM is not empty this if block will be executed
 						
 					{		
 						System.out.println("t7 thread is running");	
@@ -379,10 +380,12 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 			public void run() 
 			{	
 			
+				if(GlobalObject.getRunStatus())
+				{
+					SysOutCtrl.SysoutSet("Heartbeat monitoring has started", 1);
 					
-				SysOutCtrl.SysoutSet("Heartbeat monitoring has started", 1);
-					
-				HeartbeatMonitoring.heartbeatCheck();
+					HeartbeatMonitoring.heartbeatCheck();
+				}
 				
 			}
 					
@@ -395,13 +398,15 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 			@Override
 			public void run() 
 			{	
+				if(GlobalObject.getRunStatus())
+				{	
 						try {
 							HeartbeatMonitoring.heartbeatCheck1();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-				
+				}
 							
 			}
 					
@@ -414,7 +419,10 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 			@Override
 			public void run()
 			{
-				updatPredSec();
+				if(GlobalObject.getRunStatus())
+				{
+					updatPredSec();
+				}
 			}
 		};	
 		update_pred_sec.schedule(task_update_pred_sec, 300,30000);	
@@ -425,6 +433,8 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 		@Override
 			public void run()
 			{				
+			if(GlobalObject.getRunStatus())
+			{	
 				Map<String,String> TempMap= new TreeMap<String,String>();
 				
 				Set<String> keys = RTUpdate9.Routing_Table.keySet();
@@ -457,7 +467,8 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 				TempRouting_Table.clear();
 				TempRouting_Table.putAll(RTUpdate9.Routing_Table);
 								
-			}									
+			}	
+			}
 							
 								
 		};
