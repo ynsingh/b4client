@@ -27,6 +27,7 @@ import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateTabFromQuery;
 import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 
 public class XmlFileSegregation extends CommunicationManager
@@ -182,6 +183,35 @@ public class XmlFileSegregation extends CommunicationManager
 					
 					else if (xmlParsedFields[0].equals("1011") || xmlParsedFields[0].equals("1012") || xmlParsedFields[0].equals("1015") || xmlParsedFields[0].equals("1016"))
 					{
+						if(!GlobalObject.getRunStatus())
+						{
+							if(xmlParsedFields[0].equals("1011"))
+							{	
+								String[] xmlParsedFields_1011 = ParseXmlFile.ParseXml_1011(file);
+    						
+								String hash_id = xmlParsedFields_1011[1];
+    					       						
+								String encr_key = xmlParsedFields_1011[7];
+    						
+								String msg = xmlParsedFields_1011[2];
+    						
+								String port_email = xmlParsedFields_1011[5];
+    												
+								String sender_email_id = null;
+								String file_name_of_msg = null;
+								int number = 0;
+    						
+								number = port_email.length();
+    						
+								file_name_of_msg = port_email.substring(4,34);
+								sender_email_id = port_email.substring(34,number);
+    						
+								String rec_email_id = xmlParsedFields_1011[6];
+    																				
+								sms_send_rec_management.received_querry(hash_id, msg, sender_email_id, rec_email_id, file_name_of_msg, encr_key );
+							}	
+						}
+						
 						RxBufferSMS.add(RxBufferSMS.size(), file);
 					}
 					

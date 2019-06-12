@@ -42,6 +42,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.ReadVerifyCert;
 import com.ehelpy.brihaspati4.authenticate.emailid;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
@@ -142,73 +143,76 @@ public class IndexManagementUtilityMethods extends IndexManagement
     
     public static void Change_In_IP_Check()
     {
-        while (CheckIP==true)
-        {
-            IPAdd = com.ehelpy.brihaspati4.routingmgmt.SystemIPAddress.getSystemIP();
-            if(!MyIP.equals(IPAdd))
-            {
-                CheckIP=false;
-            }
-        }
-        
-        System.out.println("MY old IP was : "+MyIP);
+    	while(GlobalObject.getRunStatus())
+    	{	
+    		while (CheckIP==true&&GlobalObject.getRunStatus())
+    		{
+    			IPAdd = com.ehelpy.brihaspati4.routingmgmt.SystemIPAddress.getSystemIP();
+    			if(!MyIP.equals(IPAdd))
+    			{
+    				CheckIP=false;
+    			}
+    		}
 
-        MyIP = IPAdd;
-        
-        FileWriter write = null;
-		
-		try {
-			write = new FileWriter("MyPreviousIP.txt");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
-		
-		PrintWriter wr = new PrintWriter(write);
-		
-		wr.write(MyIP);
-		wr.flush();
+    		System.out.println("MY old IP was : "+MyIP);
 
-        String email_hash = selfHashId;
-        String myNodeId = OverlayManagement.myNodeId;
+    		MyIP = IPAdd;
 
-        IndexManagementUtilityMethods.addIndexRequest(email_hash, myNodeId);
+    		FileWriter write = null;
 
-        Collection<String> Node_id_extracted = CommunicationManager.myIpTable.keySet();
-        Object[] Nodeid_array = Node_id_extracted.toArray();
+    		try {
+    			write = new FileWriter("MyPreviousIP.txt");
+    		} catch (IOException e) {
+    			// 	TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+	
 
-        for(int i=0; i<Nodeid_array.length; i++)
-        {
-            String Node_id= (String) Nodeid_array[i];
-            System.out.println(" "+Node_id);
-            File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
-        
-            com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
-            SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
-            SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
-        }
-        
-        Collection<String> Node_id_extracted1 = RTUpdate9.Routing_Table.keySet();
-        Object[] Nodeid_array1 = Node_id_extracted1.toArray();
+    		PrintWriter wr = new PrintWriter(write);
 
-        for(int i=0; i<Nodeid_array1.length; i++)
-        {
-            String Node_id= (String) Nodeid_array[i];
-            System.out.println(" "+Node_id);
-            File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
-        
-            com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
-            SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
-            SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
-        }
+    		wr.write(MyIP);
+    		wr.flush();
 
-        System.out.println("Updating my new Ip at Resposible Node and nodes present in my nodelist.");
-        System.out.println("My New IP is : "+MyIP);
+    		String email_hash = selfHashId;
+    		String myNodeId = OverlayManagement.myNodeId;
 
-        CheckIP=true;
+    		IndexManagementUtilityMethods.addIndexRequest(email_hash, myNodeId);
 
-        Change_In_IP_Check();
+    		Collection<String> Node_id_extracted = CommunicationManager.myIpTable.keySet();
+    		Object[] Nodeid_array = Node_id_extracted.toArray();
+
+    		for(int i=0; i<Nodeid_array.length; i++)
+    		{
+    			String Node_id= (String) Nodeid_array[i];
+    			System.out.println(" "+Node_id);
+    			File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
+
+    			com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
+    			SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
+    			SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
+    		}
+
+    		Collection<String> Node_id_extracted1 = RTUpdate9.Routing_Table.keySet();
+    		Object[] Nodeid_array1 = Node_id_extracted1.toArray();
+
+    		for(int i=0; i<Nodeid_array1.length; i++)
+    		{
+    			String Node_id= (String) Nodeid_array[i];
+    			System.out.println(" "+Node_id);
+    			File IPUpdate = IndexManagementUtilityMethods.createXmlUpdate_IP(Node_id);
+
+    			com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods.addQueryTransmittingBuffer(IPUpdate);
+    			SysOutCtrl.SysoutSet("Updated IP file sent to TransmittingBuffer :"+Node_id, 2);
+    			SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
+    		}
+
+    		System.out.println("Updating my new Ip at Resposible Node and nodes present in my nodelist.");
+    		System.out.println("My New IP is : "+MyIP);
+
+    		CheckIP=true;
+
+    		Change_In_IP_Check();
+    	}
     }
 
     public static void timer(String Cached_Entry)
@@ -415,20 +419,20 @@ public class IndexManagementUtilityMethods extends IndexManagement
         /// randomly chooses the string index from the string array
 
         String tagvalue = "0004"; // use random index to store corresponding string value in another string
-
+        ((Element) codeele).setAttribute("tag", tagvalue);
+        
         SysOutCtrl.SysoutSet("tag selected: " + tagvalue); // prints out the value at the randomly selected index
 
-        ((Element) codeele).setAttribute("tag", tagvalue);
-        String to_node_id = PredecessorSuccessor.mySuccessors[0];
+  //      String to_node_id = PredecessorSuccessor.mySuccessors[0];
 
         // SysOutCtrl.SysoutSet(to_node_id+"my succ 0");
-        Text t1 = doc.createTextNode(to_node_id);
+        Text t1 = doc.createTextNode(PredecessorSuccessor.mySuccessors[0]);
         // String nextHopNodeId=rout.getNextHop(");// next hop will be given by routing
         // module
         Text t2 = doc.createTextNode(selfHashId);// here instead of node id we are putting hash id so that successor can transfer my entry from his index table
-        String selfNodeId = OverlayManagement.myNodeId;
+  //      String selfNodeId = OverlayManagement.myNodeId;
 
-        Text t3 = doc.createTextNode(selfNodeId);
+        Text t3 = doc.createTextNode(OverlayManagement.myNodeId);
         String selfIp = getMyIp();
 
         Text t4 = doc.createTextNode(selfIp);

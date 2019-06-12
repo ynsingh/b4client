@@ -22,7 +22,7 @@ public class GlobalObject {
     {
         running_status = flag;
     }
-    public boolean getRunStatus()
+    public static boolean getRunStatus()
     {
         return running_status ;
     }

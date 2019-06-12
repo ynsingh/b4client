@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
@@ -17,6 +18,7 @@ public class sms_retrival_thread extends Thread
 	public static Map<String, String> nodeId_Ip= new ConcurrentHashMap<String, String>();
 	public static Map<String, String> PredNodeId_Ip= new ConcurrentHashMap<String, String>();
 	public static TreeMap<String, TreeMap<String, String>> PredNodeId_EmailHashCertMap = new TreeMap<String, TreeMap<String, String>>();
+	public static boolean Receiving_message =false;
 	
 	public void run()
     {
@@ -29,7 +31,7 @@ public class sms_retrival_thread extends Thread
 				@Override
 				public void run()
 				{
-					while(true)	
+					while(GlobalObject.getRunStatus())	
 					{
 						System.out.println("Thread for asking msgs from succ.");
 						sms_send_rec_management.create_msg_request_query();
@@ -54,7 +56,7 @@ public class sms_retrival_thread extends Thread
 				@Override
 			    public void run()
 				{
-					while(true)	
+					while(GlobalObject.getRunStatus())	
 					{
 						System.out.println("Thread for updating succ cache for sms ");
 						sms_send_rec_management.update_succ();
@@ -79,7 +81,7 @@ public class sms_retrival_thread extends Thread
 				@Override
 				public void run()
 				{
-					while(true)
+					while(GlobalObject.getRunStatus()||!CommunicationManager.RxBufferSMS.isEmpty()||Receiving_message)
 					{
 						System.out.println("SMS_management thread");
 		            			
@@ -255,7 +257,7 @@ public class sms_retrival_thread extends Thread
 				@Override
 				public void run()
 				{
-					while(true)	
+					while(GlobalObject.getRunStatus())	
 					{
 						System.out.println("Thread for checking pred alive status for movig sms from cache to rec folder ");
 						sms_send_rec_management.check_pred_alive();

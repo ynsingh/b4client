@@ -122,6 +122,8 @@ public class Send_SMS_Window extends JFrame {
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
+				sms_send_rec_management.sending_message = true;
+				
 				String new_file_loc = sms_methods.create_folder_sent(emailId_received);
 				String file_loc = sms_methods.create_textFIle_loc_foler( new_file_loc);
 									

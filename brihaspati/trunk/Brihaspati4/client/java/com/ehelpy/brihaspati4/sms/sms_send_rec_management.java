@@ -27,9 +27,6 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,15 +60,14 @@ import org.w3c.dom.Text;
 import com.ehelpy.brihaspati4.authenticate.ConvertStringCertToX509;
 import com.ehelpy.brihaspati4.authenticate.ReadVerifyCert;
 import com.ehelpy.brihaspati4.authenticate.emailid;
-import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
-import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 
 public class sms_send_rec_management 
 {
 	public static Map<String, String>  filename_key = new ConcurrentHashMap<String, String>();
+	public static boolean sending_message = false;
 	
 	public static void create_msg_request_query() 
 	{
@@ -1479,7 +1475,8 @@ public class sms_send_rec_management
   	  					if(is_tonodeId_alive)
 	  					{
 	  						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
-	  					
+	  						
+	  						sending_message = false;
 	  						JFrame frame1 = new JFrame("Message");
 	  						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
 	  					}
@@ -1671,6 +1668,8 @@ public class sms_send_rec_management
 	  	  					if(is_tonodeId_alive)
 	  	  					{
 	  	  						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+	  	  						
+	  	  						sending_message = false;
 	  	  					
 	  	  						JFrame frame1 = new JFrame("Message");
 	  	  						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);

@@ -8,10 +8,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.lang.String;
 
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
+import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 
 
 
@@ -56,7 +58,7 @@ public class CommunicationManager extends Thread
 					@Override
 					public void run()
 					{
-						while(true)
+						while(GlobalObject.getRunStatus()||sms_send_rec_management.sending_message||!ReceivingBuffer.isEmpty())
 			
 						{
 				
@@ -112,7 +114,7 @@ public class CommunicationManager extends Thread
 					@Override
 					public void run()
 					{
-						while(true)
+						while(GlobalObject.getRunStatus()||!TransmittingBuffer.isEmpty())
 						{
 							SysOutCtrl.SysoutSet( "Thread-t2 (File Transmitter) is running",1);
 							System.out.println("Thread-t2 (File Transmitter) is running");
