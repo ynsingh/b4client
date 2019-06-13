@@ -1482,19 +1482,60 @@ public class sms_send_rec_management
 	  					}
   	  				
   	  				}while(!is_tonodeId_alive);	
-    		  		
-  	  			/*	OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
-  	  					
-  	  				JFrame frame1 = new JFrame("Message");
-  	  				JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);*/
-						
-						
-  	  			}	 
+    		  	}	 
   	  			catch (IOException e) {
   	  				// TODO Auto-generated catch block
   	  				e.printStackTrace();
   	  			}
 		  		
+  	  		}
+  	  		
+  	  		else if (IndexManagement.EmailHashId_certificates.containsKey(hash_email))
+  	  		{
+  	  			String cert_string = IndexManagement.EmailHashId_certificates.get(hash_email);
+	  			try 
+	  			{
+	  				X509Certificate[] certificate = ConvertStringCertToX509.convertToX509Certarray(cert_string);
+	  				PublicKey rec_public_key = certificate[0].getPublicKey();
+	  				
+	  				byte[] msg_encr_bytes = encrypt_msg(rec_public_key, msg);
+	  				String encr_msg = Base64.getEncoder().encodeToString(msg_encr_bytes);
+	  				
+	  				System.out.println("File Name : "+file_name_of_msg);
+	  				System.out.println("sender email id : "+sender_email_id);
+				
+	  				String encrypted_key = Base64.getEncoder().encodeToString(encryptedKey);
+	  				
+	  				File msg_file = make_msg_file(hash_email, sender_email_id, rec_email, encr_msg, file_name_of_msg, encrypted_key);
+	  				
+	  				boolean is_tonodeId_alive = false;
+	  				String toIp = "null";
+	  				
+	  				do
+	  				{	
+	  					String tonodeId=com.ehelpy.brihaspati4.routingmgmt.GiveNextHop.NextHop(hash_email);
+	  					System.out.println("next hop : "+tonodeId);
+				
+	  					toIp = CommunicationUtilityMethods.getIpFromMyIpTable(tonodeId);
+	  					System.out.println("next Ip : "+toIp);
+	  					
+	  					is_tonodeId_alive = CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(toIp);
+	  					
+	  					if(is_tonodeId_alive)
+  					{
+  						OverlayManagementUtilityMethods.sendFileDirect(toIp, msg_file);
+  						
+  						sending_message = false;
+  						JFrame frame1 = new JFrame("Message");
+  						JOptionPane.showMessageDialog(frame1, "MESSAGE SENT TO "+rec_email);
+  					}
+	  				
+	  				}while(!is_tonodeId_alive);	
+		  		}	 
+	  			catch (IOException e) {
+	  				// TODO Auto-generated catch block
+	  				e.printStackTrace();
+	  			}
   	  		}
 		  	
   	  		else
