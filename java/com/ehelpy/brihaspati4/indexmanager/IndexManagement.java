@@ -65,8 +65,8 @@ public class IndexManagement extends Thread
     public static String IPAdd;
     public static boolean CheckIP=true;
     public static boolean timer_flag = false;
-    public static Map<String, String>  EmailHashId_certificates= new TreeMap<String, String>();
-    public static Map<String, String>  emailIdHash_cert= new TreeMap<String, String>();
+    public static TreeMap<String, String>  EmailHashId_certificates= new TreeMap<String, String>();
+    public static TreeMap<String, String>  emailIdHash_cert= new TreeMap<String, String>();
            
     public void run()
     {
@@ -446,11 +446,11 @@ public class IndexManagement extends Thread
             							nodeid_ip_myindex1.clear();
             							nodeid_ip_myindex1.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
             							
-            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TreeMap<String,String> TempMap= new TreeMap<String,String>();
             							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], TempMap);
             						            							
             							SysOutCtrl.SysoutSet("myIndex1(myPredecessor1) index table saved successfully",2);
             						
@@ -465,11 +465,11 @@ public class IndexManagement extends Thread
             							nodeid_ip_myindex2.clear();
             							nodeid_ip_myindex2.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
             	            							
-            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TreeMap<String,String> TempMap= new TreeMap<String,String>();
             							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], TempMap);
             							
             							SysOutCtrl.SysoutSet("myIndex2(myPredecessor2) index table saved successfully",2);
             						
@@ -484,11 +484,11 @@ public class IndexManagement extends Thread
             							nodeid_ip_myindex3.clear();
             							nodeid_ip_myindex3.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
             							            							
-            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TreeMap<String,String> TempMap= new TreeMap<String,String>();
             							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], TempMap);
             							
             							SysOutCtrl.SysoutSet("myIndex3(myPredecessor3) index table saved successfully",2);
             						
@@ -504,11 +504,11 @@ public class IndexManagement extends Thread
             							nodeid_ip_myindex4.clear();
             							nodeid_ip_myindex4.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
             							            							
-            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TreeMap<String,String> TempMap= new TreeMap<String,String>();
             							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], TempMap);
             				            
             							SysOutCtrl.SysoutSet("myIndex4(myPredecessor4) index table saved successfully",2);
             						}
@@ -522,11 +522,11 @@ public class IndexManagement extends Thread
             							nodeid_ip_myindex5.clear();
             							nodeid_ip_myindex5.putAll(IndexManagementUtilityMethods.convert_xml_to_Node_ip_table(inFile));
             							
-            							Map<String,String> TempMap= new TreeMap<String,String>();
+            							TreeMap<String,String> TempMap= new TreeMap<String,String>();
             							TempMap = IndexManagementUtilityMethods.convert_xml_to_Node_encrCert_table(inFile);
             							
             							sms_retrival_thread.PredNodeId_Ip.put(info_from_xml[3], info_from_xml[4]);
-            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], (TreeMap<String, String>) TempMap );
+            							sms_retrival_thread.PredNodeId_EmailHashCertMap.put(info_from_xml[3], TempMap);
             				            	
             							SysOutCtrl.SysoutSet("myIndex5(myPredecessor5) index table saved successfully",2);
             						}

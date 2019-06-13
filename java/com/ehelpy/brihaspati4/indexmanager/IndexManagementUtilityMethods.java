@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -1257,9 +1258,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
 	    return tempIndexTable;
 	}
 
-	public static Map<String, String> convert_xml_to_Node_encrCert_table(File inFile) 
+	public static TreeMap<String, String> convert_xml_to_Node_encrCert_table(File inFile) 
 	{
-		Map<String, String> node_cert = new LinkedHashMap<String, String>();
+		TreeMap<String, String> node_cert = new TreeMap<String, String>();
 	    // this method should convert the incoming xml file to myindex9hashmap)
 			
 	    SysOutCtrl.SysoutSet("you are in convertXmlToIndexTable method",2);
