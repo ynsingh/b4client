@@ -7,7 +7,7 @@ public class P2PMain {
 	
 	{
 		RMThreadPrimary RM = new RMThreadPrimary();
-		RM.start();
+	//	RM.start();
 		
 	}
 

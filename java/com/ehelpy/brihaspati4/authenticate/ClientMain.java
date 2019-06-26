@@ -14,6 +14,9 @@ import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
 import com.ehelpy.brihaspati4.sms.sms_methods;
 import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
+import com.ehelpy.brihaspati4.DFS.DistFileSys;
+import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
+
 public class ClientMain extends Thread {
     private static X509Certificate client_cert = null;
     private static X509Certificate server_cert = null;
@@ -80,6 +83,14 @@ public class ClientMain extends Thread {
                 }
                 try {
         			RTUpdate9.InitiateRT();
+				Save_Retrive_data_Structures.Save_nodeFileChunkMap();
+        			Save_Retrive_data_Structures.Save_nodefilemap();
+        			Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
+        			Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
+        			Save_Retrive_data_Structures.Retrive_nodeFileChunkMap();
+        			Save_Retrive_data_Structures.Retrive_nodefilemap();
+        			Save_Retrive_data_Structures.Retrive_root_Fileinfo_Map();
+        			Save_Retrive_data_Structures.Retrive_shared_Fileinfo_Map();
         		} catch (IOException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
@@ -106,6 +117,15 @@ public class ClientMain extends Thread {
                 sms_retrival_thread sms= new sms_retrival_thread();
                 sms.start();
                
+		DistFileSys dfs = new DistFileSys();
+                dfs.start();
+               	try {
+        			Thread.sleep(1000);
+        	} catch (InterruptedException e1) {
+        			// TODO Auto-generated catch block
+        			e1.printStackTrace();
+        	}
+
                 B4services.service();
                 // start user specific services
                 // user specific DFS mount service,

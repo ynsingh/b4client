@@ -41,13 +41,13 @@ public class P2PMain {
         }
 
         RMThreadPrimary RM = new RMThreadPrimary();
-        RM.start();
-        try {
-            RM.join(9000);
-        } catch (InterruptedException e) {
+//        RM.start();
+  //      try {
+  //          RM.join(9000);
+    //    } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+      //      e.printStackTrace();
+       // }
 
         CommunicationManager cm= new CommunicationManager();
         cm.start();
