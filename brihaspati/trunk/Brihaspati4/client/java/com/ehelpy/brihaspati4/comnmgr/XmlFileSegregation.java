@@ -29,6 +29,7 @@ import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
+import com.ehelpy.brihaspati4.DFS.DistFileSys;
 
 public class XmlFileSegregation extends CommunicationManager
 {
@@ -130,9 +131,14 @@ public class XmlFileSegregation extends CommunicationManager
 				SysOutCtrl.SysoutSet(xmlParsedFields[1]+"compareToIgnoreCase"+PredecessorSuccessor.myPredecessors[4]+"  "	+ xmlParsedFields[1]+"compareToIgnoreCase"+PredecessorSuccessor.myPredecessors[4]);
 				if (xmlParsedFields[1].equals(selfNodeId))
 				{
-				
-					if (xmlParsedFields[0].equals("0022") || xmlParsedFields[0].equals("0031")	|| xmlParsedFields[0].equals("0032") || xmlParsedFields[0].equals("0205")|| xmlParsedFields[0].equals("0305")|| xmlParsedFields[0].equals("0021")
-						|| xmlParsedFields[0].equals("0024") || xmlParsedFields[0].equals("0098"))
+					if (xmlParsedFields[0].equals("0110") || xmlParsedFields[0].equals("0111")	|| xmlParsedFields[0].equals("0112") || xmlParsedFields[0].equals("0113")|| xmlParsedFields[0].equals("R100")|| xmlParsedFields[0].equals("R101") || xmlParsedFields[0].equals("D100") || xmlParsedFields[0].equals("R500"))
+					{
+						SysOutCtrl.SysoutSet("Tag matched for DFS", 2);
+						DistFileSys.RxBufferDFS.add(DistFileSys.RxBufferDFS.size(), file);
+						System.out.println("FileAded to DFS Buffer " + DistFileSys.RxBufferDFS.getLast()+xmlParsedFields[0]);
+						SysOutCtrl.SysoutSet("");
+					}				
+					else if (xmlParsedFields[0].equals("0022") || xmlParsedFields[0].equals("0031")	|| xmlParsedFields[0].equals("0032") || xmlParsedFields[0].equals("0205")|| xmlParsedFields[0].equals("0305")|| xmlParsedFields[0].equals("0021") || xmlParsedFields[0].equals("0024") || xmlParsedFields[0].equals("0098"))
 					{
 						SysOutCtrl.SysoutSet("Tag matched for OM", 2);
 						RxBufferOM.add(RxBufferOM.size(), file);
@@ -174,7 +180,16 @@ public class XmlFileSegregation extends CommunicationManager
 				{
 				
 					responsible_node = true;
-					if(xmlParsedFields[0].equals("0205"))
+					if(xmlParsedFields[0].equals("0110"))
+					{
+						SysOutCtrl.SysoutSet("searched newNode should have between me and my immediate predecessor", 2);
+
+						DistFileSys.RxBufferDFS.add(DistFileSys.RxBufferDFS.size(), file);
+						SysOutCtrl.SysoutSet("Tag matched for DFS", 2);
+						System.out.println("FileAded to DFS receive Buffer 0110 " + DistFileSys.RxBufferDFS.getLast()+xmlParsedFields[0]);
+						SysOutCtrl.SysoutSet("");
+					}
+					else if(xmlParsedFields[0].equals("0205"))
 					{
 						SysOutCtrl.SysoutSet("searched newNode should have between me and my immediate predecessor", 2);
 			

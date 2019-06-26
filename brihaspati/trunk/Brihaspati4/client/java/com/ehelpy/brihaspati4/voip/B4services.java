@@ -31,6 +31,9 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 
+import com.ehelpy.brihaspati4.DFS.DFS_gui;
+import com.ehelpy.brihaspati4.DFS.DistFileSys;
+
 //Maj Saurabh Vij Dated 15 Mar 2019 ; 1230 Hrs
 //this code is for GUI for B4 Services and gives main GUI for the Brihaspati4 P2P network
 //it will enable the user to select appropriate service as per requirement
@@ -51,7 +54,7 @@ public class B4services {
 	public static boolean sms_window = false;
 	public static boolean sms_reader_window = false;
 	public static boolean sms_sent_messages_window = false;
-		
+	public static boolean DFS_gui_window = false;		
 	/**
 	 * Launch the application.
 	 */
@@ -208,13 +211,29 @@ public class B4services {
 		NewRadioButton_3.setFont(new Font("Tahoma", Font.BOLD, 20));
 		NewRadioButton_3.setBounds(8, 180, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_3);
-		
+	
+		///////////////////////////////////////////////////////////////////////////////////
+		JRadioButton NewRadioButton_4 = new JRadioButton("DFS");
+		NewRadioButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				token = 5;
+			}
+		});
+		NewRadioButton_4.setBackground(Color.YELLOW);
+		NewRadioButton_4.setForeground(Color.blue);
+		NewRadioButton_4.setFont(new Font("Tahoma", Font.BOLD, 20));
+		NewRadioButton_4.setBounds(8, 225, 127, 25);
+		BServices.getContentPane().add(NewRadioButton_4);
+		//////////////////////////////////////////////////////////////////////////////////
+
 		ButtonGroup bG = new ButtonGroup();
 	    bG.add(NewRadioButton);
 	    bG.add(NewRadioButton_1);
 	    bG.add(NewRadioButton_2);
 	    bG.add(NewRadioButton_3);
-	    
+	    bG.add(NewRadioButton_4);
+
 	    JButton btnOk = new JButton("OK");
 	    btnOk.addActionListener(new ActionListener() 
 	      {
@@ -252,6 +271,14 @@ public class B4services {
 					SMS_Window obj = new SMS_Window();
 					obj.setVisible(true);
 	    			
+	    		}
+			if (token == 0)
+	    		{
+	    			b4services_window_open = false;
+	    			BServices.setVisible(false);
+					BServices.dispose();
+
+					DFS_gui.main();
 	    		}
 	    		
 	    		
