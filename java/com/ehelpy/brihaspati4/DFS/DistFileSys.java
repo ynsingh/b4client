@@ -92,7 +92,7 @@ public class DistFileSys extends Thread {
 		}*/
 		
 	////////////////////////////////////////////////////////////////////////////////////////////////////////	
-		Thread tDFSR1 = new Thread(new Runnable() {
+		/*Thread tDFSR1 = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				{
@@ -108,7 +108,7 @@ public class DistFileSys extends Thread {
 			}
 		});
 
-		tDFSR1.start();
+		tDFSR1.start();*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/*	Thread tDFS2 = new Thread(new Runnable() {
@@ -156,7 +156,12 @@ public class DistFileSys extends Thread {
 			@Override
 			public void run() {
 				while (true) {
-					DistFileSysUtilityMethods.Application_Alive_Response_ByRecieverSide();
+					try {
+						DistFileSysUtilityMethods.Application_Alive_Response_ByRecieverSide();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					System.out.println("DFS thread tDFS4 is running");
 				}
 			}
@@ -266,26 +271,14 @@ public class DistFileSys extends Thread {
 
 									System.out.println("Reply SpaceQueryMsg send");
 									
-										/*Thread tDFSR1 = new Thread(new Runnable() {
-										@Override
-										public void run() {
-											{
-												try {FileReceiverDemox
-													.fileReceiver_Store(DistFileSysUtilityMethods.choose_WhereToSave());
-
+										try {
+											FileReceiverDemox.fileReceiver_Store(DistFileSysUtilityMethods.choose_WhereToSave());
 										} catch (IOException e) {
+											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
-												
-												System.out.println("DFS thread tDFSR1 is running");
-											}
-										}
-									});
 
-									tDFSR1.start();*/
-
-									
-
+										
 									System.out.println("Recevier is ready to receive the Data");
 
 								} else {

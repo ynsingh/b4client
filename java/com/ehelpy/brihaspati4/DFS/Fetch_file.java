@@ -83,7 +83,7 @@ public class Fetch_file extends JFrame implements ActionListener {
 			System.out.println("Value Selected: " + s);
 			System.out.println("why notttttt retrive");
 						
-					try {
+			/*		try {
 						B4services.ss.close();
 					} catch (IOException e2) {
 						// TODO Auto-generated catch block
@@ -92,11 +92,9 @@ public class Fetch_file extends JFrame implements ActionListener {
 				
 					
 				System.out.println("why notttttt11111111111111 retrive");		
-				B4services.service();
+				B4services.service();*/
 			
-			//LinkedHashMap<String, ArrayList<String>> fileFragMap=new  LinkedHashMap<String, ArrayList<String>>();
-			//fileFragMap=DistFileSys.fileNodeMap.get(s);//extracting the value for this File(which is selected)
-			// the value is a linked hash map
+			
 			int no_of_Chunks=DistFileSys.nodefilemap.get(s);
 			for(Integer i=0;i<no_of_Chunks;i++)
 			{
