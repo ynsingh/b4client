@@ -793,7 +793,7 @@ public class DistFileSysUtilityMethods extends DistFileSys {
 	    	}
 	    }   
 /////////////////////////////////////////////////////////////////////////////////////////////////
-	 public static void Application_Alive_Response_ByRecieverSide()
+	 public static void Application_Alive_Response_ByRecieverSide() throws IOException
 	    {
 	    	
 	    	ServerSocket servsock = null;
@@ -818,17 +818,14 @@ public class DistFileSysUtilityMethods extends DistFileSys {
 	            System.out.println("Client Socket Connected : " + sock);
 	        }	
 	              
-	        try {
-				servsock.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	        sock.close();
+//	        servsock.close();
 	    }
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
 	    public static boolean IsApplicationAlive_AtReceivingSide(String hostname)
 	    {
 	    	boolean IsAlive = false;
-	    	int port = 4444;
+	    	int port = 8888;
 	        	
 	    	if(!hostname.equals(null)||!hostname.isEmpty()||!hostname.equals("null")||!hostname.equals("")||!hostname.equals(" "))
 	    	{	
@@ -1134,9 +1131,7 @@ public class DistFileSysUtilityMethods extends DistFileSys {
 			Text t2 = doc.createTextNode(myNodeId);
 			Text t3 = doc.createTextNode(myIp);
 			Text t4 = doc.createTextNode(area);
-		
-			
-			
+				
 			hashidele.appendChild(t0);
 			tonodeidele.appendChild(t1);
 			selfnodeidele.appendChild(t2);

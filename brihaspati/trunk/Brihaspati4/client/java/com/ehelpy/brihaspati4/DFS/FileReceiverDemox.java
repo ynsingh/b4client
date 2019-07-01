@@ -60,7 +60,8 @@ public class FileReceiverDemox {
 	        // Closing the FileOutputStream handle
 	        in.close();
 	        clientData.close();
-	        output.close();  
+	        output.close(); 
+	        serverSocket.close();
 	        System.out.println("S: File length after receiving the Fetched data" + fileName.length());
 	        
 	        
@@ -123,7 +124,8 @@ public class FileReceiverDemox {
 			        in.close();
 			        clientData.close();
 			        output.close();  
-			        //serverSocket.close();
+			        serverSocket.close();
+			        //clientSocket.close();
 			        System.out.println("S: File length after receiving" + fileName.length());
 			       
 			    }
