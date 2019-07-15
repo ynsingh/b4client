@@ -2,10 +2,9 @@ package com.ehelpy.brihaspati4.voip;
 
 import java.awt.EventQueue;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -14,21 +13,18 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import javax.crypto.SecretKey;
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import com.ehelpy.brihaspati4.authenticate.debug_level;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
-
-import sun.audio.AudioData;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-import sun.audio.ContinuousAudioDataStream;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -53,14 +49,15 @@ public class voip_receive extends Thread {
 	public static SourceDataLine audio_out; 
 	public static boolean calling,flag = false;
 	private static JButton stop;
-	public static AudioPlayer MGP = AudioPlayer.player;
-	public static AudioStream BGM;
-    AudioData MD;
-    static ContinuousAudioDataStream loop = null;
+	//public static AudioPlayer MGP = AudioPlayer.player;
+	//public static AudioStream BGM;
+    //AudioData MD;
+   // static ContinuousAudioDataStream loop = null;
    
     
 	static String path = null;
 	public static boolean music_on = true;
+	static Clip clip = null;
 	
 
 	/**
@@ -102,9 +99,11 @@ public class voip_receive extends Thread {
 		lblNewLabel.setBounds(152, 30, 128, 124);
 		frame.getContentPane().add(lblNewLabel);
 		
+
 		if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
 		&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
 		&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
+		
 		{
 			B4services.BServices.setVisible(false);
 			B4services.BServices.dispose();
@@ -170,7 +169,7 @@ public class voip_receive extends Thread {
 		}
 		 rec.far_endip = address;
 		 rec.comn_port=port2;
-		System.out.println("the rec.line port is    "+   rec.line.getLocalPort());
+		 System.out.println("the rec.line port is    "+   rec.line.getLocalPort());
 		 p.din = rec.line;
 		 
 		 music();
@@ -181,16 +180,17 @@ public class voip_receive extends Thread {
 				rec.line.close();
 				calling=false;
 				flag = false;
-				//stopreciever("Stop",IPaddr);
 				music_on =true;
-				AudioPlayer.player.stop(BGM);
+				clip.stop();
+			
 							
 				
 				
 				if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
-				&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
-				&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
-				{	
+					&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
+					&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
+						
+				  {	
 					try 
 					{
 						B4services.ss.close();
@@ -199,7 +199,7 @@ public class voip_receive extends Thread {
 						e1.printStackTrace();
 					}
 					B4services.service();
-				}
+				  }
 				else 
 					{
 					  Thread t = new voip_rxcall(B4services.ss, Integer.valueOf(properties_access.read_property("client.properties","Rxsocch")));
@@ -222,7 +222,8 @@ public class voip_receive extends Thread {
 		start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				music_on =false;
-				AudioPlayer.player.stop(BGM);
+				clip.stop();
+				
 				lblNewLabel.removeAll();
 				Image img = new ImageIcon(this.getClass().getResource("/phone_call.png")).getImage();
 				lblNewLabel.setIcon(new ImageIcon(img));
@@ -253,37 +254,51 @@ public class voip_receive extends Thread {
 		
 		return new AudioFormat(samplerate,samplesizebits,channel,signed,bigEndian );
 	}
-public static void music() {
+public static void music() 
+     {
+	   
+	
 		
-		path = properties_access.read_property("client.properties", "phone_ring");
 		try {
-			 InputStream test = new FileInputStream(path);
-	         BGM = new AudioStream(test);
-	         if(music_on)
-	         AudioPlayer.player.start(BGM);
-	         //
+			
+			path = properties_access.read_property("client.properties", "phone_ring");
+			File musicpath = new File (path);
+			if (musicpath.exists()) 
+			  {
+			    
+				    AudioInputStream test = AudioSystem.getAudioInputStream(musicpath);
+				    clip = AudioSystem.getClip();
+				    if(music_on)
+				     {
+				      clip.open(test);
+				      clip.start();
+				      clip.loop(Clip.LOOP_CONTINUOUSLY);
+				     }
+			      } 
+			   
+			      
+	          
+			
+			else
+			{
+				System.out.println("Cant find music file");
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		//AudioPlayer.player.start(BGM);
-		//MGP.start(loop);
 		
-	
-		//MGP.stop(loop);
 	}
-
-
-
-
-
-
-
-
 
 
 

@@ -4,8 +4,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import com.ehelpy.brihaspati4.authenticate.debug_level;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
+//import sun.audio.AudioPlayer;
+//import sun.audio.AudioStream;
 import javax.crypto.SecretKey;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -16,7 +16,7 @@ import javax.sound.sampled.TargetDataLine;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.DataOutputStream;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,8 +50,8 @@ public class voip_start extends Thread  {
 	public static SourceDataLine audio_out; 
 	public static boolean calling,flag = false;
 	public  static DatagramSocket datagramSocket ;
-	public static AudioPlayer MGP = AudioPlayer.player;
-	public static AudioStream BGM;
+	//public static AudioPlayer MGP = AudioPlayer.player;
+	//public static AudioStream BGM;
 	static String path = null;
 	public static boolean music_on = true;
 	
@@ -99,11 +99,11 @@ public class voip_start extends Thread  {
 		 debug_level.debug(0, "The ip address of the far end client has reached the callmanager");
 		 
 		 debug_level.debug(1,"Socket created for txn of data in port number =   " +  port1   + port2);
-		 enc_key = new voip_key(sym_key);
 		 
+		 enc_key = new voip_key(sym_key);
 		 Thread t = new Thread(enc_key);
 		 t.start();
-		 System.out.println("w1");
+		 System.out.println("Fetching secret key at caller end in thread");
 		   try {
 			    sec_key = enc_key.get();
 		       } 
@@ -112,9 +112,9 @@ public class voip_start extends Thread  {
 			    e.printStackTrace();
 		      }
 		 audio1 = getAudioFormat();
-		 info = new DataLine.Info(TargetDataLine.class, audio1);
+		 info = new DataLine.Info(TargetDataLine.class, audio1);   // to be read from mic
 		 audio2 = getAudioFormat();
-		 info_out = new DataLine.Info(SourceDataLine.class, audio2);
+		 info_out = new DataLine.Info(SourceDataLine.class, audio2);   // to be written onto speaker
 		 if(!(AudioSystem.isLineSupported(info)||AudioSystem.isLineSupported(info_out))) {
 			 System.out.println("Audio format not supported");
 			 audio_nosupport.id_exist();
@@ -128,7 +128,7 @@ public class voip_start extends Thread  {
 			audio_in.close();
 		}
 		
-		 audio_in.start();   //start receiving audio from mic 
+		 audio_in.start();   // start receiving audio from mic 
 		 try {
 			 
 			audio_out = (SourceDataLine)AudioSystem.getLine(info_out);
@@ -142,8 +142,8 @@ public class voip_start extends Thread  {
 			
 		}
 		 
-		 audio_out.start();		//start sending the recieved audio out to speaker
-		    player_thread p = new player_thread(sec_key);  //voice packet received and decrypted
+		 audio_out.start();		// start sending the recieved audio out to speaker
+		    player_thread p = new player_thread(sec_key);  // voice packet received and decrypted
 		    player_thread.audio_out = audio_out;
 		      try {
 			        player_thread.din = new DatagramSocket(port1);
@@ -162,19 +162,6 @@ public class voip_start extends Thread  {
 		 rec.comn_port = port2;
 		 rec.start();
 		 
-				 
-		   /*if(!rec.isAlive())
-		 	{
-			 voip_receive.music();
-			 
-			 }
-			
-		 if(rec.isAlive()) {
-			 voip_receive.music_on =false;
-			 
-		 }*/
-		 
-		 
 		JButton btnNewButton = new JButton("Stop");
 		btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		btnNewButton.addActionListener(new ActionListener() {
@@ -187,21 +174,22 @@ public class voip_start extends Thread  {
 				frame.dispose();
 				debug_level.debug(0,"The client main started");
 				voip_rxcall.flag = true;
-					
+				
 				if(!B4services.display_window_open&&!B4services.address_book_delete_window&&!B4services.address_book_multiple_entries_window
-						&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
-						&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
-				{
-					try {
-						B4services.ss.close();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					B4services.service();
-				}
+					&&!B4services.address_book_new_entry_window&&!B4services.address_book_search_window&&!B4services.address_book_show_details_window
+					&&!B4services.voip_gui_window&&!B4services.sms_send_window&&!B4services.sms_window&&!B4services.sms_reader_window&&!B4services.sms_sent_messages_window )
+				   {				
+			 	    try {
+					     B4services.ss.close();
+				        } 
+			 	    catch (IOException e1) 
+			 	        {
+					                       // TODO Auto-generated catch block
+					                       e1.printStackTrace();
+				        }
+				    B4services.service();
 				
-				
+				   }
 			}
 		});
 		btnNewButton.setBounds(165, 183, 117, 57);
@@ -215,11 +203,13 @@ public class voip_start extends Thread  {
 		
 	}
 	private static AudioFormat getAudioFormat() {
-		float samplerate = 8000.0F;
-		int samplesizebits = 16;
-		int channel = 2;
-		boolean signed = true;
-		boolean bigEndian = false;
+		float samplerate = 8000.0F;   //sampleRate      the number of samples per second
+		int samplesizebits = 16;     //samplesizebits  the number of bits in each sample
+		int channel = 2;             //channels  the number of channels (1 for mono, 2 for stereo, and so on)
+		boolean signed = true;      //signed  indicates whether the data is signed or unsigned
+		boolean bigEndian = false;  //bigEndian       indicates whether the data for a single sample
+	                                                //  is stored in big-endian byte order 
+	                                                //  or little-endian)
 		
 		return new AudioFormat(samplerate,samplesizebits,channel,signed,bigEndian );
 	}
@@ -228,9 +218,9 @@ public static void music() {
 		path = properties_access.read_property("client.properties", "phone_ring");
 		try {
 			 InputStream test = new FileInputStream(path);
-	         BGM = new AudioStream(test);
-	         if(music_on)
-	         AudioPlayer.player.start(BGM);
+	         //BGM = new AudioStream(test);
+	        // if(music_on)
+	         //AudioPlayer.player.start(BGM);
 	         //
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -70,7 +70,14 @@
       tofile="b4jar/Debug.txt"
       overwrite="yes"
       filtering="yes"
+		/>
+		<copy
+      file="information.csv"
+      tofile="b4jar/information.csv"
+      overwrite="yes"
+      filtering="yes"
       />
+
 		<!--	<copy
       file="RTP2P.xml"
       tofile="b4jar/RTP2P.xml"
