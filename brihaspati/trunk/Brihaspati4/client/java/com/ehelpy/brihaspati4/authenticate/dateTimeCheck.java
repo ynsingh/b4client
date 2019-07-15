@@ -1,82 +1,96 @@
 package com.ehelpy.brihaspati4.authenticate ;
-import java.io.InputStream;
-import java.net.Socket;
+//This program has been built by Lt Col Ankit Singhal Dated 08 July 2019; 2330 Hrs
+//It carries out a date time check of the system with the network server so that the user is not able to forge validity of the certificate.
+//The code retrieves a network packet from B4 or Google server (or any server defined) and extracts timestamp from it as Date1.
+//Date1 is compared with system date and time (Date2). The system date has to be equal or ahead of server time so as to ensure that user is not able to forge
+//certificate validity.
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//Lt Col Ankit Singhal Dated 07 Apr 2019 ; 1448 Hrs
-//This function carries out a date time check of the system with the network server so that the user is not able to forge validity of the certificate and thus the security
-//hostname = "ntp.iitk.ac.in";
-// The time protocol sets the epoch at 1900,the java Date class at 1970. This number differenceBetweenEpochs converts between them = 2208988800L. or use following code.
-/*TimeZone gmt = TimeZone.getTimeZone("GMT");Calendar epoch1900 = Calendar.getInstance(gmt);epoch1900.set(1900, 01, 01, 00, 00, 00);
-long epoch1900ms = epoch1900.getTime().getTime();Calendar epoch1970 = Calendar.getInstance(gmt);epoch1970.set(1970, 01, 01, 00, 00, 00);
-long epoch1970ms = epoch1970.getTime().getTime();long differenceInMS = epoch1970ms - epoch1900ms;long differenceBetweenEpochs = differenceInMS/1000;*/
-public class dateTimeCheck {
-    public static String l_datetime;
-    public static String c_date_time;
-    public final static int DEFAULT_PORT = 37;
-    public static boolean checkDate()
-    {
-        boolean flag = false;
-        String hostname;
-        int port = DEFAULT_PORT;
-        hostname = "time.nist.gov"; 
-        long differenceBetweenEpochs = 2208988800L;     
-        InputStream raw = null;
-        c_date_time = getCurrentDateTime();
-        l_datetime = getLastLogoutTime();
-        try {
-            @SuppressWarnings("resource")
-            Socket theSocket = new Socket(hostname, port);
-            raw = theSocket.getInputStream();
-            long secondsSince1900 = 0;
-            for (int i = 0; i < 4; i++) {
-                secondsSince1900 = (secondsSince1900 << 8) | raw.read();
-            }
-            long secondsSince1970 = secondsSince1900 - differenceBetweenEpochs;
-            long msSince1970 = secondsSince1970 * 1000;
-            Date time = new Date(msSince1970);
-            SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String yourDate=sdf.format(time);
-            if (yourDate.compareTo(c_date_time) >= 0 ) {
-                debug_level.debug(3,"Current date & time of your system is:   " + c_date_time);
-                debug_level.debug(0,"Last logout date & time of your system is:   " + l_datetime);
-                debug_level.debug(3,"System clock is correct");
-                flag=true;
-            }
-            else {
-                debug_level.debug(0,"System's current date & time is:   " + c_date_time);
-                debug_level.debug(0,"Last logout date & time is:   " + l_datetime);
-                debug_level.debug(3,"System clock is not correct");
-                flag=false;
-            }
-        }
-        catch (Exception e) {
-        }
-        return flag;
-    }
-    public static String getCurrentDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
-    /***This code segment to be used when we get last logout time from config class***/
-     public static String getLastLogoutTime()
-    {
-    	try{
-    	//Read the last usage time from B4conf.properties file.
-      	l_datetime = Config.getConfigObject().getLastLogoutTime();
-        }
-    	catch(Exception e){
-    		l_datetime=null;
-    	}
-    	return  l_datetime;
-    }
-    public static void setLastLogoutTime()
-    {
-            System.out.println("setting the logout time in properties file..........");
-    	l_datetime = getCurrentDateTime();
-    	//Set this time in B4conf.properties file when user logouts.
-    	Config.getConfigObject().saveLastLogoutTime(l_datetime);
-    }
-}
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+public class dateTimeCheck 
+{
+	public static String l_datetime;
+    public static String c_date_time; 
+    public static boolean checkDate() throws Exception{
+		System.out.println("DATE AND TIME CHECK OF YOUR SYSTEM IS UNDER PROGRESS") ; 
+    	boolean flag=false;	// flag which returns true if date time is correct or false if incorrect.    
+		//String serverUrl = "http://172.20.82.6:8080/b4server"; // here the server ip can be specified as desired.
+		String serverUrl = "https://www.google.co.in";
+    	SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.getDefault());//to fetch date in local (zone)date time format 
+		SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+	    Date date1 = null; //server date and time
+	        try
+	        {
+	            date1 = sdf.parse(getServerHttpDate(serverUrl)); // fetches date of the server
+	        }
+	        catch (ParseException e)
+	        {
+	            e.printStackTrace();
+	        }       
+
+	     if (sdf2.format(date1).compareTo(getCurrentDateTime()) <= 0 ) {					// if server date is less than or equal to system date then system clock ok
+	    	System.out.println("Server Date & Time is :   " +sdf2.format(date1) );
+	    	debug_level.debug(3,"Your System Date & Time is :   " + getCurrentDateTime());                
+	    	//debug_level.debug(0,"Last logout date & time of your system is:   " + getLastLogoutTime());
+	    	debug_level.debug(3,"Your System Clock is CORRECT");          
+	    	flag=true;
+	        
+	     	} else     	{										// if server date is not less than or equal to system date then system clock incorrect
+	     		System.out.println("Server Date & Time is :   " +sdf2.format(date1) );
+	    	debug_level.debug(3,"Your System Date & Time is :   " + getCurrentDateTime());
+	    	//debug_level.debug(0,"Last logout date & time of your system is:   " + getLastLogoutTime());
+	    	debug_level.debug(3,"Your System clock is INCORRECT");
+	    	flag=false;
+	     	}
+	    return flag; // returns false to intimate user to correct system date and time and true to log on the network if system clock correct
+	  }
+    
+    
+		private static String getServerHttpDate(String serverUrl) throws IOException {
+	    URL url = new URL(serverUrl);
+	    URLConnection connection = url.openConnection();
+	    Map<String, List<String>> httpHeaders = connection.getHeaderFields();
+	    for (Map.Entry<String, List<String>> entry : httpHeaders.entrySet()) {
+	      String headerName = entry.getKey();
+	      if (headerName != null && headerName.equalsIgnoreCase("date")) {
+	        return entry.getValue().get(0);						// retrieving server date and time and returning to main function
+	      }
+	    }
+	    return null;											// returns null if server not online
+	  }
+  
+
+	  public static String getCurrentDateTime() {				// fetches current system date and time
+	        //DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+	        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+	        Date date = new Date();
+	        return dateFormat.format(date);
+	    }
+	    /***This code segment to be used when we get last logout time from config class***/
+	     public static String getLastLogoutTime()
+	    {
+	    	try{
+	    	//Read the last usage time from B4conf.properties file.
+	      	l_datetime = Config.getConfigObject().getLastLogoutTime();
+	        }
+	    	catch(Exception e){
+	    		l_datetime=null;
+	    	}
+	    	return  l_datetime;
+	    }
+	    public static void setLastLogoutTime()
+	    {
+	            System.out.println("setting the logout time in properties file..........");
+	    	l_datetime = getCurrentDateTime();
+	    	//Set this time in B4conf.properties file when user logouts.
+	    	Config.getConfigObject().saveLastLogoutTime(l_datetime);
+	    }
+
+	}

@@ -34,7 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 //import org.apache.commons.io.FileUtils;
-
+import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
@@ -108,7 +108,7 @@ public class DistFileSys extends Thread {
 			}
 		});
 
-		tDFSR1.start();*/
+		tDFSR1.start();   */  
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/*	Thread tDFS2 = new Thread(new Runnable() {
@@ -175,7 +175,7 @@ public class DistFileSys extends Thread {
 			@Override
 			public void run() {
 
-				while (true)
+				while (GlobalObject.getRunStatus())
 
 				{
 					try {
@@ -271,12 +271,22 @@ public class DistFileSys extends Thread {
 
 									System.out.println("Reply SpaceQueryMsg send");
 									
-										try {
-											FileReceiverDemox.fileReceiver_Store(DistFileSysUtilityMethods.choose_WhereToSave());
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+									////////////
+									Timer FileReceiverStarts = new Timer();
+									TimerTask Rcx_file = new TimerTask() {
+										@Override
+										public void run() {
+											try {
+												FileReceiverDemox.fileReceiver_Store(DistFileSysUtilityMethods.choose_WhereToSave());
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
 										}
+									};
+									FileReceiverStarts.schedule(Rcx_file,1);
+									
+									
+										
 
 										
 									System.out.println("Recevier is ready to receive the Data");
