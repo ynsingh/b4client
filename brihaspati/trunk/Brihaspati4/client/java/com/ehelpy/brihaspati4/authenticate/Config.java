@@ -5,6 +5,7 @@ package com.ehelpy.brihaspati4.authenticate ;
 * Date, Change description - Get the configuration parameters.
 * Copyright 2016 : YNSingh
 */
+
 import java.io.File;
 import java.util.Properties;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 //import com.ehelpy.brihaspati4.security;
 @SuppressWarnings("unused")
+
 public class Config {
 
     // Config initialization from configuration file during object creation by the constructor of Config.
