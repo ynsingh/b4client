@@ -24,17 +24,31 @@ public class ClientMain extends Thread {
     public static int CtrlConsoleOut=0;
     public static void main(String args[]) throws Exception
     {    	
-        GlobalObject.setRunStatus(true);
+        @SuppressWarnings("unused")
+        
+	GlobalObject globj= GlobalObject.getGlobalObject();
+        globj.setRunStatus(true);
         // GlobalObject will keep status of various threads and run status. This will be used
         // for proper closure of threads when closing the application.
-        com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
-        CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
+
+        // *com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
+        // *CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
+        
+        Config conf=Config.getConfigObject();
+        // Config initialization from configuration file during by the constructor of Config.
+        // Config_object will keep the data after reading from configuration file.
+        // On each change, the data should be written back to config file also.
+        // It implies, in each write api, write to config file on disk is to be implemented.
+        // debug level to be read from Config object which in turn to be read from configuration file. Can be modified in GUI, which
+        // update it in the configuration file.
+
+        CtrlConsoleOut = conf.getConsoleOut(); 
+
         SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
         UpdateIP IPUpdate = new UpdateIP();
         IPUpdate.start();
         IPUpdate.setName("IPUpdate");
         SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
-        @SuppressWarnings("unused")
         Config conf=Config.getConfigObject();
         // Config initialization from configuration file during by the constructor of Config.
         // Config_object will keep the data after reading from configuration file.
@@ -63,7 +77,7 @@ public class ClientMain extends Thread {
                 System.exit(0);
             }
         }
-        if(GlobalObject.getRunStatus())
+        if(globj.getRunStatus())
         {
             if(flagset) 
             {
@@ -136,7 +150,7 @@ public class ClientMain extends Thread {
         }
         else
         {
-            GlobalObject.setRunStatus(true);
+            globj.setRunStatus(true);
             ClientMain.main(args);
        }
     }

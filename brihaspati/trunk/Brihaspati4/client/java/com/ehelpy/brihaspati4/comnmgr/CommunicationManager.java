@@ -15,8 +15,6 @@ import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 
-
-
 public class CommunicationManager extends Thread
 {
 
@@ -43,7 +41,8 @@ public class CommunicationManager extends Thread
 	public static LinkedList<String> fromNodeIdList = new LinkedList<>();
 	public static boolean updateTable =false;
 	
-	public static Lock lock = new ReentrantLock();// this is to protect simultaneously accessing writeIpTable method in xmiFileSeggregation class. 
+	public static Lock lock = new ReentrantLock();
+        // this is to protect simultaneously accessing writeIpTable method in xmiFileSeggregation class. 
 	
 	public static List<String> succ = new LinkedList<String>(); 
 	public static List<String> pred = new LinkedList<String>();
@@ -51,7 +50,7 @@ public class CommunicationManager extends Thread
 	public void  run()
 	{
 	
-		Thread t0= new Thread
+	Thread t0= new Thread
 		(
 				new Runnable()
 				{

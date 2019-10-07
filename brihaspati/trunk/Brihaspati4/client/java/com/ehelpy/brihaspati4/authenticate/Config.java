@@ -15,22 +15,21 @@ import java.io.OutputStream;
 @SuppressWarnings("unused")
 public class Config {
 
-    private static Config configObject;
-// Config initialization from configuration file during object creation by the constructor of Config.
-// Config_object will keep the data after reading from configuration file.
-// On each change, the data should be written back to config file also. It implies, in each
-// write api, write to config file on disk is to be implemented.
-// Configuration file will reside in location from where the jar of Brihaspati4 will be started.
-// {$user_home}/brihaspati4/B4conf.properties will be file holding the configuration.
-// location of security certificate for local client inside the {$user_home}/brihaspati4.
-// example {$user_home}/brihaspati4/certstore
-//	{$user_home}/brihaspati4/keystore will contain the private key and certificate ID couplet.
-//	It will be encrypted with keystore password.
-// location of routing table in local disk storage for client. It is relative to $user_home.
-// example {$user_home}/brihaspati4/routetable.txt
-    private String home_dir = System.getProperty("user.home");
-    private String path = home_dir+"/B4/src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
+    // Config initialization from configuration file during object creation by the constructor of Config.
+    // Config_object will keep the data after reading from configuration file.
+    // On each change, the data should be written back to config file also. It implies, in each
+    // write api, write to config file on disk is to be implemented.
+    // Configuration file will reside in location from where the jar of Brihaspati4 will be started.
+    // {$user_home}/brihaspati4/B4conf.properties will be file holding the configuration.
+    // location of security certificate for local client inside the {$user_home}/brihaspati4.
+    // example {$user_home}/brihaspati4/certstore
+    //   	{$user_home}/brihaspati4/keystore will contain the private key and certificate ID couplet.
+    //	        It will be encrypted with keystore password.
+    // location of routing table in local disk storage for client. It is relative to $user_home.
+    // example {$user_home}/brihaspati4/routetable.txt
+
     private String SCSS_uri;
+
     // URI for secure certificate signing service access for local client.
     // example - https://scss.iitk.ac.in:8443/b4/servlet/certserv
     private boolean Storage_service_flag;
@@ -61,15 +60,10 @@ public class Config {
     public String keystorelocation;
     public String keystorepass;
 
-    public static Config getConfigObject()
+    public static Config(String f)
     {
-        try
-        {
-            if (configObject ==null)
-                configObject = new Config();
-        }
-        catch(Exception e) {}
-        return configObject;
+       private String home_dir = System.getProperty("user.home");
+       private String path = home_dir+"/"+f;
     }
     public Config()
     {
