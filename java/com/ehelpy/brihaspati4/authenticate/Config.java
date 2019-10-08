@@ -67,7 +67,7 @@ public class Config {
        private String home_dir = System.getProperty("user.home");
        private String path = home_dir+"/"+f;
     }
-    public Config()
+    public static Config()
     {
         try {
             //retrieve the absolute path of home directory.
