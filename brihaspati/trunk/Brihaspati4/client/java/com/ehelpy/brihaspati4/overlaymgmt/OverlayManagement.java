@@ -1,4 +1,5 @@
 package com.ehelpy.brihaspati4.overlaymgmt;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +16,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
@@ -27,9 +27,13 @@ import com.ehelpy.brihaspati4.indexmanager.SHA1;
 import com.ehelpy.brihaspati4.routingmgmt.*;
 import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
-	//Major Piyush Tiwari Dated: 
-	//This class is the main class of the overlay management in which all the methods of OM are called.
-	public class OverlayManagement extends Thread {  
+
+// Major Piyush Tiwari Dated: 
+// This class is the main class of the overlay management in which all the methods of OM are called.
+
+public class OverlayManagement extends Thread {  
+
+      
 		public static  boolean iAmNewlyJoinedNode = false;//flag is set true if a node joins for the first time.
 		public static boolean flagMyPredecessorsUpdatedForIndexManager = false;
 		public static boolean flagMyPredecessorsUpdatedForRoutingManager = false;

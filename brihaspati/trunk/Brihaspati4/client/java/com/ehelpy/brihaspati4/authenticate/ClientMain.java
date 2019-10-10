@@ -26,7 +26,7 @@ public class ClientMain extends Thread {
 
     public static void main(String args[]) throws Exception
     {    	
-        @SuppressWarnings("unused")
+//        @SuppressWarnings("unused")
         
 	     GlobalObject globj= GlobalObject.getGlobalObject();
         globj.setRunStatus(true);
@@ -110,10 +110,12 @@ public class ClientMain extends Thread {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		} 
-                OverlayManagement.nodeStartUp();
-                OverlayManagement olay = new OverlayManagement();
-                olay.start();
-                try {
+*/
+            OverlayManagement.nodeStartUp();
+            OverlayManagement olay = OverlayManagement.getInstance();
+            olay.start();
+            
+            try {
         			Thread.sleep(5000);
         		} catch (InterruptedException e1) {
         			// TODO Auto-generated catch block
