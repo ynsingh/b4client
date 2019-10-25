@@ -42,7 +42,7 @@ public class ClientMain extends Thread {
         // On each change, the data should be written back to config file also.
         // It implies, in each write api, write to config file on disk is to be implemented.
         // debug level to be read from Config object which in turn to be read from configuration file. Can be modified in GUI, which
-        // update it in the configuration file.
+        // will update it in the configuration file.
 
         // CtrlConsoleOut = conf.getConsoleOut(); 
 
@@ -53,14 +53,14 @@ public class ClientMain extends Thread {
         SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
         Config conf=Config.getConfigObject();
         */
-        // Config initialization from configuration file during by the constructor of Config.
-        // Config_object will keep the data after reading from configuration file.
-        // On each change, the data should be written back to config file also.
-        // It implies, in each write api, write to config file on disk is to be implemented.
-
+       
         boolean timeflg=dateTimeCheck.checkDate();
-        // If the time flag returns false then exit the user from the system
+        // Date and time is to be checked. It should be same as on standard time server
+        // or greater than equal to last logout date time value. 
+        // If the time flag returns false (in case the above conditions fails)
+        // then exit the user from the system
         // otherwise start the services.
+        
         if (!timeflg){
             String msg = "Please reset your system time and try again." ;
             Gui.showMessageDialogBox(msg);
@@ -69,6 +69,11 @@ public class ClientMain extends Thread {
         else {
             try {
                 flagset = ReadVerifyCert.verifyCert();
+        // check if there is valid certificate in the client. Also userID identified by this
+        // certificate. In case of invalid certificate, the ReadVerifyCert object should do
+        // credential verification, new certificate generation. If every thing fails, false flag
+        // should be returned.
+
 /*                client_cert = ReadVerifyCert.returnClientCert();
                 server_cert = ReadVerifyCert.returnServerCert();
                 debug_level.debug(0,"clientcertsaved is =" + client_cert );
@@ -76,6 +81,11 @@ public class ClientMain extends Thread {
                 String email_id=emailid.getemaild();
                 debug_level.debug(0,"My Email-Id is =" + email_id );
 */          } catch (CertificateException e) {
+        // In case of exception during the certificate verification, the stacktrace is to be printed
+        // for debugging purpose and program should terminate.
+        // We can have an log submission mail of development team for identifying the issue and improving
+        // the product. The emailing of this stacktrace can be added later.
+
                 e.printStackTrace();
                 System.exit(0);
             }
@@ -89,6 +99,10 @@ public class ClientMain extends Thread {
  */               // call objects and methods from classes of - communication
             CommunicationManager cm= CommunicationManager.getCM();
             cm.start();
+        // Communication manager thread started. The thread will have buffers to keep incoming messages
+        // which can be read by various modules (RTManager to update Routing Tables in all the DHT
+        // layers,)
+
  /*               try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
