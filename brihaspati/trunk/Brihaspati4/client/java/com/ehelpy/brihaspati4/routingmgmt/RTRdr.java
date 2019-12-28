@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class RTRdr extends RTUpdate9
+public class RTRdr extends RTManager
 {
 	public String[][] PickRT() //throws FileNotFoundException
 	{

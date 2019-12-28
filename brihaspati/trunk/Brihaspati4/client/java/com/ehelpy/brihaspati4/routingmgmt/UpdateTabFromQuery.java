@@ -3,7 +3,7 @@ package com.ehelpy.brihaspati4.routingmgmt;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 
 // Major Niladri Roy 3 may 2018
-public class UpdateTabFromQuery extends RTUpdate9
+public class UpdateTabFromQuery extends RTManager
 {
 	
 //	this class updates the table from queries received, and pred and succ tables.
@@ -74,7 +74,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        		{
 		        			Pred[n][0] = queryid;
 		        			Pred[n][1] = ipad;
-		        			RTUpdate9.Routing_Table.put(a,b);
+		        			RTManager.Routing_Table.put(a,b);
 		        			break;
 		  	    		}
 	        		
@@ -92,7 +92,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        				{
 		        					Pred[n][0] = queryid;
 	        						Pred[n][1] = ipad;
-	        						RTUpdate9.Routing_Table.put(a,b);
+	        						RTManager.Routing_Table.put(a,b);
 	    							break;
 		        				}
 	        				}
@@ -113,7 +113,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        						Pred[n][0] = queryid;
 	        						Pred[n][1] = ipad;
 	        						System.out.println("cond 1");
-	        						RTUpdate9.Routing_Table.put(a,b);
+	        						RTManager.Routing_Table.put(a,b);
 	    							break;
 	    					
 	        					}
@@ -134,7 +134,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 			  	    		{
 			  	    			Pred[n][0] = queryid;
 	    						Pred[n][1] = ipad;
-	    						RTUpdate9.Routing_Table.put(a,b);
+	    						RTManager.Routing_Table.put(a,b);
 	    						break;
 			  	    		}
 		        		
@@ -151,7 +151,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 			        				{
 			        					Pred[n][0] = queryid;
 		        						Pred[n][1] = ipad;
-		        						RTUpdate9.Routing_Table.put(a,b);
+		        						RTManager.Routing_Table.put(a,b);
 		    							break;
 			        				}
 		        			
@@ -167,7 +167,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        					{
 		        						Pred[n][0] = queryid;
 		        						Pred[n][1] = ipad;
-		        						RTUpdate9.Routing_Table.put(a,b);
+		        						RTManager.Routing_Table.put(a,b);
 		        					break;
 		        					}
 		        				
@@ -193,7 +193,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        		{
 		        			Succ[n][0] = queryid;
 		        			Succ[n][1] = ipad;
-		        			RTUpdate9.Routing_Table.put(a,b);
+		        			RTManager.Routing_Table.put(a,b);
 		        			break;
 		        		}
 	        		
@@ -212,7 +212,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        				{
 		        					Succ[n][0] = queryid;
 	        						Succ[n][1] = ipad;
-	        						RTUpdate9.Routing_Table.put(a,b);
+	        						RTManager.Routing_Table.put(a,b);
 	    							break;
 		        				}
 		        			}
@@ -221,7 +221,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        			{
 		        				Succ[n][0] = queryid;
 		        				Succ[n][1] = ipad;
-		        				RTUpdate9.Routing_Table.put(a,b);
+		        				RTManager.Routing_Table.put(a,b);
 		        				break;	
 		        			}
 		        			else
@@ -244,7 +244,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	                	
 		        			Mid[n][0] = queryid;
 		        			Mid[n][1] = ipad;
-		        			RTUpdate9.Routing_Table.put(a,b);
+		        			RTManager.Routing_Table.put(a,b);
 		        			break;
 		        		}
 	        		
@@ -268,7 +268,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        				{
 		        					Mid[n][0] = queryid;
 	        						Mid[n][1] = ipad;
-	        						RTUpdate9.Routing_Table.put(a,b);
+	        						RTManager.Routing_Table.put(a,b);
 	    							break;
 		        				}
 		        			}
@@ -282,7 +282,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        				{
 		        					Mid[n][0] = queryid;
 		        					Mid[n][1] = ipad;
-		        					RTUpdate9.Routing_Table.put(a,b);
+		        					RTManager.Routing_Table.put(a,b);
 		        					break;	
 		        				}
 	        				
@@ -290,7 +290,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		        				{
 		        					Mid[n][0] = queryid;
 		        					Mid[n][1] = ipad;
-		        					RTUpdate9.Routing_Table.put(a,b);
+		        					RTManager.Routing_Table.put(a,b);
 		        					break;		
 		        				}
 		        			}
@@ -324,7 +324,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        		{
 	        			Pred[n][0] = queryid;
 	        			Pred[n][1] = ipad;
-	        			RTUpdate9.Routing_Table.put(a,b);
+	        			RTManager.Routing_Table.put(a,b);
 	        			break;
 	        		}
 	        		
@@ -341,7 +341,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				{
 	        					Pred[n][0] = queryid;
         						Pred[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
         				}
@@ -349,7 +349,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			{
 	        				Pred[n][0] = queryid;
 	            			Pred[n][1] = ipad;
-	            			RTUpdate9.Routing_Table.put(a,b);
+	            			RTManager.Routing_Table.put(a,b);
 	                		break;	
 	        			}
 	        			else
@@ -372,7 +372,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	                	
 	        		Mid[n][0] = queryid;
 	        		Mid[n][1] = ipad;
-	        		RTUpdate9.Routing_Table.put(a,b);
+	        		RTManager.Routing_Table.put(a,b);
 	        		break;
 	        		}
 	        		
@@ -394,13 +394,13 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				{
 	        					Mid[n][0] = queryid;
         						Mid[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}else if(HexQueryNib>=0 && ((queryid.compareTo( Existingid)>0) && (HexQueryNib<(HexNodeNib-8)))|| ((queryid.compareTo( Existingid)<0 &&(HexQueryNib>=(HexNodeNib-8)))))
 	        				{
 	        					Mid[n][0] = queryid;
         						Mid[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
         				}
@@ -412,7 +412,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			{
 	        				Mid[n][0] = queryid;
 	    	        		Mid[n][1] = ipad;
-	    	        		RTUpdate9.Routing_Table.put(a,b);
+	    	        		RTManager.Routing_Table.put(a,b);
 	    	        		System.out.println("condition 1");
 	    	        		break;
 	        			}
@@ -430,7 +430,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        		{
 	        		Succ[n][0] = queryid;
 	        		Succ[n][1] = ipad;
-	        		RTUpdate9.Routing_Table.put(a,b);
+	        		RTManager.Routing_Table.put(a,b);
 	        		break;
 	        		}
 	        		
@@ -447,7 +447,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				{
 	        					Succ[n][0] = queryid;
         						Succ[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
 	        			}
@@ -456,7 +456,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			{
 	        				Succ[n][0] = queryid;
 	                		Succ[n][1] = ipad;
-	                		RTUpdate9.Routing_Table.put(a,b);
+	                		RTManager.Routing_Table.put(a,b);
 	                		break;	
 	        			}
 	        			else
@@ -495,7 +495,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        		{
 	        		Succ[n][0] = queryid;
 	        		Succ[n][1] = ipad;
-	        		RTUpdate9.Routing_Table.put(a,b);
+	        		RTManager.Routing_Table.put(a,b);
 	        		break;
 	        		}
 	        		
@@ -517,7 +517,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				{
 	        					Succ[n][0] = queryid;
         						Succ[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
 	        			}
@@ -527,7 +527,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				Succ[n][0] = queryid;
 	                		Succ[n][1] = ipad;
 	                		System.out.println("234");
-	                		RTUpdate9.Routing_Table.put(a,b);
+	                		RTManager.Routing_Table.put(a,b);
 	                		break;	
 	        			}
 	        			else
@@ -544,7 +544,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        		{
 	        		Pred[n][0] = queryid;
 	        		Pred[n][1] = ipad;
-	        		RTUpdate9.Routing_Table.put(a,b);
+	        		RTManager.Routing_Table.put(a,b);
 	        		break;
 	        		}
 	        		
@@ -561,7 +561,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				{
 	        					Pred[n][0] = queryid;
         						Pred[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
 	        			}
@@ -570,7 +570,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        			{
 	        				Pred[n][0] = queryid;
 	                		Pred[n][1] = ipad;
-	                		RTUpdate9.Routing_Table.put(a,b);
+	                		RTManager.Routing_Table.put(a,b);
 	                		break;	
 	        			}
 	        			else
@@ -594,7 +594,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	                	
 	        			Mid[n][0] = queryid;
 	        			Mid[n][1] = ipad;
-	        			RTUpdate9.Routing_Table.put(a,b);
+	        			RTManager.Routing_Table.put(a,b);
 	        			break;
 	        		}
 	        		
@@ -615,7 +615,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        					System.out.println("check12");
 	        					Mid[n][0] = queryid;
         						Mid[n][1] = ipad;
-        						RTUpdate9.Routing_Table.put(a,b);
+        						RTManager.Routing_Table.put(a,b);
     							break;
 	        				}
 	        				
@@ -628,7 +628,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	        				System.out.println("HexExistingNib"+HexExistingNib);
 	        				Mid[n][0] = queryid;
 	        				Mid[n][1] = ipad;
-	        				RTUpdate9.Routing_Table.put(a,b);
+	        				RTManager.Routing_Table.put(a,b);
 	        				System.out.println("condition 1");
 	        				break;
 	        			}
@@ -658,7 +658,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	   				{	
 	   					Succ[k][j+1] = ipad;
 	   					succ = true;
-	   					RTUpdate9.Routing_Table.put(a,b);
+	   					RTManager.Routing_Table.put(a,b);
 	   					break;
 	   				}
 	   			}	
@@ -675,7 +675,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	   				{	
 	   					Mid[k][j+1] = ipad;
 	   					succ = true;
-	   					RTUpdate9.Routing_Table.put(a,b);
+	   					RTManager.Routing_Table.put(a,b);
 	   					break;
 	   				}
 	   			}	
@@ -692,7 +692,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 	   				{	
 	   					Pred[k][j+1] = ipad;
 	   					pred = true;
-	   					RTUpdate9.Routing_Table.put(a,b);
+	   					RTManager.Routing_Table.put(a,b);
 	   					break;
 	   				}
 	   			}	
@@ -707,7 +707,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		
 	//    PrintRT9 .PrintMatrix();
 	   	
-	//	RTUpdate9.Routing_Table.put(a,b);
+	//	RTManager.Routing_Table.put(a,b);
 		
 		Save_Retrieve_RT.Save_RT save1 = new Save_Retrieve_RT.Save_RT();
 		save1.Save_RTNow();
@@ -715,7 +715,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 		}
 	}
 
-	class PrintRT9 extends RTUpdate9
+	class PrintRT9 extends RTManager
 	{
 		public static void PrintMatrix()
 		{
@@ -726,7 +726,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 				if(Pred[i][0]!=null)
 				{
 					System.out.println("Pred Rg Element at index " + i +" : "+ Pred[i][0]);  
-					RTUpdate9.Routing_Table.put(Pred[i][0],Pred[i][1]);
+					RTManager.Routing_Table.put(Pred[i][0],Pred[i][1]);
 				}
 			}
 			SysOutCtrl.SysoutSet("",2);
@@ -735,7 +735,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 				if(Succ[i][0]!=null)
 				{
 					System.out.println("Succ Rg Element at index " + i +" : "+ Succ[i][0]);
-					RTUpdate9.Routing_Table.put(Succ[i][0],Succ[i][1]);
+					RTManager.Routing_Table.put(Succ[i][0],Succ[i][1]);
 				}
 			}
 			SysOutCtrl.SysoutSet("",2);
@@ -744,7 +744,7 @@ public class UpdateTabFromQuery extends RTUpdate9
 				if(Mid[i][0]!=null)
 				{
 					System.out.println("Mid Rg Element at index " + i +" : "+ Mid[i][0]);
-					RTUpdate9.Routing_Table.put(Mid[i][0],Mid[i][1]);
+					RTManager.Routing_Table.put(Mid[i][0],Mid[i][1]);
 				}
 			}
 

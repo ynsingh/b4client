@@ -77,7 +77,7 @@ import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
-import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.RTManager;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
@@ -377,8 +377,8 @@ public class CommunicationUtilityMethods extends CommunicationManager {
         SysOutCtrl.SysoutSet("My IP Table:"+myIpTable);
         String ip = null;
         
-        if(RTUpdate9.Routing_Table.containsKey(nodeId))
-        	ip = RTUpdate9.Routing_Table.get(nodeId);
+        if(RTManager.Routing_Table.containsKey(nodeId))
+        	ip = RTManager.Routing_Table.get(nodeId);
         
         else if(nodeId.equals(OverlayManagement.myNodeId))
         	ip = PresentIP.MyPresentIP();

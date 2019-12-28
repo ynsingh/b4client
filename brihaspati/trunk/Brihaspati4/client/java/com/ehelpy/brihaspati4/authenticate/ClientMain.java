@@ -19,13 +19,17 @@ import com.ehelpy.brihaspati4.DFS.DistFileSys;
 import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
 
 public class ClientMain extends Thread {
+	 private static X509Certificate client_cert = null;
+    private static X509Certificate server_cert = null;
+    private static boolean flagset = false;
+    public static int CtrlConsoleOut=0;
 
     public static void main(String args[]) throws Exception
     {
-        X509Certificate client_cert = null;
-        X509Certificate server_cert = null;
-        boolean flagset = false;
-        int CtrlConsoleOut=0;
+       // X509Certificate client_cert = null;
+      //  X509Certificate server_cert = null;
+      //  boolean flagset = false;
+     //   int CtrlConsoleOut=0;
 
 //        @SuppressWarnings("unused")
 
@@ -34,8 +38,8 @@ public class ClientMain extends Thread {
         // GlobalObject will keep status of various threads and run status. This will be used
         // for proper closure of threads when closing the application.
 
-        // *com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
-        // *CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
+        com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
+        CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
 
         Config conf=Config.getConfigObject();
         // Config initialization from configuration file done during call of the constructor of Config.
@@ -47,13 +51,13 @@ public class ClientMain extends Thread {
 
         // CtrlConsoleOut = conf.getConsoleOut();
 
-        /* SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
+         SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
            UpdateIP IPUpdate = new UpdateIP();
            IPUpdate.start();
         IPUpdate.setName("IPUpdate");
         SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
-        Config conf=Config.getConfigObject();
-        */
+   
+        
 
         boolean timeflg=dateTimeCheck.checkDate();
         // Date and time is to be checked. It should be same as on standard time server
@@ -75,13 +79,13 @@ public class ClientMain extends Thread {
                 // credential verification, new certificate generation. If every thing fails, false flag
                 // should be returned.
 
-                /*                client_cert = ReadVerifyCert.returnClientCert();
+                                client_cert = ReadVerifyCert.returnClientCert();
                                 server_cert = ReadVerifyCert.returnServerCert();
-                                debug_level.debug(0,"clientcertsaved is =" + client_cert );
-                                debug_level.debug(0,"servercertsaved is =" + server_cert );
+              //                  debug_level.debug(0,"clientcertsaved is =" + client_cert );
+                //                debug_level.debug(0,"servercertsaved is =" + server_cert );
                                 String email_id=emailid.getemaild();
                                 debug_level.debug(0,"My Email-Id is =" + email_id );
-                */
+               
             }
             catch (CertificateException e) {
                 // In case of exception during the certificate verification, the stacktrace is to be printed
@@ -94,28 +98,30 @@ public class ClientMain extends Thread {
             }
         }
         if(flagset) {
-            /*           	debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
-                           sms_methods.choose_loc();
-                       	sms_send_rec_management.empty_cache_folder();
-                       	sms_send_rec_management.empty_rec_folder();
-                        	IndexManagementUtilityMethods.Ip_txt_empty();
-            */               // call objects and methods from classes of - communication
-            CommunicationManager cm= CommunicationManager.getCM();
+                      // 	debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
+                     //   sms_methods.choose_loc();
+                     //  	sms_send_rec_management.empty_cache_folder();
+                     //  	sms_send_rec_management.empty_rec_folder();
+                       	IndexManagementUtilityMethods.Ip_txt_empty();
+                           // call objects and methods from classes of - communication
+//            CommunicationManager cm= CommunicationManager.getCM(); //todo
+		CommunicationManager cm= new CommunicationManager();
             cm.start();
             // Communication manager thread started. The thread will have buffers to keep incoming messages
             // which can be read by various modules (RTManager to update Routing Tables in all the DHT
             // layers,)
 
-            /*               try {
+                           try {
                                Thread.sleep(5000);
                            } catch (InterruptedException e) {
                                // TODO Auto-generated catch block
                                e.printStackTrace();
                            }
                        try {
-            */      		RTManager rm = RTManager.getRTMgr();
-            rm.start();
-            /*				Save_Retrive_data_Structures.Save_nodeFileChunkMap();
+                  		//RTManager rm = RTManager.getRTMgr(); //TODO
+            			//rm.start();//TODO
+					RTManager.initiateRT();
+            				Save_Retrive_data_Structures.Save_nodeFileChunkMap();
                     			Save_Retrive_data_Structures.Save_nodefilemap();
                     			Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
                     			Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
@@ -127,9 +133,10 @@ public class ClientMain extends Thread {
                     			// TODO Auto-generated catch block
                     			e.printStackTrace();
                     		}
-            */
+            
             OverlayManagement.nodeStartUp();
-            OverlayManagement olay = OverlayManagement.getInstance();
+        //    OverlayManagement olay = OverlayManagement.getInstance(); //ToDo
+		OverlayManagement olay = new OverlayManagement();
             olay.start();
 
             try {
@@ -148,7 +155,7 @@ public class ClientMain extends Thread {
             IndexManagement indmgt= new IndexManagement();
             indmgt.start();
 
-            sms_retrival_thread sms= new sms_retrival_thread();
+         /*   sms_retrival_thread sms= new sms_retrival_thread();
             sms.start();
 
             DistFileSys dfs = new DistFileSys();
@@ -159,7 +166,7 @@ public class ClientMain extends Thread {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            */
+        */    
             B4services.service();
             // start user specific services
             // user specific DFS mount service,
