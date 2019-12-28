@@ -16,7 +16,7 @@ import com.ehelpy.brihaspati4.comnmgr.XmlFileSegregation;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 import com.ehelpy.brihaspati4.routingmgmt.PurgeEntry;
-import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.RTManager;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 
@@ -204,16 +204,16 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
      ///for routing table removal
       
       boolean bool_routingtable = false;
-      Set<String> keys_rt = RTUpdate9.Routing_Table.keySet();
+      Set<String> keys_rt = RTManager.Routing_Table.keySet();
       for(String key: keys_rt)
       {
-    	  String ip = RTUpdate9.Routing_Table.get(key);
+    	  String ip = RTManager.Routing_Table.get(key);
     	  bool_routingtable =	CommunicationUtilityMethods.IsApplicationAlive_AtReceiver(ip);
     	  if(!bool_routingtable)
     	  {
     		  System.out.println("Entry to be pugedd: "+ key);
 				
-					  RTUpdate9.Routing_Table.remove(key, ip);
+					  RTManager.Routing_Table.remove(key, ip);
 					  PurgeEntry.purge(key);
     	  }
       }
@@ -238,7 +238,7 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
 		  Collections.sort(Act);
 		//  com.ehelpy.brihaspati4.routingmgmt.PurgeEntry deleteFromRt = new com.ehelpy.brihaspati4.routingmgmt.PurgeEntry();
             			
-		  Set<String> keys = RTUpdate9.Routing_Table.keySet();
+		  Set<String> keys = RTManager.Routing_Table.keySet();
 		  
 		  try
 		  {
@@ -252,7 +252,7 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
 				  {	 
 					  try {
 						  String purge = key;
-						  String ipadd = RTUpdate9.Routing_Table.get(key);
+						  String ipadd = RTManager.Routing_Table.get(key);
 						  if(!purge.equals(null))
 						  {
 							  System.out.println("Entry to be pugedd: "+ purge);
@@ -279,7 +279,7 @@ public class HeartbeatMonitoring extends OverlayManagementUtilityMethods{
 						   		  }
 							  }
 								  
-							  RTUpdate9.Routing_Table.remove(purge, ipadd);
+							  RTManager.Routing_Table.remove(purge, ipadd);
 							  PurgeEntry.purge(purge);
 						  }
 					  }catch(NullPointerException e)

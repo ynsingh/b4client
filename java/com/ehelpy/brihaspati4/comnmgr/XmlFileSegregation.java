@@ -22,7 +22,7 @@ import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
-import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.RTManager;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateTabFromQuery;
 import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
@@ -110,7 +110,7 @@ public class XmlFileSegregation extends CommunicationManager
 				fromNodeIdList.add(nodeId);// for RT to check and remove and update
 			}
 		
-			if(!RTUpdate9.Routing_Table.containsKey(xmlParsedFields[3]))
+			if(!RTManager.Routing_Table.containsKey(xmlParsedFields[3]))
 				UpdateTabFromQuery.NextEntry(xmlParsedFields[3], xmlParsedFields[4]);
 			
 			if(!CommunicationUtilityMethods.myIpTable.containsKey(nodeId))

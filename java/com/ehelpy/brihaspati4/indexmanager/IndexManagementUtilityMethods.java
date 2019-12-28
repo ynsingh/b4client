@@ -55,7 +55,7 @@ import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
 import com.ehelpy.brihaspati4.routingmgmt.PurgeEntry;
-import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.RTManager;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
@@ -193,7 +193,7 @@ public class IndexManagementUtilityMethods extends IndexManagement
     			SysOutCtrl.SysoutSet("Tx Buffer state vis at UpdateIP :"+CommunicationManager.TransmittingBuffer, 2);
     		}
 
-    		Collection<String> Node_id_extracted1 = RTUpdate9.Routing_Table.keySet();
+    		Collection<String> Node_id_extracted1 = RTManager.Routing_Table.keySet();
     		Object[] Nodeid_array1 = Node_id_extracted1.toArray();
 
     		for(int i=0; i<Nodeid_array1.length; i++)
@@ -545,9 +545,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     		   				CommunicationManager.lock.unlock();
     		   		  }
     			}
-    			if(RTUpdate9.Routing_Table.containsKey(my_pred[4]))
+    			if(RTManager.Routing_Table.containsKey(my_pred[4]))
     			{
-    				RTUpdate9.Routing_Table.remove(my_pred[4], ip_mypred_1);
+    				RTManager.Routing_Table.remove(my_pred[4], ip_mypred_1);
     				PurgeEntry.purge(my_pred[4]);
     				
     				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
@@ -584,9 +584,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
 		   				CommunicationManager.lock.unlock();
 		   		  	}
     			}
-    			if(RTUpdate9.Routing_Table.containsKey(my_pred[3]))
+    			if(RTManager.Routing_Table.containsKey(my_pred[3]))
     			{
-    				RTUpdate9.Routing_Table.remove(my_pred[3], ip_mypred_2);
+    				RTManager.Routing_Table.remove(my_pred[3], ip_mypred_2);
     				PurgeEntry.purge(my_pred[3]);
 				
     				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
@@ -623,9 +623,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     		   				CommunicationManager.lock.unlock();
     		   		  }
     			}
-    			if(RTUpdate9.Routing_Table.containsKey(my_pred[2]))
+    			if(RTManager.Routing_Table.containsKey(my_pred[2]))
     			{
-    				RTUpdate9.Routing_Table.remove(my_pred[4], ip_mypred_3);
+    				RTManager.Routing_Table.remove(my_pred[4], ip_mypred_3);
     				PurgeEntry.purge(my_pred[2]);
     				
     				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
@@ -662,9 +662,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     		   				CommunicationManager.lock.unlock();
     		   		  }
     			}
-    			if(RTUpdate9.Routing_Table.containsKey(my_pred[1]))
+    			if(RTManager.Routing_Table.containsKey(my_pred[1]))
     			{
-    				RTUpdate9.Routing_Table.remove(my_pred[1], ip_mypred_4);
+    				RTManager.Routing_Table.remove(my_pred[1], ip_mypred_4);
     				PurgeEntry.purge(my_pred[4]);
     				
     				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
@@ -701,9 +701,9 @@ public class IndexManagementUtilityMethods extends IndexManagement
     		   				CommunicationManager.lock.unlock();
     		   		  }
     			}
-    			if(RTUpdate9.Routing_Table.containsKey(my_pred[0]))
+    			if(RTManager.Routing_Table.containsKey(my_pred[0]))
     			{
-    				RTUpdate9.Routing_Table.remove(my_pred[0], ip_mypred_5);
+    				RTManager.Routing_Table.remove(my_pred[0], ip_mypred_5);
     				PurgeEntry.purge(my_pred[4]);
     				
     				Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();

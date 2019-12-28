@@ -18,7 +18,7 @@ import com.ehelpy.brihaspati4.comnmgr.ParseXmlFile;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagement;
 import com.ehelpy.brihaspati4.overlaymgmt.OverlayManagementUtilityMethods;
 import com.ehelpy.brihaspati4.overlaymgmt.PredecessorSuccessor;
-import com.ehelpy.brihaspati4.routingmgmt.RTUpdate9;
+import com.ehelpy.brihaspati4.routingmgmt.RTManager;
 import com.ehelpy.brihaspati4.routingmgmt.Save_Retrieve_RT;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
@@ -412,9 +412,9 @@ public class IndexManagement extends Thread
             						String nodeId = info_from_xml[3];
             						String ipAdd = info_from_xml[4];
             						
-            						if(RTUpdate9.Routing_Table.containsKey(nodeId))
+            						if(RTManager.Routing_Table.containsKey(nodeId))
             						{
-            							RTUpdate9.Routing_Table.put(nodeId, ipAdd);
+            							RTManager.Routing_Table.put(nodeId, ipAdd);
             							
             							Save_Retrieve_RT.Save_RT save = new Save_Retrieve_RT.Save_RT();
             							save.Save_RTNow();
@@ -627,23 +627,23 @@ public class IndexManagement extends Thread
         		System.out.println(EmailHashId_certificates);
         		System.out.println("my cached index : "+cached_index);
         		System.out.println("my cached ip table : "+cached_NodeId_ip_index);
-        		System.out.println("my routing table : "+RTUpdate9.Routing_Table);
+        		System.out.println("my routing table : "+RTManager.Routing_Table);
         		Map<String, String> Alive_nodes = OverlayManagement.AliveNodes;
         		System.out.println("my alive nodes : "+Alive_nodes );
         		System.out.println("search reply: "+searchReply_cert);
         		
         		System.out.println("pred, mid, succ range: ");
-        		for (int i = 0; i < RTUpdate9.Pred.length; i++)
-        			if(RTUpdate9.Pred[i][0]!=null)
-        				System.out.println("Pred Rg Element at index " + i +" : "+ RTUpdate9.Pred[i][0]);          
+        		for (int i = 0; i < RTManager.Pred.length; i++)
+        			if(RTManager.Pred[i][0]!=null)
+        				System.out.println("Pred Rg Element at index " + i +" : "+ RTManager.Pred[i][0]);          
         		SysOutCtrl.SysoutSet("",2);
-        		for (int i = 0; i < RTUpdate9.Succ.length; i++)
-        			if(RTUpdate9.Succ[i][0]!=null) 
-        				System.out.println("Succ Rg Element at index " + i +" : "+ RTUpdate9.Succ[i][0]);         
+        		for (int i = 0; i < RTManager.Succ.length; i++)
+        			if(RTManager.Succ[i][0]!=null) 
+        				System.out.println("Succ Rg Element at index " + i +" : "+ RTManager.Succ[i][0]);         
         		SysOutCtrl.SysoutSet("",2);
-        		for (int i = 0; i < RTUpdate9.Mid.length; i++)
-        			if(RTUpdate9.Mid[i][0]!=null) 
-        				System.out.println("Mid Rg Element at index " + i +" : "+ RTUpdate9.Mid[i][0]);
+        		for (int i = 0; i < RTManager.Mid.length; i++)
+        			if(RTManager.Mid[i][0]!=null) 
+        				System.out.println("Mid Rg Element at index " + i +" : "+ RTManager.Mid[i][0]);
         		
         		System.out.println("My succ list: "+CommunicationManager.succ);
         		System.out.println("My Pred list: "+CommunicationManager.pred);

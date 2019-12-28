@@ -2,7 +2,7 @@ package com.ehelpy.brihaspati4.routingmgmt;
 // Major Niladri Roy 3 May 2018
 import java.util.Arrays;
 
-public class PurgeEntry extends RTUpdate9
+public class PurgeEntry extends RTManager
 {
 //	we pass a 40 Hex string Id (dead node form Heartbeat monitor) to it for purging from the RT
 	

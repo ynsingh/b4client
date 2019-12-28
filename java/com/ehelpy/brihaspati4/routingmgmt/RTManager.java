@@ -21,23 +21,24 @@ public class RTManager extends Thread
 {
 //	public static String[][] NodesInRT = new String[120][2];
 
-   private static RTManager rtmgr;
-	private static String Succ[][] = new String[40][2];
-	private static String Pred[][] = new String[40][2];
-	private static String Mid[][] = new String[40][2];
-	private static String[][] Matrix = new String[3][40];
-	private static String[][] mat = new String[3][40]; 
-	private static BufferedReader BR = null; 
-	private static String[][] RoutingInptBuff = new String[120][2];	
-	private static Map<String, String>  Routing_Table = new ConcurrentHashMap<String, String>();
-	private static Lock lock_for_routoing_table = new ReentrantLock();
+   	public static RTManager rtmgr;
+	public static String Succ[][] = new String[40][2];
+	public static String Pred[][] = new String[40][2];
+	public static String Mid[][] = new String[40][2];
+	public static String[][] Matrix = new String[3][40];
+	public static String[][] mat = new String[3][40]; 
+	public static BufferedReader BR = null; 
+	public static String[][] RoutingInptBuff = new String[120][2];	
+	public static Map<String, String>  Routing_Table = new ConcurrentHashMap<String, String>();
+	public static Lock lock_for_routoing_table = new ReentrantLock();
 
 	public static RTManager getRTMgr(){
-     if(rtmgr ==null) rtmgr = new RTManager();
-     return rtmgr; 
-   }
+     		if(rtmgr ==null) rtmgr = new RTManager();
+     		return rtmgr; 
+   	}
 
-   public synchronized static void start() throws IOException
+// public synchronized static void start() throws IOException
+   public synchronized static void initiateRT() throws IOException
 		
 		{
 			Save_Retrieve_RT.Retrieve_RT Read=	new Save_Retrieve_RT.Retrieve_RT();

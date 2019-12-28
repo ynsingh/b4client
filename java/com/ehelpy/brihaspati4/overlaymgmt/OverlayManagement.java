@@ -194,7 +194,7 @@ public class OverlayManagement extends Thread {
 					
 								File ipTableReply = null;
 								try {
-									ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml(  RTUpdate9.Routing_Table, info_from_xml[3],"yyyy" , myNodeId, MyIP, "2222");
+									ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml(  RTManager.Routing_Table, info_from_xml[3],"yyyy" , myNodeId, MyIP, "2222");
 									SysOutCtrl.SysoutSet("reply for tag 22 has been generated");
 								} catch (FileNotFoundException e) 
 								{
@@ -298,7 +298,7 @@ public class OverlayManagement extends Thread {
 							
 								try {
 					
-									List<String> myRTTable_3 = RTUpdate9.Routing_Table.keySet().stream().collect(Collectors.toList());
+									List<String> myRTTable_3 = RTManager.Routing_Table.keySet().stream().collect(Collectors.toList());
 									if(myRTTable_3.contains(info_from_xml[3])) {
 									}
 									else {
@@ -441,14 +441,14 @@ public class OverlayManagement extends Thread {
 			{	
 				Map<String,String> TempMap= new TreeMap<String,String>();
 				
-				Set<String> keys = RTUpdate9.Routing_Table.keySet();
+				Set<String> keys = RTManager.Routing_Table.keySet();
 				for(String key: keys)
 				{
 					if(!TempRouting_Table.containsKey(key))
-						TempMap.put(key, RTUpdate9.Routing_Table.get(key));
+						TempMap.put(key, RTManager.Routing_Table.get(key));
 				}
 				
-				String qwe = RTUpdate9.Routing_Table.toString();
+				String qwe = RTManager.Routing_Table.toString();
 				String HashRT=SHA1.getSha1(qwe);
 				
 				File ipTableReply = null;
@@ -459,7 +459,7 @@ public class OverlayManagement extends Thread {
 					try
 					{
 						ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml( TempMap, key,HashRT , myNodeId, MyIP, "2222");
-						String ipadd = RTUpdate9.Routing_Table.get(key);
+						String ipadd = RTManager.Routing_Table.get(key);
 						OverlayManagementUtilityMethods.sendFileDirect(ipadd, ipTableReply);
 					} 
 					catch (FileNotFoundException | TransformerException | ParserConfigurationException e) {
@@ -469,7 +469,7 @@ public class OverlayManagement extends Thread {
 				}
 				TempMap.clear();
 				TempRouting_Table.clear();
-				TempRouting_Table.putAll(RTUpdate9.Routing_Table);
+				TempRouting_Table.putAll(RTManager.Routing_Table);
 								
 			}	
 			}
@@ -629,7 +629,7 @@ public class OverlayManagement extends Thread {
 	NodeIDExists = true;
 	SysOutCtrl.SysoutSet("Node id updated now sending tag22 to bootstrap");
 	OverlayManagementUtilityMethods.sendTag22ToBootStrap();
-	Set<String> keys = RTUpdate9.Routing_Table.keySet();
+	Set<String> keys = RTManager.Routing_Table.keySet();
 	File ipTableReplyReq=null;
 	String myip=PresentIP.MyPresentIP();
 	for(String key: keys)
@@ -656,7 +656,7 @@ public class OverlayManagement extends Thread {
 				e.printStackTrace();
 			}
 			//String ipadd = CommunicationManager.myIpTable.get(Readelem);
-			String ipadd = RTUpdate9.Routing_Table.get(key);
+			String ipadd = RTManager.Routing_Table.get(key);
 			OverlayManagementUtilityMethods.sendFileDirect(ipadd, ipTableReplyReq);
 			SysOutCtrl.SysoutSet("routing table has been sent to the"+ Readelem+ " node");
 		}
@@ -728,10 +728,10 @@ public class OverlayManagement extends Thread {
 		File ipTableReply = null;
 	
 		
-		String qwe = RTUpdate9.Routing_Table.toString();
+		String qwe = RTManager.Routing_Table.toString();
 		String HashRT=SHA1.getSha1(qwe);
 		
-		Set<String> keys = RTUpdate9.Routing_Table.keySet();
+		Set<String> keys = RTManager.Routing_Table.keySet();
 			
 		for(String key: keys)
 		{
@@ -740,7 +740,7 @@ public class OverlayManagement extends Thread {
 			{}
 			else {
 			try {
-				ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml( RTUpdate9.Routing_Table, Readelem,HashRT , myNodeId, MyIP, "2222");
+				ipTableReply = OverlayManagementUtilityMethods.convert_hashmap_toxml( RTManager.Routing_Table, Readelem,HashRT , myNodeId, MyIP, "2222");
 				//SysOutCtrl.SysoutSet("reply for tag 22 has been generated");
 			} catch (FileNotFoundException e) 
 			{
@@ -756,13 +756,13 @@ public class OverlayManagement extends Thread {
 				e.printStackTrace();
 			}
 			//String ipadd = CommunicationManager.myIpTable.get(Readelem);
-			String ipadd = RTUpdate9.Routing_Table.get(key);
+			String ipadd = RTManager.Routing_Table.get(key);
 			OverlayManagementUtilityMethods.sendFileDirect(ipadd, ipTableReply);
 			SysOutCtrl.SysoutSet("routing table has been sent to the"+ Readelem+ " node");
 		}
 		
 		}
-		TempRouting_Table.putAll(RTUpdate9.Routing_Table);
+		TempRouting_Table.putAll(RTManager.Routing_Table);
 			
 		
 		SysOutCtrl.SysoutSet("send Routing table method started PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP ");

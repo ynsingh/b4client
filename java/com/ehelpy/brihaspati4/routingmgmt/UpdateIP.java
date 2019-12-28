@@ -20,7 +20,7 @@ import java.util.Scanner;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
 
-public class UpdateIP extends RTUpdate9
+public class UpdateIP extends RTManager
 {
 //	this keeps a handle on the IP and updates 
 //	the moment a change in IP is detected it informs all the nodes that self node is aware of the 
