@@ -24,7 +24,7 @@ public class CertificateSignature {
         byte[] certbyte = cert.getEncoded();
         String certstringbyte = new String(Base64.getEncoder().encode(certbyte));
         debug_level.debug(1,"String format of recieved certificate for signatue is     :"+certstring);
-        String mserverurl ="http://172.20.82.6:8080/b4server";
+        String mserverurl ="http://172.20.160.56:8080/b4server";
         String MSrequrl = mserverurl +"/ProcessRequest?req=sscccertsign&cert=" + URLEncoder.encode(certstring, "UTF-8");
         debug_level.debug(1,MSrequrl);
         createConnection http = new createConnection();
