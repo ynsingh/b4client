@@ -213,7 +213,7 @@ public class voip_start extends Thread  {
 		
 		return new AudioFormat(samplerate,samplesizebits,channel,signed,bigEndian );
 	}
-public static void music() {
+	public static void music() {
 		
 		path = properties_access.read_property("client.properties", "phone_ring");
 		try {
@@ -225,12 +225,13 @@ public static void music() {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} 
+		/*catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-  }
+		*/
+  	}
 
 
 }
