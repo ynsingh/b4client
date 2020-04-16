@@ -25,7 +25,7 @@ import javax.crypto.Cipher;
 import javax.crypto.Cipher.*;
 
 import com.ehelpy.brihaspati4.messagesend.server.WriteToFile;
-import com.sun.crypto.provider.RSACipher.*;
+//import com.sun.crypto.provider.RSACipher.*;
 import sun.security.rsa.RSAPadding.*;
 
 public class EncryptionDecryption_Server {

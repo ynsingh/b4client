@@ -18,8 +18,8 @@ import com.ehelpy.brihaspati4.messagesend.encryption.Ping;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.ehelpy.brihaspati4.messagesend.client.WriteToFile;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 public class AESEncryptionDecryptionTest {
 
     private static final String ALGORITHM       = "AES";

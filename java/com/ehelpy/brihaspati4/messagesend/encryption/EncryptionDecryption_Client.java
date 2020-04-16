@@ -23,7 +23,7 @@ import javax.crypto.Cipher;
 import javax.crypto.Cipher.*;
 
 import com.ehelpy.brihaspati4.messagesend.client.WriteToFile;
-import com.sun.crypto.provider.RSACipher.*;
+//import com.sun.crypto.provider.RSACipher.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import sun.security.rsa.RSAPadding.*;
