@@ -15,9 +15,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.ehelpy.brihaspati4.messagesend.encryption.Ping;
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.ehelpy.brihaspati4.messagesend.client.WriteToFile;
-
+import java.util.Base64;
 //import sun.misc.BASE64Decoder;
 //import sun.misc.BASE64Encoder;
 public class AESEncryptionDecryptionTest {
@@ -59,8 +59,10 @@ public class AESEncryptionDecryptionTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        new Base64();
-        String encryptedByteValue =    Base64.encode(encryptedData);
+        //new Base64();
+        //String encryptedByteValue =    Base64.encode(encryptedData);
+	 Base64.Encoder encoder = Base64.getEncoder();
+        String encryptedByteValue =    encoder.encodeToString(encryptedData);
         return  new String(encryptedByteValue);//.toString();
     }
     public static byte[] encrypt_offsess(String valueToEnc) throws Exception {
@@ -97,7 +99,9 @@ public class AESEncryptionDecryptionTest {
     {
 
         Key key = generateKey();
-        byte[] encryptedData  = new Base64().decode(data);
+//        byte[] encryptedData  = new Base64().decode(data);
+	Base64.Decoder decoder = Base64.getDecoder();
+        byte[] encryptedData  = decoder.decode(data);
         Cipher c = null;
         try {
             c = Cipher.getInstance(ALGORITHM);

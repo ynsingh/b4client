@@ -11,8 +11,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import java.util.Base64;
+//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 public class AESEncryptionDecryptionClient {
     private static final String ALGORITHM       = "AES";
 // private String secretKey =WriteToFile.off_sess ;
@@ -50,8 +50,12 @@ public class AESEncryptionDecryptionClient {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        new Base64();
-        String encryptedByteValue =    Base64.encode(encryptedData);
+       // new Base64();
+	Base64.Encoder encoder = Base64.getEncoder();
+        //String encryptedByteValue =    Base64.encode(encryptedData);
+     //   String encryptedByteValue =    encoder.encode(encryptedData);
+       // String encryptedByteValue =    encoder.encodeToString(encryptedData.getBytes());
+        String encryptedByteValue =    encoder.encodeToString(encryptedData);
         return  new String(encryptedByteValue);//.toString();
 
     }
@@ -76,7 +80,10 @@ public class AESEncryptionDecryptionClient {
     {
 
         Key key = generateKey();
-        byte[] encryptedData  = new Base64().decode(data);
+	  Base64.Decoder decoder = Base64.getDecoder();
+      //  byte[] encryptedData  = new Base64().decode(data);
+        byte[] encryptedData  = decoder.decode(data);
+//	  String dStr = new String(decoder.decode(str));  
         Cipher c = null;
         try {
             c = Cipher.getInstance(ALGORITHM);
