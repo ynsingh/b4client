@@ -103,8 +103,11 @@ public class OverlayManagement extends Thread {
 			SysOutCtrl.SysoutSet("bootstrap ip iiiiiiiiiiiiipppppppppppppppp " +BootstrapIP);
 			
 			SysOutCtrl.SysoutSet("Overlay Management Thread is running");
-			SysOutCtrl.SysoutSet("sysout int"+com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout);
-			if(com.ehelpy.brihaspati4.routingmgmt.GetProperties.Backbone==true)
+			//SysOutCtrl.SysoutSet("sysout int"+com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout);
+			SysOutCtrl.SysoutSet("sysout int"+properties_access.read_debuglevel("client.properties", "CtrlConsoleOut"));
+			Boolean backbone = Boolean.parseBoolean(properties_access.read_property("client.properties", "Backbone"));
+			///if(com.ehelpy.brihaspati4.routingmgmt.GetProperties.Backbone==true)
+			if(backbone)
 			{
 				OverlayManagementUtilityMethods.fillMyIptable();
 				SysOutCtrl.SysoutSet("Backbone = true");

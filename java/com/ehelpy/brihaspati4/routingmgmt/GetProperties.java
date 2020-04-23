@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
+import com.ehelpy.brihaspati4.authenticate.properties_access;
 
 public class GetProperties 
 {
@@ -17,8 +18,9 @@ public class GetProperties
 	public static String Property_IP2;
 	public static int Property_sysout;
 	public static boolean Backbone;	
-	
-	public static void main(String[] args) throws IOException  
+
+// if you want to test this class alone kindly uncomment the  main function	
+/*	public static void main(String[] args) throws IOException  
 	{
 		// TODO Auto-generated method stub
 		 
@@ -40,26 +42,27 @@ public class GetProperties
 		
 		
 	}
-
+*/
 public static class Debug 
 // used for filling up specific NodeIp table for debugging 
 // Also we can set up  the console sysout for deployment or debugging
 {
 	public static void Properties() throws IOException
 	{
-		try 
-		{
+//		try 
+//		{
 			
-			BR1 = new BufferedReader(new FileReader("Debug.txt"));
-					
-			String Line;
-			String number =null;
+//			BR1 = new BufferedReader(new FileReader("Debug.txt"));
+//					
+//			String Line;
+		//	String number =null;
 			
 			try 
 				{
-				Line = BR1.readLine();
-				
-				if(Line.startsWith("t"))
+	//			Line = BR1.readLine();
+				Boolean backbone=Boolean.parseBoolean(properties_access.read_property("client.properties", "Backbone"));	
+				//if(Line.startsWith("t"))
+				if(backbone)
 					{
 				Backbone = true;
 				SysOutCtrl.SysoutSet("we are in a Backbone machine");
@@ -73,64 +76,69 @@ public static class Debug
 					}
 				
 				
-				for(int i=1;i<4;i++) 
-					{
-						Line = BR1.readLine();
+	//			for(int i=1;i<4;i++) 
+	//				{
+	//					Line = BR1.readLine();
 						
 								if(Backbone == true)
 								{	
-									if (i==1)
-									{
-										int Length = Line.length();
-										Property_NodeId1 	= Line.substring(0,40);
-										Property_IP1 		= Line.substring(40,Length);
-									}
+								//	if (i==1)
+							//		{
+								//		int Length = Line.length();
+									//	Property_NodeId1 	= Line.substring(0,40);
+									//	Property_IP1 		= Line.substring(40,Length);
+										Property_NodeId1 	= properties_access.read_property("client.properties","BotstrpND");
+										Property_IP1 		= properties_access.read_property("client.properties","BotstrpIP");
+								//	}
 							
-									if (i==2)
-									{
-										int Length = Line.length();
-										Property_NodeId2 	= Line.substring(0,40);
-										Property_IP2 		= Line.substring(40,Length);
-									}
+								//	if (i==2)
+								//	{
+								//		int Length = Line.length();
+								//		Property_NodeId2 	= Line.substring(0,40);
+								//		Property_IP2 		= Line.substring(40,Length);
+								//	}
 								
-									if (i==3)
-									{
-										number = Line;
-										Property_sysout =Integer.parseInt(number);
-									}
+								//	if (i==3)
+								//	{
+								//		number = Line;
+									//	Property_sysout =Integer.parseInt(number);
+										Property_sysout =properties_access.read_debuglevel("client.properties", "CtrlConsoleOut");
+								//	}
 								}
 								
 								else
 								{	
 
-									if (i==3)
-									{
-										number = Line;
-										Property_sysout =Integer.parseInt(number);
-									}
+								//	if (i==3)
+								//	{
+								//		number = Line;
+								//		Property_sysout =Integer.parseInt(number);
+										Property_sysout =properties_access.read_debuglevel("client.properties", "CtrlConsoleOut");
+								//	}
 								}	
-						}
+					//	}
 						 	
 					} 
 				
 			
-			catch (IOException e) 
+			//catch (IOException e) 
+			catch (Exception e) 
 				{
 				// TODO Auto-generated catch block
 //				e.printStackTrace();
 				}
-		} 
+//		} 
 		
 		
-		catch (FileNotFoundException e) 
-		{
+//		catch (FileNotFoundException e) 
+//		{
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-			SysOutCtrl.SysoutSet("Properties file not found by GetProperties",0);
+//			SysOutCtrl.SysoutSet("Properties file not found by GetProperties",0);
 
-		}
-	}
+//		}
+	}// close properties function
 
-}
+}//close class debug
 
-}
+}//close class getproperties
