@@ -71,12 +71,13 @@
       			overwrite="yes"
       			filtering="yes"
       		/>
-		<copy
+	<!--		<copy
       			file="Debug.txt"
       			tofile="b4jar/Debug.txt"
       			overwrite="yes"
       			filtering="yes"
 		/>
+-->
 		<copy
       			file="information.csv"
       			tofile="b4jar/information.csv"

@@ -39,7 +39,9 @@ public class ClientMain extends Thread {
         // for proper closure of threads when closing the application.
 
         com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
-        CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
+       // CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
+	CtrlConsoleOut = properties_access.read_debuglevel("client.properties", "CtrlConsoleOut");
+
 
         Config conf=Config.getConfigObject();
         // Config initialization from configuration file done during call of the constructor of Config.

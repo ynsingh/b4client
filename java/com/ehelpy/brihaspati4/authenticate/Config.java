@@ -31,7 +31,8 @@ public class Config {
     // example {$user_home}/brihaspati4/routetable.txt
 	private static Config configObject;
 	 private String home_dir = System.getProperty("user.home");
-    private String path = home_dir+"/B4/src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
+    //private String path = home_dir+"/B4/src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
+    private String path = "clent.properties";
     private String SCSS_uri;
 
     // URI for secure certificate signing service access for local client.
@@ -88,7 +89,8 @@ public class Config {
             //retrieve the absolute path of home directory.
 //            home_dir = System.getProperty("D:\\study\\studymtrl\\codes\\client");
 	    home_dir=System.getProperty("user.home");
-            path = home_dir+"src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
+            //path = home_dir+"src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
+            path = "client.properties";
             //SCSS_uri - read from file B4conf.properties.
             SCSS_uri = getConfigParamValue(path,"SCSS.uri.value");
             System.out.println("SCSS VALUE..."+SCSS_uri);
@@ -102,8 +104,10 @@ public class Config {
             String Proxyserv = getConfigParamValue(path,"proxyService.flag.value");
             proxy_service = Boolean.parseBoolean(Proxyserv);
             //Get the path of both the Certificate and Keystore Locations.
-            String certLocation = path+"/brihaspati4/cert";
-            String keystorelocation = path+"/brihaspati4/keystore";
+            //String certLocation = path+"/brihaspati4/cert";
+            //String keystorelocation = path+"/brihaspati4/keystore";
+            String certLocation = home_dir+"/brihaspati4/cert";
+            String keystorelocation = home_dir+"/brihaspati4/keystore";
             //from certificate manager get the status if the certificate variable to the current user exits.
             //CertExists = CertManager.ReadVerifyCert(certLocation,keystorelocation);
             //Get the location of Route Table.
