@@ -6,9 +6,11 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+
 //Lt Col Ankit Singhal Dated 18 April 2019 ; 1800 Hrs
 //This code forward the newly generated certificate to the identity server for Authentication
 // It also carries out the OTP verification for verification of Email Id
+
 public class CertificateSignature {
     @SuppressWarnings("static-access")
     public static  boolean certsign(X509Certificate cert) throws Exception {
@@ -18,13 +20,13 @@ public class CertificateSignature {
         //generate node id - hex 160 bit - at server
         //sign cert,add node id
         //return back to client
-        boolean certsign = false;        
-        debug_level.debug(1, "Welcome to CertificateSignature .Sending new cert to Iden Server for sign");        
+        boolean certsign = false;
+        debug_level.debug(1, "Welcome to CertificateSignature .Sending new cert to Iden Server for sign");
         String certstring=cert.toString();
         byte[] certbyte = cert.getEncoded();
         String certstringbyte = new String(Base64.getEncoder().encode(certbyte));
         debug_level.debug(1,"String format of recieved certificate for signatue is     :"+certstring);
-       // String mserverurl ="http://172.20.160.56:8080/b4server";
+        // String mserverurl ="http://172.20.160.56:8080/b4server";
         String mserverurl ="http://ictwiki.iitk.ac.in:8080/b4server";
         String MSrequrl = mserverurl +"/ProcessRequest?req=sscccertsign&cert=" + URLEncoder.encode(certstring, "UTF-8");
         debug_level.debug(1,MSrequrl);
@@ -41,7 +43,7 @@ public class CertificateSignature {
         if(server1) {
             String OTP = Gui.getotp();
             String MSrequrl1 = mserverurl +"/otp_verification?req=otpverify&OTP=" + URLEncoder.encode(OTP, "UTF-8")
-            + "&cert=" + URLEncoder.encode(certstring, "UTF-8")+"&certstringbyte="+URLEncoder.encode(certstringbyte, "UTF-8");
+                               + "&cert=" + URLEncoder.encode(certstring, "UTF-8")+"&certstringbyte="+URLEncoder.encode(certstringbyte, "UTF-8");
             http_2.sendGet(MSrequrl1);
             X509Certificate[] Certs	= new  X509Certificate[2];
             Certs = http_2.sendPost(MSrequrl1);

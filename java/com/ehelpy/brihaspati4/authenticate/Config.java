@@ -29,10 +29,10 @@ public class Config {
     //	        It will be encrypted with keystore password.
     // location of routing table in local disk storage for client. It is relative to $user_home.
     // example {$user_home}/brihaspati4/routetable.txt
-	private static Config configObject;
-	 private String home_dir = System.getProperty("user.home");
+    private static Config configObject;
+    private String home_dir = System.getProperty("user.home");
     //private String path = home_dir+"/B4/src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
-    private String path = "clent.properties";
+    private String path = "client.properties";
     private String SCSS_uri;
 
     // URI for secure certificate signing service access for local client.
@@ -66,11 +66,11 @@ public class Config {
     public String keystorepass;
 //	private static home_dir='';
 //	private static path='';
-  //  public static Config(String f)
-   // {
+    //  public static Config(String f)
+    // {
     //   String home_dir = System.getProperty("user.home");
     //   String path = home_dir+"/"+f;
-  //  }
+    //  }
 
     public static Config getConfigObject()
     {
@@ -88,7 +88,7 @@ public class Config {
         try {
             //retrieve the absolute path of home directory.
 //            home_dir = System.getProperty("D:\\study\\studymtrl\\codes\\client");
-	    home_dir=System.getProperty("user.home");
+            home_dir=System.getProperty("user.home");
             //path = home_dir+"src/java/com/ehelpy/brihaspati4"+"/"+"B4conf.properties";
             path = "client.properties";
             //SCSS_uri - read from file B4conf.properties.
