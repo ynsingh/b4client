@@ -40,10 +40,6 @@ public class ClientMain extends Thread {
         GlobalObject globj= GlobalObject.getGlobalObject();
         globj.setRunStatus(true);
 
-        com.ehelpy.brihaspati4.routingmgmt.GetProperties.Debug.Properties();
-       // CtrlConsoleOut=com.ehelpy.brihaspati4.routingmgmt.GetProperties.Property_sysout;
-	CtrlConsoleOut = properties_access.read_debuglevel("client.properties", "CtrlConsoleOut");
-
         Config conf=Config.getConfigObject();
         // Config initialization from configuration file done during call of the constructor of Config.
         // Config_object will keep the data after reading from configuration file.
@@ -52,7 +48,7 @@ public class ClientMain extends Thread {
         // debug level to be read from Config object which in turn to be read from configuration file. Can be modified in GUI, which
         // will update it in the configuration file.
 
-        // CtrlConsoleOut = conf.getConsoleOut();
+        CtrlConsoleOut = conf.getCtrlConsoleOut();
 
         SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
         UpdateIP IPUpdate = new UpdateIP();
