@@ -70,13 +70,51 @@ others. These will be sent to CommMgr, from where the messages will be pushed to
 nodes on thier setup connections or pulled by the nodes via http.
 
 9. IndexingMgr (threaded loop) - Stores (key, value) pairs for which the current
-node is root node. It receives, query, publish messages and responds after
-searching database/filesystem. It republishes when republish timer expires and
-removes. Removes when removal timer expires. In case of shortage of space,
-searches for proxyroot nodes, creates the spillover table. Searches for backup
-node. Monitor root nodes for which it is backup. When a monitored root node is
-dead, republishes all the backedup entries. It can work with multiple layers
-simultaneously. In storage layer, it will store the file fragments.
+node is root node or [proxyroot][EE698C Lecture-2]. It receives query and publish
+messages and responds after searching database/filesystem. When sending the
+response, it also send the key,value pair to the previous node from which the
+key query was received for caching. It republishes when republish timer expires
+and removes the entry after sometime. In case of the entry is stored as
+proxyroot, the root node is informed of the entry timer expiry. If the timer
+reset is not received within a specified time, then the entry is republished.
+The entry is removed when removal timer expires. In case of shortage of space as
+root node, the thread searches for proxyroot nodes, and creates the spillover
+table. The thread also Searches for backup nodes and transfer the stored entries
+to it. It also monitor root nodes for which it is backup. When a monitored root
+node is dead, it republishes all the backedup entries. It can work with multiple
+layers simultaneously. In storage layer, it will store the file fragments.
 
-TBD.
+10. Key cache \(threaded loop\) - Store the key,value sent from the other nodes.
+Each entry will have timer associated. The entry should be purged after the
+timer expires. In case response is sent back to query source, a copy is sent to
+previous node from which query was received for cacheing.
 
+11. Search Engine (threaded loop) - stores local content which is put for public
+consumption. The crawler is also run by this thread which creates the index for
+all the keys stored in key list. All keys will have timer (may of few months).
+Whenever a key is used, the timer is reset. Any content added to storage is
+indexed via crawler for the store keys. Any new keys when received, all the
+content is search for this key and index updated.
+
+12. Content Cache (threaded loop) - The response to the content search is always
+passed to previous node from which query arrived. All such content received is
+cached. If the content is served from local cache, the content is again pushed
+to previous node from which content query received. This way popular content
+gets spread in the whole network and become readily available for large number
+of users.
+
+13. Configuration (singleton object) - abstracts the configuration file of the
+client as a object. It can be used by any component. Any changes in
+configuration is also pushed to local file system.
+
+14. Broadcast/RandomWalk router (threaded loop) - used for search engine
+functionality using unstructured search. Also implements broadcast routing,
+random walk routing with TTL (time to live field). When a broadcast packet is
+droped due to TTL=0, it sends its endpoint address to source. It will work as
+edge node which can be used by source to initiate the second round of expanded
+search.
+
+15. Global Object (singleton object) - Keeps all status variable. Used to
+control various threads. 
+
+[EE698C Lecture-2]: https://youtu.be/Pf_1JFmKOCg
