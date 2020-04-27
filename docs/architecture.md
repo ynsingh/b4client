@@ -1,7 +1,9 @@
-2020/04/26
+# Components in the client software.
+
+### 2020/04/26
 
 While, going through ClientMain.java, I found that it can be rewritten in more
-structured fashion. I found after the date_time check, and certificate
+structured fashion. I found after the date\_time check, and certificate
 verification, following components should be started as singleton services
 running their indpendent threads. These can pass messages to each other for
 implementing all possible use case scenarios.Some singleton objects will simply
@@ -9,8 +11,8 @@ represent object as abstraction of configuration and do not require independent
 thread runninge. 
 
 One important point is the use of *synchronized blocks to avoid race condition*.
-Whatever group of instruction has to be executed as an atomic step, should be put
-in synchronized block.
+Whatever group of instruction has to be executed as an atomic step, should be
+put in synchronized block.
 
 Unfortunately, this has not been taken care of in the current code. It may show
 sometime inconsistency due to race condition and will have tremendous bearing on
@@ -36,7 +38,7 @@ table alongwith the transport, and direct/proxy mode to be used. Input queue
 will be timer based events to purge the table entry, transmission of pings to
 the neigbours for heart beat message.
 
-The above three should handle multiple DHT Layers. So, number of DHTables should
+   The above three should handle multiple DHT Layers. So, number of DHTables should
 be equal to number of layers.
 
 4. SpilloverTable (threaded loop) - Spillover table manages the range of
@@ -63,7 +65,7 @@ them to correct differntial delay, forwards them to children nodes, forwards a
 stream to UI for playback.
 
 8.  ProxyRouter (threaded loop) - Will maintain the table of nodes (behind NAT/
-firewall/ http_proxies) on whose behalf it will receive the messages from
+firewall/ http\_proxies) on whose behalf it will receive the messages from
 others. These will be sent to CommMgr, from where the messages will be pushed to
 nodes on thier setup connections or pulled by the nodes via http.
 
