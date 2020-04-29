@@ -97,6 +97,8 @@ public class Config {
     public String keystorelocation;
     public String keystorepass;
 
+    private boolean Boot_Strp_Value;
+
     public static Config getConfigObject()
     {
         try
@@ -170,7 +172,9 @@ public class Config {
 
             CtrlConsoleOut = Integer.parseInt(getConfigParamValue(path,"CtrlConsoleOut"));
 
-            Last_Logout_time = getConfigParamValue(path,"LastLogoutTime.value");
+            Boot_Strp_Value = Boolean.parseBoolean(getConfigParamValue(path,"Botstrp"));
+            
+	    Last_Logout_time = getConfigParamValue(path,"LastLogoutTime.value");
         }
         catch(Exception e) {}
     }
@@ -230,6 +234,10 @@ public class Config {
         return Last_Logout_time;
     }
 
+    public boolean getBootValue() {
+        return Boot_Strp_Value;
+    }
+    
     public void saveLastLogoutTime(String logoutDatetime) {
         setConfigParamValue(path,logoutDatetime,"LastLogoutTime.value");
     }
