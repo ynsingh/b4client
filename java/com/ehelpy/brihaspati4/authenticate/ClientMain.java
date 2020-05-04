@@ -40,7 +40,8 @@ public class ClientMain extends Thread {
         // Config_object will keep the data after reading from configuration file.
         // On each change, the data should be written back to config file also.
         // It implies, in each write api, write to config file on disk is to be implemented.
-        // Debug level (CtrlConsoleOut) to be read from Config object which in turn to be read from configuration file.
+        // Debug level (CtrlConsoleOut) to be read from Config object which in turn to be read
+        // from configuration file.
         // Can be modified in GUI, which will update it in the configuration file.
 
         CtrlConsoleOut = conf.getCtrlConsoleOut();
@@ -57,6 +58,9 @@ public class ClientMain extends Thread {
         // If the returns value false (in case the above conditions fails)
         // then exit the user from the system with advise to user to correct the system date and time.
         // otherwise start the services.
+
+        // Start the singleton object for UI
+        UIObject ui = UIObject.getUIObject(); 
 
         if (!timeflg) {
             String msg = "Please reset your system time and try again." ;
@@ -88,7 +92,13 @@ public class ClientMain extends Thread {
             }
         }
         if(flagset) {
-            //  
+            // get singleton object for DHTRouter, RTManager, DHTable,
+            // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
+            // IndexingMgr, KeyCache, SearchEngine, ContentCache,
+            // Broadcast-RWRouter.
+            DHTRouter dhtr = DHTRouter.getDHTRouter();
+            RTManager rtmgr = RTManager.getRTManager();
+            DHTable dhtable = DHTable.getDHTable();  
 
             // debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
             // sms_methods.choose_loc();

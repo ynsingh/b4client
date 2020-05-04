@@ -28,17 +28,39 @@ service thread.
 trigger merge operations. Input queue will contain routing table updates
 received from neighbours.
 
+   - Message _RTUpdate_ from _CommMgr_,  Action: merge into DHTable, Timer for
+each updated entry timer reset
+   - Event _Update Timer_ expires, Action: Dispatch The DHT Routing Table to all
+neighbour in staggerred fashion, _update timer_ reset. 
+
+
 2. DHTRouter (threaded loop) - It will use DHTable of appropriate layer and
 decide the next node to whom the message is to be forwarded. Input queue will
-contain messages to be routed.
+contain messages to be routed. Message type received/send
+
+   - _Query_ from **CommMgr** or any other component, Action: Send to next hop
+     through **CommMgr**, If current node is root node, send to **IndexingMgr** 
+   - _QResponse_ from **IndexingMgr**, Action: Send to next hop through
+     **CommMgr**
+   - _QResponse_ from **CommMgr**, Action: Send to next hop through **CommMgr**,
+if the current node is root node, depending on type of response, send to
+appropriate component.
+   - _Publish_. from **CommMgr**, Action: Send to next hop through **CommMgr**,
+     if the current node is root node, send to **IndexingMgr** for adding to
+index.
 
 3. DHTable (threaded loop) - Maintain the data structure of DHTable for all
 layers. The data structure will contain endpoint address of all the nodes in the
 table alongwith the transport, and direct/proxy mode to be used. Input queue
 will be timer based events to purge the table entry, transmission of pings to
-the neigbours for heart beat message.
+the neigbours for heart beat message. Message type send
+   - _Heartbeat Timer_ expires, Action: If the routing table did not changed since last
+     heartbeat,  send _HeartBeat_ to neighbours through **CommMgr**, if there is
+change in routing table, send the _RoutingTable_ to all neighbours through
+**CommMgr**
+   - _Entry Purge Timer_ expires, purge the corresponding entry.
 
-   The above three should handle multiple DHT Layers. So, number of DHTables should
+   The above thread should handle multiple DHT Layers. So, number of DHTables should
 be equal to number of layers.
 
 4. SpilloverTable (threaded loop) - Spillover table manages the range of
@@ -52,7 +74,8 @@ making system work as per user's wish.
 
 6. CommMgr (threaded loop) - All communications with all possible transport will
 be received, and queued up for various components to retrieve the messages from
-buffer.
+buffer. Message type received
+- _HeartBeat_ from other Nodes, response _Acknowledgement_ to other nodes.
 
 7. MulticastManager (threaded loop) - Publishing/removing the forwarder entry in
 DHT. Managing the MediaBridge forwarding and mixing table. Communicating with
@@ -83,6 +106,12 @@ table. The thread also Searches for backup nodes and transfer the stored entries
 to it. It also monitor root nodes for which it is backup. When a monitored root
 node is dead, it republishes all the backedup entries. It can work with multiple
 layers simultaneously. In storage layer, it will store the file fragments.
+
+In case, the query is for endpoint address, and the hash ID matches the current
+node, the endpoint address for receiving the messages is sent via DHT message.
+
+In case, the query is for multicast grop forwarders, the list of endpoint
+addresses, transport is sent via DHT message to source node.
 
 10. Key cache \(threaded loop\) - Store the key,value sent from the other nodes.
 Each entry will have timer associated. The entry should be purged after the
