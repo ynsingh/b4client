@@ -18,36 +18,45 @@ import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 public class CommunicationManager extends Thread
 {
 
+    private static CommunicationManager comnmgr;
+
     // Create Receiving Buffer for putting all the received xml files from previous Comm Manager
-    public static LinkedList<File> ReceivingBuffer = new LinkedList<File>();
-    public static Object lock_RecBuff_Main = new Object();
+    public LinkedList<File> ReceivingBuffer = new LinkedList<File>();
+    public Object lock_RecBuff_Main = new Object();
 
     // Create TransmittingBuffer for putting all the received xml files for next hop;
-    public static LinkedList<File> TransmittingBuffer = new LinkedList<File>();
-    public static Object lock_TransBuff_Main = new Object();
-
+    public LinkedList<File> TransmittingBuffer = new LinkedList<File>();
+    public Object lock_TransBuff_Main = new Object();
 
     // Creating buffers for OM/RT/IM. Xml files will be put based on tag in respective buffer
-    public static LinkedList<File> RxBufferOM = new LinkedList<File>();
-    public static LinkedList<File> RxBufferRT = new LinkedList<File>();
+    public LinkedList<File> RxBufferOM = new LinkedList<File>();
+    public LinkedList<File> RxBufferRT = new LinkedList<File>();
 
-    public static LinkedList<File> RxBufferIM = new LinkedList<File>();
+    public LinkedList<File> RxBufferIM = new LinkedList<File>();
 
-    public static LinkedList<File> RxBufferSMS = new LinkedList<File>();
+    public LinkedList<File> RxBufferSMS = new LinkedList<File>();
 
-    public static Object lock_RxBufferIM = new Object();
+    public Object lock_RxBufferIM = new Object();
 
-    public static Map<String, String> myIpTable = new ConcurrentHashMap<>();
-    public static LinkedList<String> fromNodeIdList = new LinkedList<>();
-    public static boolean updateTable =false;
+    public Map<String, String> myIpTable = new ConcurrentHashMap<>();
+    public LinkedList<String> fromNodeIdList = new LinkedList<>();
+    public boolean updateTable =false;
 
-    public static Lock lock = new ReentrantLock();
+    public Lock lock = new ReentrantLock();
     // this is to protect simultaneously accessing writeIpTable method in xmiFileSeggregation class.
 
-    public static List<String> succ = new LinkedList<String>();
-    public static List<String> pred = new LinkedList<String>();
+    public List<String> succ = new LinkedList<String>();
+    public List<String> pred = new LinkedList<String>();
 
-    public void  run()
+    public static CommunicationManager getComnMgr()
+    {
+        // If the singleton object does not exist, create one.
+        if (comnmgr == null) comnmgr = new CommunicationManager();
+        // return the object reference of CommunicationManager Singleton.
+        return comnmgr;
+    }
+
+    public void run()
     {
 
         Thread t0= new Thread
