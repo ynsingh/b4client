@@ -4,25 +4,43 @@
 
 While, going through ClientMain.java, I found that it can be rewritten in more
 structured fashion. I found after the date\_time check, and certificate
-verification, following components should be started as singleton services
-running their indpendent threads. These can pass messages to each other for
-implementing all possible use case scenarios.Some singleton objects will simply
-represent object as abstraction of configuration and do not require independent
-thread runninge. 
+verification, following components should be instantiated as objects and their
+object reference is kept in GlobalObject.
+
+The GlobalObject instance is
+instantiated in main entry of the program (authenticate/ClientMain.java) and its
+object reference is maintained in ClientMain object. There is also a small loop
+with sleep period of 60 seconds in the end of ClientMain.java. The loop exits
+when the running status is set
+to false by GUI.
+
+These components have threads running which can pass messages to each other for
+implementing all possible use case scenarios. Some objects will simply
+represent objects as abstraction of configuration and do not require independent
+thread running. 
 
 One important point is the use of *synchronized blocks to avoid race condition*.
-Whatever group of instruction has to be executed as an atomic step, should be
+As multiple threads can try accessing same data structure through same function.
+Most of the API calls to service objects running threads, should be enclosed in
+synchronized, to avoid deadlocks. Whatever group of instruction has to be
+executed as an atomic step, should be
 put in synchronized block.
 
 Unfortunately, this has not been taken care of in the current code. It may show
 sometime inconsistency due to race condition and will have tremendous bearing on
 the performance. This will be typically problem with input task Queues of
-singleton object.
+service object.
 
-Each singleton thread should be considered as thread which takes up tasks from
+Each service component should be considered as thread which takes up tasks from
 the input queue and updates its on data structures and generates task which are
 dispatched to input queues of the other singleton objects running their own
 service thread.
+
+For service object, interface should be defined. The objects should implement
+the interface. Global object should define the placeholder for object reference
+to service object by way of interfaces. Similarly, all service objects should
+use interface of Global object as mechanism to keep placeholder for Global
+Object.
 
 1. RTManager (threaded loop) - It will do periodic exchange with neighbours,
 trigger merge operations. Input queue will contain routing table updates

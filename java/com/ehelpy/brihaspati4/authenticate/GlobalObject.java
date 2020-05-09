@@ -4,7 +4,7 @@ package com.ehelpy.brihaspati4.authenticate;
 //This function ensures that only one instance of the package is running
 //so that no duplicate entries are found
 
-public class GlobalObject {
+public class GlobalObject implements GlobalObjInterface {
     private static GlobalObject globalObject;
     @SuppressWarnings("unused")
     private static boolean Certificate_Status = false;
