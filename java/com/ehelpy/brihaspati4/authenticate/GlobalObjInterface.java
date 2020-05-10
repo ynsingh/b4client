@@ -1,9 +1,11 @@
-interface GlobalObjInterface {
+package com.ehelpy.brihaspati4.authenticate;
 
-	public setRunStatus();
+public interface GlobalObjInterface {
 
-	public getRunStatus();
+	public void setRunStatus(boolean runstatus);
 
-	public setConfig(ConfigObjInterface);
+	public boolean getRunStatus();
+
+	public void setConfig(ConfigObjInterface config);
 
 }

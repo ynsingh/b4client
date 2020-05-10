@@ -181,7 +181,7 @@ public class Config implements ConfigObjInterface {
         return(val);
     }
 
-    public static void setConfigParamValue(String path,String Value,String key)
+    public void setConfigParamValue(String path,String Value,String key)
     {
         try
         {

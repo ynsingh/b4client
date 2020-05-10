@@ -32,12 +32,12 @@ public class ClientMain extends Thread {
         // GlobalObject will keep status of various threads and run status. This will be used
         // for proper closure of threads when closing the application.
 
-        GlobalObjInterface globj= GlobalObject.getGlobalObject();
+        GlobalObjInterface globj= new GlobalObject();
         globj.setRunStatus(true);
         
         // Configuration object created and object referece is saved in
         // GlobalObject.
-        ConfigObjInterface conf= new Config("client.properties");
+        ConfigObjInterface conf= new Config();
         globj.setConfig(conf); 
         
         // Config initialization from configuration file done during call of the constructor of Config.

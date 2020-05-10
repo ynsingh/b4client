@@ -5,29 +5,27 @@ package com.ehelpy.brihaspati4.authenticate;
 //so that no duplicate entries are found
 
 public class GlobalObject implements GlobalObjInterface {
-    private static GlobalObject globalObject;
-    @SuppressWarnings("unused")
-    private static boolean Certificate_Status = false;
-    private static boolean Generic_status = true; // generic services running
-    private static boolean Specific_status = false; //specific services not running
-    private static boolean running_status = true;
+    
+@SuppressWarnings("unused")
+    private boolean Certificate_Status = false;
+    private boolean Generic_status = true; // generic services running
+    private boolean Specific_status = false; //specific services not running
+    private boolean running_status = true;
+    private ConfigObjInterface ConfigObj;
 
-    public static GlobalObject getGlobalObject()
-    {
-        if ( globalObject==null)
-        {
-            globalObject = new GlobalObject();
-        }
-        return globalObject;
-    }
-
-    public static void setRunStatus(boolean flag)
+    public void setRunStatus(boolean flag)
     {
         running_status = flag;
     }
 
-    public static boolean getRunStatus()
+    public boolean getRunStatus()
     {
         return running_status ;
     }
+
+    public void setCofig(ConfigObjInterface config)
+    {
+        ConfigObj = config;
+    }
 }
+
