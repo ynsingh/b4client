@@ -17,14 +17,18 @@ to false by GUI.
 These components have threads running which can pass messages to each other for
 implementing all possible use case scenarios. Some objects will simply
 represent objects as abstraction of configuration and do not require independent
-thread running. 
+thread running. **Each thread will also check that if it is running without doing
+any task, then it should sleep for some *T* seconds. If it is running for
+consecutively for *i* loops without doing any task, then it will sleep for *2^i
+T* period. In case, a task is found, then *i* will be reset to *0*.**
 
 One important point is the use of *synchronized blocks to avoid race condition*.
+This should be used specially when a variable or datastructure in an object is
+modified.
 As multiple threads can try accessing same data structure through same function.
 Most of the API calls to service objects running threads, should be enclosed in
 synchronized, to avoid deadlocks. Whatever group of instruction has to be
-executed as an atomic step, should be
-put in synchronized block.
+executed as an atomic step, should be put in synchronized block.
 
 Unfortunately, this has not been taken care of in the current code. It may show
 sometime inconsistency due to race condition and will have tremendous bearing on
@@ -33,7 +37,7 @@ service object.
 
 Each service component should be considered as thread which takes up tasks from
 the input queue and updates its on data structures and generates task which are
-dispatched to input queues of the other singleton objects running their own
+dispatched to input queues of the other objects running their own
 service thread.
 
 For service object, interface should be defined. The objects should implement
