@@ -17,7 +17,7 @@ import java.io.OutputStream;
 
 @SuppressWarnings("unused")
 
-public class Config implements ConfigObjInterface {
+public class Config {
 
     // Config initialization from configuration file during object creation by the
     // constructor of Config.
