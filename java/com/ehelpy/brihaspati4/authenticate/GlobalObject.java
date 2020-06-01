@@ -12,13 +12,10 @@ public class GlobalObject {
     private boolean Generic_status = true; // generic services running
     private boolean Specific_status = false; //specific services not running
     private static boolean running_status = true;
-    private Config ConfigObj;
 
-    public static GlobalObject getGlobalObject()
+    public static synchronized GlobalObject getGlobalObject()
     {
-        synchronized(this) {
-            if (GlobalObj == null) GlobalObj = new GlobalObject();
-        }
+        if (GlobalObj == null) GlobalObj = new GlobalObject();
         return GlobalObj;
     }
 
@@ -32,9 +29,5 @@ public class GlobalObject {
         return running_status ;
     }
 
-    public void setCofig(Config config)
-    {
-        ConfigObj = config;
-    }
 }
 

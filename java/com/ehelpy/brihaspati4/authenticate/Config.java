@@ -35,7 +35,7 @@ public class Config {
 
 
     // *paths and files.*
-
+    private static Config config;
     private String home_dir = System.getProperty("user.home");
     private String path; 
     private String SCSS_uri;
@@ -100,6 +100,12 @@ public class Config {
     public String keystorepass;
 
     private boolean Boot_Strp_Value;
+
+    public static synchronized Config getConfigObject()
+    {
+        if(config ==null) config = new Config();
+        return config;
+    } 
 
     public Config()
     {

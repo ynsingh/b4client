@@ -22,7 +22,7 @@ public class CommunicationManager extends Thread
 
     // Create Receiving Buffer for putting all the received xml files from previous Comm Manager
     public static LinkedList<File> ReceivingBuffer = new LinkedList<File>();
-    public Object lock_RecBuff_Main = new Object();
+    public static Object lock_RecBuff_Main = new Object();
 
     // Create TransmittingBuffer for putting all the received xml files for next hop;
     public static LinkedList<File> TransmittingBuffer = new LinkedList<File>();
@@ -30,11 +30,11 @@ public class CommunicationManager extends Thread
 
     // Creating buffers for OM/RT/IM. Xml files will be put based on tag in respective buffer
     public static LinkedList<File> RxBufferOM = new LinkedList<File>();
-    public static inkedList<File> RxBufferRT = new LinkedList<File>();
+    public static LinkedList<File> RxBufferRT = new LinkedList<File>();
 
     public static LinkedList<File> RxBufferIM = new LinkedList<File>();
 
-    public static inkedList<File> RxBufferSMS = new LinkedList<File>();
+    public static LinkedList<File> RxBufferSMS = new LinkedList<File>();
 
     public static Object lock_RxBufferIM = new Object();
 
@@ -46,7 +46,7 @@ public class CommunicationManager extends Thread
     // this is to protect simultaneously accessing writeIpTable method in xmiFileSeggregation class.
 
     public static List<String> succ = new LinkedList<String>();
-    public static ist<String> pred = new LinkedList<String>();
+    public static List<String> pred = new LinkedList<String>();
 
     public static CommunicationManager getComnMgr()
     {

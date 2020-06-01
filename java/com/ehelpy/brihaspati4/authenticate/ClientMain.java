@@ -32,13 +32,12 @@ public class ClientMain extends Thread {
         // GlobalObject will keep status of various threads and run status. This will be used
         // for proper closure of threads when closing the application.
 
-        GlobalObject globj= new GlobalObject.getGlobalObject();
+        GlobalObject globj= GlobalObject.getGlobalObject();
         globj.setRunStatus(true);
 
         // Configuration object created and object referece is saved in
         // GlobalObject.
-        Config conf= new Config.getConfig();
-        globj.setConfig(conf);
+        Config conf= Config.getConfigObject();
 
         // Config initialization from configuration file done during call of the
         // constructor of Config.
@@ -69,7 +68,7 @@ public class ClientMain extends Thread {
         */
 
         // Start the singleton object for UI
-        UIObject ui = UIObject.getUIObject();
+        // UIObject ui = UIObject.getUIObject();
 
         if (!timeflg) {
             String msg = "Please reset your system time and try again." ;
@@ -105,9 +104,9 @@ public class ClientMain extends Thread {
             // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
             // IndexingMgr, KeyCache, SearchEngine, ContentCache,
             // Broadcast-RWRouter.
-            DHTRouter dhtr = DHTRouter.getDHTRouter();
-            RTManager rtmgr = RTManager.getRTManager();
-            DHTable dhtable = DHTable.getDHTable();
+            // DHTRouter dhtr = DHTRouter.getDHTRouter();
+            // RTManager rtmgr = RTManager.getRTManager();
+            // DHTable dhtable = DHTable.getDHTable();
 
             // debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
             // sms_methods.choose_loc();
