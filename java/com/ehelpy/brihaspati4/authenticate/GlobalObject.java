@@ -22,7 +22,7 @@ public class GlobalObject {
         return GlobalObj;
     }
 
-    public void setRunStatus(boolean flag)
+    public static void setRunStatus(boolean flag)
     {
         running_status = flag;
     }
