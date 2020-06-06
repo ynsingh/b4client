@@ -6,8 +6,9 @@ import java.io.InputStream;
 import java.util.Properties;
 //Lt Col Raja Vijit Dated 22 May 2018 ; 1230 Hrs
 //This function gives access to the any text file included in the package as per requirement
+
 public class properties_access {
-    @SuppressWarnings("finally")
+//    @SuppressWarnings("finally")
     public static String read_property(String File_name, String Property_name) {
 
         Properties prop = new Properties();

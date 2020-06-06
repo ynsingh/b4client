@@ -48,6 +48,7 @@ import com.ehelpy.brihaspati4.indexmanager.SHA1;
 import com.ehelpy.brihaspati4.routingmgmt.PresentIP;
 import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 import com.ehelpy.brihaspati4.routingmgmt.UpdateIP;
+import com.ehelpy.brihaspati4.authenticate.properties_access;
 //public static LinkedList<File> TempBuffer = new LinkedList<File>();
 public class OverlayManagementUtilityMethods extends OverlayManagement{
 	public static LinkedList<File> TempBuffer = new LinkedList<File>();
@@ -238,8 +239,9 @@ public class OverlayManagementUtilityMethods extends OverlayManagement{
 
 
 	public static void fillMyIptable(){ 
-		
-		if(com.ehelpy.brihaspati4.routingmgmt.GetProperties.Backbone)
+		Boolean backbone = Boolean.parseBoolean(properties_access.read_property("client.properties", "Backbone"));	
+		//if(com.ehelpy.brihaspati4.routingmgmt.GetProperties.Backbone)
+		if(backbone)
 		{	
 			if(!CommunicationUtilityMethods.myIpTable.containsKey(BootstrapNodeId))
 				CommunicationManager.update_my_IpTable(BootstrapNodeId,BootstrapIP);

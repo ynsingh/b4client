@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 //Last modified by Lt Col Ankit Singhal Dated 26 May 2019 2019 ; 1500 Hrs
 //This function carries out verification of the existing certificate of the peer
 //15 days prior to certificate expiry, the system will prompt the user for renewing the certificate
@@ -21,6 +22,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 //It also forward the certificate for signature to the Identity server
 //Entire package whenever either the client certificate or server certificate is required the functions are
 // defined in this class
+
 public class ReadVerifyCert {
     private static X509Certificate x509servercert = null;
     private static X509Certificate x509clientcert = null;
@@ -28,6 +30,7 @@ public class ReadVerifyCert {
     private static String keyStorePass ;
     private static String keystorealias;
     private static	Certificate[] cert = null;
+
     public static KeyStore loadKeyStore(String keystorealias, String password) {
         //Before a key store can be accessed, it must be loaded.
         if (password == null || keystorealias == null || keystorealias.equals(""))
@@ -40,7 +43,7 @@ public class ReadVerifyCert {
             debug_level.debug(0,"Move on to new Cert Acquisition");
         }
         else
-        { 
+        {
             try {
                 keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             } catch (KeyStoreException e1) {
@@ -54,9 +57,9 @@ public class ReadVerifyCert {
                 char[] keypass	=	password.toCharArray() ;
                 try {
                     keystore.load(is, keypass);
-                    }
-                catch(Exception e) {                	
-                	debug_level.debug(3, "The password or alias entered is incorrect");
+                }
+                catch(Exception e) {
+                    debug_level.debug(3, "The password or alias entered is incorrect");
                     pw_alias_wr.id_exist();
                     return keystore;
                 }
@@ -78,19 +81,29 @@ public class ReadVerifyCert {
                         e.printStackTrace();
                     }
                 }
-            } 
+            }
         }
         return keystore;
     }
-    @SuppressWarnings("static-access")
-	static boolean verifyCert() throws Exception {
-    	// This function loads keystore and checks the validity of the certificate
-    	Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-    	boolean status = true;// flag for certificate status
+
+//    @SuppressWarnings("static-access")
+    static boolean verifyCert() throws Exception {
+        // This function loads keystore and checks the validity of the certificate
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        boolean status = true;// flag for certificate status
         boolean flag = false;
         do {
-            keyStorePass = Gui.getkeystorepass();
-            keystorealias = Gui.getaliasname();
+		boolean bootflg = Config.getConfigObject().getBootValue();
+		if(bootflg == true){
+		// check it is bootstrap
+			keyStorePass = Config.getConfigObject().getConfigParamValue("botstrp.properties","passwd");
+			keystorealias = Config.getConfigObject().getConfigParamValue("botstrp.properties","alias");
+		// if yes then get the values
+		}else{
+		// else
+            		keyStorePass = Gui.getkeystorepass();
+            		keystorealias = Gui.getaliasname();
+		}
             keystore = loadKeyStore(keystorealias, keyStorePass);
             if (keystore == null) {
                 X509Certificate newcert = GenerateCertificate2.createSelfSignedCert();
@@ -101,39 +114,39 @@ public class ReadVerifyCert {
             } else {
                 debug_level.debug(2,"KEYSTORE IS = " + keystore);
                 try {
-                	
-                	cert = keystore.getCertificateChain(keystorealias);// Returns the cert associated with the given alias
-                	debug_level.debug(2,"KEYSTORE cert IS = " + cert);
+
+                    cert = keystore.getCertificateChain(keystorealias);// Returns the cert associated with the given alias
+                    debug_level.debug(2,"KEYSTORE cert IS = " + cert);
                     if (cert == null) {
                         pw_alias_wr.id_exist();
                         return false;
-                }
+                    }
                 }
                 catch (KeyStoreException ex) {
                     pw_alias_wr.id_exist();
                     return false;
                 }
                 try {
-                	x509servercert =   (X509Certificate) cert[0];
+                    x509servercert =   (X509Certificate) cert[0];
                     x509clientcert =  (X509Certificate) cert[1];
                 } catch (Exception e) {
                     return false;
                 }
-                if (x509clientcert instanceof X509Certificate) { 
-                	try {                   	
-                    	 x509clientcert.checkValidity();
-                       	 x509clientcert.verify(x509servercert.getPublicKey(), new BouncyCastleProvider());
-                         debug_level.debug(3,"Checked certificate validity.Certificate is VALID.");
+                if (x509clientcert instanceof X509Certificate) {
+                    try {
+                        x509clientcert.checkValidity();
+                        x509clientcert.verify(x509servercert.getPublicKey(), new BouncyCastleProvider());
+                        debug_level.debug(3,"Checked certificate validity.Certificate is VALID.");
                         status = true;
                         Date certNotAfter = x509clientcert.getNotAfter();
                         Date now = new Date();
                         long timeLeft = certNotAfter.getTime() - now.getTime(); // Time left in ms
                         long days = timeLeft / (24 * 3600 * 1000);
-                            System.out.println("Your Certificate is now valid for only " + days +" days");
-                            if(days<16) {                        
+                        System.out.println("Your Certificate is now valid for only " + days +" days");
+                        if(days<16) {
                             String msgg = "Acquire a new certificate immediately";
-                            Gui.showMessageDialogBox(msgg); 
-                            }                   
+                            Gui.showMessageDialogBox(msgg);
+                        }
                     } catch (Exception e) {
                         debug_level.debug(3,"Checked certificate validity.Certificate has EXPIRED (not valid).Move on to new Cert Acquisition");
                         String messg = "Your Certificate has Expired ";
@@ -143,7 +156,7 @@ public class ReadVerifyCert {
                         status = false;
                         flag = false;
                         // Generating and printing new self signed certificate using GenerateCertificate2 Class
-                        
+
                         X509Certificate newcert = GenerateCertificate2.createSelfSignedCert();
                         debug_level.debug(0,"new certificate of node is " + newcert);
                         debug_level.debug(3,"new certificate of node will now be sent for signature to Identity Server ");
@@ -162,14 +175,17 @@ public class ReadVerifyCert {
         } while (flag);
         return status;// status- returns status of checkValidity method
     }
-    	public static X509Certificate returnServerCert() throws Exception {
+
+    public static X509Certificate returnServerCert() throws Exception {
         if(x509servercert==null)x509servercert=createotpConnection.returnServerCert();
         return x509servercert;
     }
-    	public static X509Certificate returnClientCert() throws Exception {
+
+    public static X509Certificate returnClientCert() throws Exception {
         if(x509clientcert==null)x509clientcert=createotpConnection.returnClientCert();
         return x509clientcert;
     }
+
     public static PrivateKey getKeyPair() {
         Key key = null;
         {
@@ -187,9 +203,9 @@ public class ReadVerifyCert {
             } catch (NoSuchAlgorithmException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }            
+            }
         }
         //  final PublicKey publicKey = cert.getPublicKey();
         return  (PrivateKey) key;
-    }    
+    }
 }
