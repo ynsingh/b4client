@@ -5,7 +5,11 @@
 While, going through ClientMain.java, I found that it can be rewritten in more
 structured fashion. I found after the date\_time check, and certificate
 verification, following components should be instantiated as objects and their
-object reference is kept in GlobalObject.
+object reference is kept in GlobalObject. Some of the classes have been created
+with static data structures and static functions, thus they will have only one
+single instance of data structures and the functions can be called without
+instantiating the object. One such object is CommMgr through which everyone
+communicates over the network.
 
 The GlobalObject instance is
 instantiated in main entry of the program (authenticate/ClientMain.java) and its
