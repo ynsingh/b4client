@@ -27,7 +27,7 @@ public class GetPublicHostname
 			//	System.out.println("The IF : " + ethr);
 				if(!(ethr.equals("lo"))){
 				       if(!(ethr.contains("br") )){
-						System.out.println("Interface:" + ethr);
+						//System.out.println("Interface:" + ethr);
 						InetAddress ia = null;
 						for(Enumeration ips = iface.getInetAddresses();ips.hasMoreElements();)
 						{
