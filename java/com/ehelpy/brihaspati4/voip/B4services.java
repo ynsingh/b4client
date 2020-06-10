@@ -25,6 +25,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 import com.ehelpy.brihaspati4.voip.voip_rxcall;
+
+import DFSnew.DFSUI;
+
 import java.awt.Color;
 
 import java.net.InetSocketAddress;
@@ -225,6 +228,20 @@ public class B4services {
 		NewRadioButton_4.setFont(new Font("Tahoma", Font.BOLD, 20));
 		NewRadioButton_4.setBounds(8, 225, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_4);
+		////////////////////////////////////////////////////////////////////////////////////////////
+		JRadioButton NewRadioButton_5 = new JRadioButton("NewDFS");
+		NewRadioButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				token = 6;
+				
+				}
+			
+		});
+		NewRadioButton_5.setBackground(Color.YELLOW);
+		NewRadioButton_5.setForeground(Color.BLUE);
+		NewRadioButton_5.setFont(new Font("Tahoma", Font.BOLD, 20));
+		NewRadioButton_5.setBounds(8, 270, 127, 25);
+		BServices.getContentPane().add(NewRadioButton_5);
 		//////////////////////////////////////////////////////////////////////////////////
 
 		ButtonGroup bG = new ButtonGroup();
@@ -233,7 +250,8 @@ public class B4services {
 	    bG.add(NewRadioButton_2);
 	    bG.add(NewRadioButton_3);
 	    bG.add(NewRadioButton_4);
-
+	    bG.add(NewRadioButton_5);
+	    
 	    JButton btnOk = new JButton("OK");
 	    btnOk.addActionListener(new ActionListener() 
 	      {
@@ -280,8 +298,14 @@ public class B4services {
 
 					DFS_gui.main();
 	    		}
-	    		
-	    		
+			if(token == 6)
+    			{
+    			    b4services_window_open = false;
+    			    BServices.setVisible(false);
+				    BServices.dispose();
+				    DFSUI.main();
+    			}
+	    				
 			}
 	    			
 	      });

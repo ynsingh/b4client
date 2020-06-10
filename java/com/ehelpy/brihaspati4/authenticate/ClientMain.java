@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import com.ehelpy.brihaspati4.voip.B4services;
+
+import DFSnew.DFSUI;
+
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
@@ -184,6 +187,7 @@ public class ClientMain extends Thread {
             // All generic services Interface
             // VOIP call, storage services, messaging service
             // }
+            DFSUI.essentials();
         }
         while(globj.getRunStatus()) {
             Thread.sleep(30000);
