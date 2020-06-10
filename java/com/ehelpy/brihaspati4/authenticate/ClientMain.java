@@ -50,14 +50,14 @@ public class ClientMain extends Thread {
 
         CtrlConsoleOut = conf.getCtrlConsoleOut();
 
-        /* Commented - to be removed when the branch is to be finally merted to
-         * the master. 
+        /* Commented - to be removed when the branch is to be finally merged to
+         * the master.*/ 
         	SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
                 UpdateIP IPUpdate = new UpdateIP();
                 IPUpdate.start();
                 IPUpdate.setName("IPUpdate");
                 SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
-        */
+        /* */
 
         boolean timeflg=dateTimeCheck.checkDate();
         /* Date and time is to be checked. It should be same as on standard time
