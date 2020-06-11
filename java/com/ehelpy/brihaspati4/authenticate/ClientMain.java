@@ -51,7 +51,8 @@ public class ClientMain extends Thread {
         CtrlConsoleOut = conf.getCtrlConsoleOut();
 
         /* Commented - to be removed when the branch is to be finally merged to
-         * the master.*/ 
+         * the master.
+         */
         	SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
                 UpdateIP IPUpdate = new UpdateIP();
                 IPUpdate.start();
