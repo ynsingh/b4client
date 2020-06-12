@@ -254,7 +254,7 @@ public class B4services {
 		NewRadioButton_6.setBackground(Color.YELLOW);
 		NewRadioButton_6.setForeground(Color.BLUE);
 		NewRadioButton_6.setFont(new Font("Tahoma", Font.BOLD, 20));
-		NewRadioButton_6.setBounds(8, 325, 127, 25);
+		NewRadioButton_6.setBounds(8, 320, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_6);
 
 		ButtonGroup bG = new ButtonGroup();
@@ -292,7 +292,24 @@ public class B4services {
 					
 					voip_gui.main();
 					
-					}				
+					}
+				 if(token == 7)
+				 {
+					 b4services_window_open = false;
+					 BServices.setVisible(false);
+					 BServices.dispose();
+
+					 try
+					 {
+						 com.ehelpy.brihaspati4.Distributed_Search.SearchClient_v4.main( );
+					 }
+					 catch (IOException e1)
+					 {
+						 // TODO Auto-generated catch block
+						 e1.printStackTrace();
+					 }
+
+				 }
 					
 	    		if (token == 3)
 	    		{
@@ -312,23 +329,6 @@ public class B4services {
 
 					DFS_gui.main();
 	    		}
-				 if(token == 7)
-				 {
-					 b4services_window_open = false;
-					 BServices.setVisible(false);
-					 BServices.dispose();
-
-					 try
-					 {
-						 com.ehelpy.brihaspati4.Distributed_Search.SearchClient_v4.main( );
-					 }
-					 catch (IOException e1)
-					 {
-						 // TODO Auto-generated catch block
-						 e1.printStackTrace();
-					 }
-
-				 }
 			if(token == 6)
     			{
     			    b4services_window_open = false;
