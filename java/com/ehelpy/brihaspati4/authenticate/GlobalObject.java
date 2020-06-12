@@ -5,20 +5,18 @@ package com.ehelpy.brihaspati4.authenticate;
 //so that no duplicate entries are found
 
 public class GlobalObject {
-    private static GlobalObject globalObject;
-    @SuppressWarnings("unused")
-    private static boolean Certificate_Status = false;
-    private static boolean Generic_status = true; // generic services running
-    private static boolean Specific_status = false; //specific services not running
+    
+@SuppressWarnings("unused")
+    private static GlobalObject GlobalObj;
+    private boolean Certificate_Status = false;
+    private boolean Generic_status = true; // generic services running
+    private boolean Specific_status = false; //specific services not running
     private static boolean running_status = true;
 
-    public static GlobalObject getGlobalObject()
+    public static synchronized GlobalObject getGlobalObject()
     {
-        if ( globalObject==null)
-        {
-            globalObject = new GlobalObject();
-        }
-        return globalObject;
+        if (GlobalObj == null) GlobalObj = new GlobalObject();
+        return GlobalObj;
     }
 
     public static void setRunStatus(boolean flag)
@@ -30,4 +28,6 @@ public class GlobalObject {
     {
         return running_status ;
     }
+
 }
+

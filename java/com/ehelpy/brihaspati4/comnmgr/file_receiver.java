@@ -15,12 +15,12 @@ import java.io.InputStream;
 
 
 public class file_receiver extends Thread {
-	
-	private ServerSocket serverSocket;
+
+    private ServerSocket serverSocket;
     private static int port = 2222;
     private boolean running = false;
 
-    
+
     public static void main( String[] args )
     {
         System.out.println( "Start server on port: " + port );
@@ -28,13 +28,13 @@ public class file_receiver extends Thread {
         file_receiver server = new file_receiver( port );
         server.startServer();
 
-   }
-    
+    }
+
     public file_receiver( int port )
     {
         file_receiver.port = port;
     }
-    
+
     public void startServer()
     {
         try
@@ -47,11 +47,11 @@ public class file_receiver extends Thread {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void run()
     {
-     //   running = true;
+        //   running = true;
         while(GlobalObject.getRunStatus()||sms_send_rec_management.sending_message)
         {
             try
@@ -87,14 +87,14 @@ class RequestHandler extends Thread
         try
         {
             System.out.println( "Received a connection" );
-            
+
             int fileReceiveIndex = 0;
             // Get input streams
-            
+
             byte[] mybytearray = new byte[4096];
-            
+
             InputStream is = socket.getInputStream();
-            
+
             String fileName=CommunicationUtilityMethods.getFileName();
             FileOutputStream fos = new FileOutputStream(fileName);
 
@@ -103,12 +103,12 @@ class RequestHandler extends Thread
             int current = bytesRead;
 
             do {
-              bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
-              if (bytesRead >= 0)
-            	  current += bytesRead;
+                bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
+                if (bytesRead >= 0)
+                    current += bytesRead;
             } while (bytesRead > -1);
-                    
-            
+
+
             bos.write(mybytearray, 0, current);
             bos.flush();
 
@@ -116,27 +116,27 @@ class RequestHandler extends Thread
             fos.flush();
             fos.close();
             socket.close();
-            
+
             for (int i = 0; i < mybytearray.length; i++) {
                 System.out.print(mybytearray[i] + " ");
-             }
-             SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
-             File inFile = new File(fileName);
+            }
+            SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
+            File inFile = new File(fileName);
 
-             SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
-             SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
-             SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
+            SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
+            SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
+            SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
 
-             String[] xmlParsed =ParseXmlFile.ParseXml(inFile) ;
-             System.out.println("file received is : "+xmlParsed[0]);
-             if(xmlParsed[0].equals("0031"))
-             {
-             	CommunicationManager.RxBufferOM.add(inFile);
-             }
-             else
-            	 CommunicationUtilityMethods.addQueryToReceiveBuffer(inFile);
-             
-             fileReceiveIndex++;
+            String[] xmlParsed =ParseXmlFile.ParseXml(inFile) ;
+            System.out.println("file received is : "+xmlParsed[0]);
+            if(xmlParsed[0].equals("0031"))
+            {
+                CommunicationManager.RxBufferOM.add(inFile);
+            }
+            else
+                CommunicationUtilityMethods.addQueryToReceiveBuffer(inFile);
+
+            fileReceiveIndex++;
 
             System.out.println( "Connection closed" );
         }

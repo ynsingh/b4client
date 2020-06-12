@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import com.ehelpy.brihaspati4.voip.B4services;
+
+import DFSnew.DFSUI;
+
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
@@ -35,28 +38,41 @@ public class ClientMain extends Thread {
         GlobalObject globj= GlobalObject.getGlobalObject();
         globj.setRunStatus(true);
 
-        Config conf=Config.getConfigObject();
-        // Config initialization from configuration file done during call of the constructor of Config.
+        // Configuration object created and object referece is saved in
+        // GlobalObject.
+        Config conf= Config.getConfigObject();
+
+        // Config initialization from configuration file done during call of the
+        // constructor of Config.
         // Config_object will keep the data after reading from configuration file.
-        // On each change, the data should be written back to config file also.
+        // On each change, the data should also be written back to config file.
         // It implies, in each write api, write to config file on disk is to be implemented.
-        // Debug level (CtrlConsoleOut) to be read from Config object which in turn to be read from configuration file.
+        // Debug level (CtrlConsoleOut) is read from Config object which in
+        // turn is to be read from configuration file.
         // Can be modified in GUI, which will update it in the configuration file.
 
         CtrlConsoleOut = conf.getCtrlConsoleOut();
 
-        SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
-        UpdateIP IPUpdate = new UpdateIP();
-        IPUpdate.start();
-        IPUpdate.setName("IPUpdate");
-        SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
+        /* Commented - to be removed when the branch is to be finally merged to
+         * the master.
+         */
+        	SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
+                UpdateIP IPUpdate = new UpdateIP();
+                IPUpdate.start();
+                IPUpdate.setName("IPUpdate");
+                SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
+        /* */
 
         boolean timeflg=dateTimeCheck.checkDate();
-        // Date and time is to be checked. It should be same as on standard time server
-        // or greater than equal to last logout date time value.
-        // If the returns value false (in case the above conditions fails)
-        // then exit the user from the system with advise to user to correct the system date and time.
-        // otherwise start the services.
+        /* Date and time is to be checked. It should be same as on standard time
+        * server or greater than equal to last logout date time value.  If the returns
+        * value false (in case the above conditions fails) then exit the user from the
+        * system with advise to user to correct the system date and time. otherwise
+        * start the services.
+        */
+
+        // Start the singleton object for UI
+        // UIObject ui = UIObject.getUIObject();
 
         if (!timeflg) {
             String msg = "Please reset your system time and try again." ;
@@ -88,7 +104,13 @@ public class ClientMain extends Thread {
             }
         }
         if(flagset) {
-            //  
+            // get singleton object for DHTRouter, RTManager, DHTable,
+            // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
+            // IndexingMgr, KeyCache, SearchEngine, ContentCache,
+            // Broadcast-RWRouter.
+            // DHTRouter dhtr = DHTRouter.getDHTRouter();
+            // RTManager rtmgr = RTManager.getRTManager();
+            // DHTable dhtable = DHTable.getDHTable();
 
             // debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
             // sms_methods.choose_loc();
@@ -166,6 +188,7 @@ public class ClientMain extends Thread {
             // All generic services Interface
             // VOIP call, storage services, messaging service
             // }
+            DFSUI.essentials();
         }
         while(globj.getRunStatus()) {
             Thread.sleep(30000);
