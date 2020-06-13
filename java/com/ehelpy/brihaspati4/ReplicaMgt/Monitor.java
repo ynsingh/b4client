@@ -1,4 +1,4 @@
-package ReplicaMgt;
+package com.ehelpy.brihaspati4.ReplicaMgt;
 
 import java.io.IOException;
 import java.net.*;

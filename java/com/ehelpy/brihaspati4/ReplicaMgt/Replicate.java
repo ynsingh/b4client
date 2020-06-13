@@ -1,9 +1,9 @@
-package ReplicaMgt;
+package com.ehelpy.brihaspati4.ReplicaMgt;
 
-import Communication.Sender;
-import DbaseAPI.TLVParser;
-import Encryption.GenerateKeys;
-import Encryption.Hash;
+import com.ehelpy.brihaspati4.comnmgr.Sender;
+import com.ehelpy.brihaspati4.DbaseAPI.TLVParser;
+import com.ehelpy.brihaspati4.Encryption.GenerateKeys;
+import com.ehelpy.brihaspati4.Encryption.Hash;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +12,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 
-import static DbaseAPI.file.*;
-import static Encryption.Encrypt.concat;
-import static Encryption.Hash.hashgenerator;
-import static XMLhandler2.XMLWriter.writer;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.*;
+import static com.ehelpy.brihaspati4.Encryption.Encrypt.concat;
+import static com.ehelpy.brihaspati4.Encryption.Hash.hashgenerator;
+import static com.ehelpy.brihaspati4.XMLhandler2.XMLWriter.writer;
 
 public class Replicate {
     /**

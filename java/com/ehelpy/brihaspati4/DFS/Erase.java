@@ -1,9 +1,9 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
 import java.io.File;
 import java.io.IOException;
 
-import static DbaseAPI.file.DeleteRecord;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.DeleteRecord;
 /**
  * Class responsible for performing Delete from local disk
  * This class deletes the file from local disk on request from the user
