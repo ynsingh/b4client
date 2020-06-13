@@ -1,10 +1,10 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
-import Communication.Sender;
-import DbaseAPI.Reassembly;
-import DbaseAPI.TLVParser;
-import Encryption.Encrypt;
-import Encryption.Hash;
+import com.ehelpy.brihaspati4.comnmgr.Sender;
+import com.ehelpy.brihaspati4.DbaseAPI.Reassembly;
+import com.ehelpy.brihaspati4.DbaseAPI.TLVParser;
+import com.ehelpy.brihaspati4.Encryption.Encrypt;
+import com.ehelpy.brihaspati4.Encryption.Hash;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -13,10 +13,10 @@ import com.ehelpy.brihaspati4.authenticate.emailid;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.routingmgmt.GiveNextHop;
 
-import static DbaseAPI.Reassembly.stichfiles;
-import static DbaseAPI.file.*;
-import static Encryption.Hash.comparehash;
-import static XMLhandler2.XMLWriter.writer;
+import static com.ehelpy.brihaspati4.DbaseAPI.Reassembly.stichfiles;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.*;
+import static com.ehelpy.brihaspati4.Encryption.Hash.comparehash;
+import static com.ehelpy.brihaspati4.XMLhandler2.XMLWriter.writer;
 
 /**
  * Class responsible for performing Download.

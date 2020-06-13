@@ -1,4 +1,4 @@
-package DbaseAPI;
+package com.ehelpy.brihaspati4.DbaseAPI;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

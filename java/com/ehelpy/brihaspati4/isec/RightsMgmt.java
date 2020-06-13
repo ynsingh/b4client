@@ -1,4 +1,4 @@
-package isec;
+package com.ehelpy.brihaspati4.isec;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

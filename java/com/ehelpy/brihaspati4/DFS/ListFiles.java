@@ -1,4 +1,4 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

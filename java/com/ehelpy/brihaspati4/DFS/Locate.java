@@ -1,14 +1,14 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
-import Communication.Sender;
+import com.ehelpy.brihaspati4.comnmgr.Sender;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import static DbaseAPI.file.readdata;
-import static XMLhandler2.XMLWriter.writer;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.readdata;
+import static com.ehelpy.brihaspati4.XMLhandler2.XMLWriter.writer;
 
 /**
  * Class responsible for locating the segment in the  local Disk.

@@ -1,6 +1,6 @@
-package Communication;
+package com.ehelpy.brihaspati4.comnmgr;
 
-import XMLhandler2.XMLReader;
+import com.ehelpy.brihaspati4.XMLhandler2.XMLReader;
 
 import java.io.*;
 import java.net.ServerSocket;
