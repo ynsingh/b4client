@@ -1,4 +1,4 @@
-package XMLhandler2;
+package com.ehelpy.brihaspati4.XMLhandler2;
 
 public class ReadObject {
     private int id;

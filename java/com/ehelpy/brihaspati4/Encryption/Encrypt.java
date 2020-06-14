@@ -1,6 +1,6 @@
-package Encryption;
+package com.ehelpy.brihaspati4.Encryption;
 
-import DbaseAPI.TLVParser;
+import com.ehelpy.brihaspati4.DbaseAPI.TLVParser;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

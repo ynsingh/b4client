@@ -1,7 +1,7 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
-import Communication.Sender;
-import Encryption.Hash;
+import com.ehelpy.brihaspati4.comnmgr.Sender;
+import com.ehelpy.brihaspati4.Encryption.Hash;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -10,9 +10,9 @@ import com.ehelpy.brihaspati4.authenticate.emailid;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;
 import com.ehelpy.brihaspati4.routingmgmt.GiveNextHop;
 
-import static DbaseAPI.file.DeleteRecord;
-import static DbaseAPI.file.csvreader;
-import static XMLhandler2.XMLWriter.writer;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.DeleteRecord;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.csvreader;
+import static com.ehelpy.brihaspati4.XMLhandler2.XMLWriter.writer;
 /**
  * Class responsible for performing Delete.
  * This class deletes the file from DFS cloud.

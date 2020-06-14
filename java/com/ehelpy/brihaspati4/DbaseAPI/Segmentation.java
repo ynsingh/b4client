@@ -1,4 +1,4 @@
-package DbaseAPI;
+package com.ehelpy.brihaspati4.DbaseAPI;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static DbaseAPI.file.*;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.*;
 
 public class Segmentation {
 

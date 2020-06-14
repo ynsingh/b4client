@@ -1,10 +1,10 @@
-package XMLhandler2;
+package com.ehelpy.brihaspati4.XMLhandler2;
 
-import DFSnew.Download;
-import DFSnew.Erase;
-import DFSnew.Locate;
-import DFSnew.Store;
-import ReplicaMgt.Replicate;
+import com.ehelpy.brihaspati4.DFS.Download;
+import com.ehelpy.brihaspati4.DFS.Erase;
+import com.ehelpy.brihaspati4.DFS.Locate;
+import com.ehelpy.brihaspati4.DFS.Store;
+import com.ehelpy.brihaspati4.ReplicaMgt.Replicate;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;

@@ -1,4 +1,4 @@
-package Encryption;
+package com.ehelpy.brihaspati4.Encryption;
 
 import java.io.IOException;
 import java.security.*;
@@ -6,8 +6,9 @@ import java.security.spec.InvalidKeySpecException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
-import DbaseAPI.TLVParser;
-import static isec.MsgIntegrity.SIGN_SHA_256_RSA;
+import com.ehelpy.brihaspati4.DbaseAPI.TLVParser;
+import com.ehelpy.brihaspati4.isec.MsgIntegrity;
+import static com.ehelpy.brihaspati4.isec.MsgIntegrity.SIGN_SHA_256_RSA;
 /**
  * <h1>GenerateKeys</h1>
  * Class responsible for Generating all type of keys
@@ -79,7 +80,7 @@ public class GenerateKeys {
         //get the private key of user
         PrivateKey privatekey = Encrypt.getPrivate();
         // sign the hash using privatekey with SHA-256
-        byte[] signedHash = isec.MsgIntegrity.getSignature(input,privatekey,SIGN_SHA_256_RSA);
+        byte[] signedHash = MsgIntegrity.getSignature(input,privatekey,SIGN_SHA_256_RSA);
         // frame the signed hash in TLV format and return it
         return TLVParser.startFraming(signedHash,1);
     }
@@ -104,7 +105,7 @@ public class GenerateKeys {
         // get the users public key
         PublicKey publicKey = Encrypt.getPublic();//TODO - take publickey from certificate
         // call teh verifysignature method to verify  signed hash
-        boolean hashSigned = isec.MsgIntegrity.verifySignature
+        boolean hashSigned = MsgIntegrity.verifySignature
                 (hashComputed,signedHash,publicKey,SIGN_SHA_256_RSA);
         return hashSigned;
     }

@@ -1,7 +1,7 @@
-package Encryption;
+package com.ehelpy.brihaspati4.Encryption;
 
 
-import DFSnew.Locate;
+import com.ehelpy.brihaspati4.DFS.Locate;
 
 import java.io.*;
 

@@ -1,4 +1,4 @@
-package Communication;
+package com.ehelpy.brihaspati4.comnmgr;
 
 import java.io.*;
 import java.net.Socket;

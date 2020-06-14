@@ -1,20 +1,20 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
-import Communication.Sender;
-import DbaseAPI.Segmentation;
-import DbaseAPI.TLVParser;
-import Encryption.Encrypt;
-import Encryption.GenerateKeys;
-import Encryption.Hash;
+import com.ehelpy.brihaspati4.comnmgr.Sender;
+import com.ehelpy.brihaspati4.DbaseAPI.Segmentation;
+import com.ehelpy.brihaspati4.DbaseAPI.TLVParser;
+import com.ehelpy.brihaspati4.Encryption.Encrypt;
+import com.ehelpy.brihaspati4.Encryption.GenerateKeys;
+import com.ehelpy.brihaspati4.Encryption.Hash;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import static DbaseAPI.file.*;
-import static Encryption.Encrypt.concat;
-import static Encryption.Hash.hashgenerator;
-import static XMLhandler2.XMLWriter.writer;
+import static com.ehelpy.brihaspati4.DbaseAPI.file.*;
+import static com.ehelpy.brihaspati4.Encryption.Encrypt.concat;
+import static com.ehelpy.brihaspati4.Encryption.Hash.hashgenerator;
+import static com.ehelpy.brihaspati4.XMLhandler2.XMLWriter.writer;
 
 import com.ehelpy.brihaspati4.routingmgmt.GiveNextHop;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationUtilityMethods;

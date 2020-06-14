@@ -1,14 +1,14 @@
-package DFSnew;
+package com.ehelpy.brihaspati4.DFS;
 
-import Communication.Receiver;
-import ReplicaMgt.Monitor;
+import com.ehelpy.brihaspati4.comnmgr.Receiver;
+import com.ehelpy.brihaspati4.ReplicaMgt.Monitor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import static DFSnew.Upload.start;
+import static com.ehelpy.brihaspati4.DFS.Upload.start;
 
 public class DFSUI extends JFrame
 {
