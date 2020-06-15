@@ -10,6 +10,7 @@ import com.ehelpy.brihaspati4.authenticate.properties_access;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.Address_Book.Display_Window_After_Login;
 import com.ehelpy.brihaspati4.Address_Book.import_database;
+import com.ehelpy.brihaspati4.screencast.Gui;
 import com.ehelpy.brihaspati4.sms.SMS_Window;
 import com.ehelpy.brihaspati4.sms.Send_SMS_Window;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
@@ -48,6 +49,7 @@ public class B4services {
 	public static boolean b4services_window_open = false;
 	public static boolean display_window_open = false;
 	public static boolean voip_gui_window = false;
+	public static boolean ss_gui_window = false;
 	public static boolean address_book_new_entry_window = false;
 	public static boolean address_book_show_details_window = false;
 	public static boolean address_book_search_window = false;
@@ -216,8 +218,8 @@ public class B4services {
 		BServices.getContentPane().add(NewRadioButton_3);
 	
 		///////////////////////////////////////////////////////////////////////////////////
-/*		JRadioButton NewRadioButton_4 = new JRadioButton("DFS");
-		NewRadioButton_2.addActionListener(new ActionListener() {
+		JRadioButton NewRadioButton_4 = new JRadioButton("SCREEN SHARE");
+		NewRadioButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				token = 5;
@@ -226,9 +228,10 @@ public class B4services {
 		NewRadioButton_4.setBackground(Color.YELLOW);
 		NewRadioButton_4.setForeground(Color.blue);
 		NewRadioButton_4.setFont(new Font("Tahoma", Font.BOLD, 20));
-		NewRadioButton_4.setBounds(8, 225, 127, 25);
+		NewRadioButton_4.setBounds(8, 225, 207, 25);
+		NewRadioButton_4.setBounds(8, 225, 207, 25);
 		BServices.getContentPane().add(NewRadioButton_4);
-		*/
+
 		////////////////////////////////////////////////////////////////////////////////////////////
 		JRadioButton NewRadioButton_5 = new JRadioButton("DFS");
 		NewRadioButton_5.addActionListener(new ActionListener() {
@@ -241,8 +244,8 @@ public class B4services {
 		NewRadioButton_5.setBackground(Color.YELLOW);
 		NewRadioButton_5.setForeground(Color.BLUE);
 		NewRadioButton_5.setFont(new Font("Tahoma", Font.BOLD, 20));
-		NewRadioButton_5.setBounds(8, 225, 127, 25);
-	//	NewRadioButton_5.setBounds(8, 270, 127, 25);
+		NewRadioButton_5.setBounds(8, 325, 127, 25);
+		NewRadioButton_5.setBounds(8, 325, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_5);
 		//////////////////////////////////////////////////////////////////////////////////
 		JRadioButton NewRadioButton_6 = new JRadioButton("Search");
@@ -256,7 +259,7 @@ public class B4services {
 		NewRadioButton_6.setBackground(Color.YELLOW);
 		NewRadioButton_6.setForeground(Color.BLUE);
 		NewRadioButton_6.setFont(new Font("Tahoma", Font.BOLD, 20));
-	//	NewRadioButton_6.setBounds(8, 320, 127, 25);
+		NewRadioButton_6.setBounds(8, 320, 127, 25);
 		NewRadioButton_6.setBounds(8, 270, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_6);
 
@@ -265,7 +268,7 @@ public class B4services {
 	    bG.add(NewRadioButton_1);
 	    bG.add(NewRadioButton_2);
 	    bG.add(NewRadioButton_3);
-	//    bG.add(NewRadioButton_4);
+	    bG.add(NewRadioButton_4);
 	    bG.add(NewRadioButton_5);
 		bG.add(NewRadioButton_6);
 	    
@@ -324,15 +327,20 @@ public class B4services {
 					obj.setVisible(true);
 	    			
 	    		}
-	/*		if (token == 0)
-	    		{
+			if (token == 5)
+	    		{ System.out.println("token selected for screen share++++++++++++++++++++++++++++++++++++++++");
 	    			b4services_window_open = false;
 	    			BServices.setVisible(false);
 					BServices.dispose();
+					System.out.println("token selected for screen share++++++++++++++++++++++++++++++++++++++++");
+					try {
+						Gui.start();
 
-					DFS_gui.main();
-	    		}
-			*/
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+
 			if(token == 6)
     			{
     			    b4services_window_open = false;
@@ -347,7 +355,7 @@ public class B4services {
 	    
 	    
 	    btnOk.setFont(new Font("Calibri", Font.BOLD, 18));
-	    btnOk.setBounds(105, 304, 74, 25);
+	    btnOk.setBounds(105, 374, 74, 25);
 	    BServices.getContentPane().add(btnOk);
 	    
 	    JButton btnCancel = new JButton("CANCEL");
@@ -387,7 +395,7 @@ public class B4services {
 	    	}
 	    });
 	    btnCancel.setFont(new Font("Calibri", Font.BOLD, 18));
-	    btnCancel.setBounds(274, 304, 113, 25);
+	    btnCancel.setBounds(274, 374, 113, 25);
 	    BServices.getContentPane().add(btnCancel);
 	    
 	    String email_id=emailid.getemaild();
