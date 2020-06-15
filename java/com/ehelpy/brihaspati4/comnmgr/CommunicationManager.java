@@ -18,6 +18,8 @@ import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 public class CommunicationManager extends Thread
 {
 
+    private static CommunicationManager comnmgr;
+
     // Create Receiving Buffer for putting all the received xml files from previous Comm Manager
     public static LinkedList<File> ReceivingBuffer = new LinkedList<File>();
     public static Object lock_RecBuff_Main = new Object();
@@ -25,7 +27,6 @@ public class CommunicationManager extends Thread
     // Create TransmittingBuffer for putting all the received xml files for next hop;
     public static LinkedList<File> TransmittingBuffer = new LinkedList<File>();
     public static Object lock_TransBuff_Main = new Object();
-
 
     // Creating buffers for OM/RT/IM. Xml files will be put based on tag in respective buffer
     public static LinkedList<File> RxBufferOM = new LinkedList<File>();
@@ -47,7 +48,15 @@ public class CommunicationManager extends Thread
     public static List<String> succ = new LinkedList<String>();
     public static List<String> pred = new LinkedList<String>();
 
-    public void  run()
+    public static CommunicationManager getComnMgr()
+    {
+        // If the singleton object does not exist, create one.
+        if (comnmgr == null) comnmgr = new CommunicationManager();
+        // return the object reference of CommunicationManager Singleton.
+        return comnmgr;
+    }
+
+    public void run()
     {
 
         Thread t0= new Thread

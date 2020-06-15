@@ -25,6 +25,9 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 import com.ehelpy.brihaspati4.voip.voip_rxcall;
+
+import com.ehelpy.brihaspati4.DFS.DFSUI;
+
 import java.awt.Color;
 
 import java.net.InetSocketAddress;
@@ -213,7 +216,7 @@ public class B4services {
 		BServices.getContentPane().add(NewRadioButton_3);
 	
 		///////////////////////////////////////////////////////////////////////////////////
-		JRadioButton NewRadioButton_4 = new JRadioButton("DFS");
+/*		JRadioButton NewRadioButton_4 = new JRadioButton("DFS");
 		NewRadioButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -225,15 +228,47 @@ public class B4services {
 		NewRadioButton_4.setFont(new Font("Tahoma", Font.BOLD, 20));
 		NewRadioButton_4.setBounds(8, 225, 127, 25);
 		BServices.getContentPane().add(NewRadioButton_4);
+		*/
+		////////////////////////////////////////////////////////////////////////////////////////////
+		JRadioButton NewRadioButton_5 = new JRadioButton("DFS");
+		NewRadioButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				token = 6;
+				
+				}
+			
+		});
+		NewRadioButton_5.setBackground(Color.YELLOW);
+		NewRadioButton_5.setForeground(Color.BLUE);
+		NewRadioButton_5.setFont(new Font("Tahoma", Font.BOLD, 20));
+		NewRadioButton_5.setBounds(8, 225, 127, 25);
+	//	NewRadioButton_5.setBounds(8, 270, 127, 25);
+		BServices.getContentPane().add(NewRadioButton_5);
 		//////////////////////////////////////////////////////////////////////////////////
+		JRadioButton NewRadioButton_6 = new JRadioButton("Search");
+		NewRadioButton_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				token = 7;
+
+			}
+
+		});
+		NewRadioButton_6.setBackground(Color.YELLOW);
+		NewRadioButton_6.setForeground(Color.BLUE);
+		NewRadioButton_6.setFont(new Font("Tahoma", Font.BOLD, 20));
+	//	NewRadioButton_6.setBounds(8, 320, 127, 25);
+		NewRadioButton_6.setBounds(8, 270, 127, 25);
+		BServices.getContentPane().add(NewRadioButton_6);
 
 		ButtonGroup bG = new ButtonGroup();
 	    bG.add(NewRadioButton);
 	    bG.add(NewRadioButton_1);
 	    bG.add(NewRadioButton_2);
 	    bG.add(NewRadioButton_3);
-	    bG.add(NewRadioButton_4);
-
+	//    bG.add(NewRadioButton_4);
+	    bG.add(NewRadioButton_5);
+		bG.add(NewRadioButton_6);
+	    
 	    JButton btnOk = new JButton("OK");
 	    btnOk.addActionListener(new ActionListener() 
 	      {
@@ -260,7 +295,24 @@ public class B4services {
 					
 					voip_gui.main();
 					
-					}				
+					}
+				 if(token == 7)
+				 {
+					 b4services_window_open = false;
+					 BServices.setVisible(false);
+					 BServices.dispose();
+
+					 try
+					 {
+						 com.ehelpy.brihaspati4.Distributed_Search.SearchClient_v4.main( );
+					 }
+					 catch (IOException e1)
+					 {
+						 // TODO Auto-generated catch block
+						 e1.printStackTrace();
+					 }
+
+				 }
 					
 	    		if (token == 3)
 	    		{
@@ -272,7 +324,7 @@ public class B4services {
 					obj.setVisible(true);
 	    			
 	    		}
-			if (token == 0)
+	/*		if (token == 0)
 	    		{
 	    			b4services_window_open = false;
 	    			BServices.setVisible(false);
@@ -280,8 +332,15 @@ public class B4services {
 
 					DFS_gui.main();
 	    		}
-	    		
-	    		
+			*/
+			if(token == 6)
+    			{
+    			    b4services_window_open = false;
+    			    BServices.setVisible(false);
+				    BServices.dispose();
+				    DFSUI.main();
+    			}
+	    				
 			}
 	    			
 	      });
