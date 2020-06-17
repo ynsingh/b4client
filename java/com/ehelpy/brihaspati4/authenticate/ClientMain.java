@@ -20,6 +20,8 @@ import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 import com.ehelpy.brihaspati4.DFS.DistFileSys;
 import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
+import com.ehelpy.brihaspati4.comnmgr.NATServer;
+import com.ehelpy.brihaspati4.comnmgr.NATHandler; 
 
 public class ClientMain extends Thread {
     private static X509Certificate client_cert = null;
@@ -111,6 +113,15 @@ public class ClientMain extends Thread {
             // DHTRouter dhtr = DHTRouter.getDHTRouter();
             // RTManager rtmgr = RTManager.getRTManager();
             // DHTable dhtable = DHTable.getDHTable();
+		// start the nat server
+            boolean bootflg = Config.getConfigObject().getBootValue();
+            if(bootflg == true){
+                NATServer ns=new NATServer();
+                ns.start();
+            }else{
+                NATHandler nh=new NATHandler();
+                nh.callNATHandler();
+            }
 
             // debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
             // sms_methods.choose_loc();
