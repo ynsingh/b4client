@@ -1,10 +1,8 @@
 package com.ehelpy.brihaspati4.screencast;
 // lt col jitesh ps updated this on 14 june 2020 ; 0700 Hrs
 //this code is for declaring for common functions which can be used for general activities like pinging , get instances
-//import core.isec.MsgIntegrity;
-//import core.isec.RightsMgmt;
-//import core.isec.RightsMgmt;
-//import core.isec.RightsMgmt;
+import com.ehelpy.brihaspati4.isec.MsgIntegrity;
+import com.ehelpy.brihaspati4.isec.RightsMgmt;
 //import core.port.Datagram;
 //import core.port.TcpClient;
 //import core.port.TcpServer;

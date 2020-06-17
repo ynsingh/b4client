@@ -4,7 +4,7 @@ package com.ehelpy.brihaspati4.screencast;
 //import auxx.TestMain;
 //import cast.HostSetup;
 //import cast.host.InitConnection;
-//import core.isec.RightsMgmt;
+//import com.ehelpy.brihaspati4.isec.RightsMgmt;
 //import core.port.Datagram;
 //import core.port.UdpMaster;
 
