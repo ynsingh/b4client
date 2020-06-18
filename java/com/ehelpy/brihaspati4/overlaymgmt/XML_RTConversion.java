@@ -20,6 +20,9 @@ import java.math.BigInteger;
 	import org.xml.sax.SAXException;
 
 	import java.io.File;
+	import java.io.FileReader;
+	import java.io.BufferedReader;
+	import java.io.FileNotFoundException;
 	import java.io.IOException;
 	import java.lang.String;
 	import java.lang.StringBuffer;
@@ -214,33 +217,44 @@ public class XML_RTConversion {
 				}
 	
 		
-	//************************ Obtain (EXTRACT) Self NodeID from NewSelfRouteTable
-		public String getSelfNodeID(){
+	//************************ Obtain (EXTRACT) Self NodeID from NewSelfRouteTable/NodeID.txt
+	public String getSelfNodeID(){
 			
-			String SelfNodeID = null;			
-			
-					try{
-										
-							String path = "NewSelfRouteTable.xml";
-							//System.out.println(path);
-							File inputFile = new File(path);
-							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-							Document doc = dBuilder.parse(inputFile);
-							doc.getDocumentElement().normalize();
-							SelfNodeID = doc.getDocumentElement().getAttribute("LocalNodeID");
+		String SelfNodeID = null;			
+	
+		try{
+                        BufferedReader br = new BufferedReader(new FileReader("NodeID.txt"));
+                        SelfNodeID=br.readLine();
+                }
+                catch(FileNotFoundException fnfex){
+                        System.out.println(fnfex);
+                }
+                catch(IOException ioex){
+                        System.out.println(ioex);
+                }
+/*	
+ 		// This code may be used in later need to be tested
+		try{
+			String path = "NewSelfRouteTable.xml";
+			//System.out.println(path);
+			File inputFile = new File(path);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+			SelfNodeID = doc.getDocumentElement().getAttribute("LocalNodeID");
 							
-							System.out.println("Fetching Self NodeID from NewSelfRouteTable.xml  : " + SelfNodeID);
-							System.out.println("");
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-											
-			return SelfNodeID;
+			System.out.println("Fetching Self NodeID from NewSelfRouteTable.xml  : " + SelfNodeID);
+			System.out.println("");
 		}
-
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+*/											
+		return SelfNodeID;
 	}
+
+}
 
 
 

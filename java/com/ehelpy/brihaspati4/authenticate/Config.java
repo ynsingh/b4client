@@ -1,4 +1,5 @@
 package com.ehelpy.brihaspati4.authenticate ;
+
 /* License -
 * Design - YNSingh (2016)
 * Implementation - Seemanti (2016), Chetna (2016)
@@ -13,11 +14,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 //import com.ehelpy.brihaspati4.security;
+
 @SuppressWarnings("unused")
 
 public class Config {
 
-    // Config initialization from configuration file during object creation by the constructor of Config.
+    // Config initialization from configuration file during object creation by the
+    // constructor of Config.
     // Config_object will keep the data after reading from configuration file.
     // On each change, the data should be written back to config file also. It implies, in each
     // write api, write to config file on disk is to be implemented.
@@ -30,12 +33,11 @@ public class Config {
     // location of routing table in local disk storage for client. It is relative to $user_home.
     // example {$user_home}/brihaspati4/routetable.txt
 
-    private static Config configObject;
 
     // *paths and files.*
-
+    private static Config config;
     private String home_dir = System.getProperty("user.home");
-    private String path = "client.properties";
+    private String path; 
     private String SCSS_uri;
 
     // URI for secure certificate signing service access for local client.
@@ -84,7 +86,7 @@ public class Config {
 
     private int CtrlConsoleOut;
 
-    // *Ports for the system* 
+    // *Ports for the system*
 
     private int UDP_port=9000, TCP_port=9001, http_port=9002, https_port=9003;
 
@@ -97,16 +99,13 @@ public class Config {
     public String keystorelocation;
     public String keystorepass;
 
-    public static Config getConfigObject()
+    private boolean Boot_Strp_Value;
+
+    public static synchronized Config getConfigObject()
     {
-        try
-        {
-            if (configObject ==null)
-                configObject = new Config();
-        }
-        catch(Exception e) {}
-        return configObject;
-    }
+        if(config ==null) config = new Config();
+        return config;
+    } 
 
     public Config()
     {
@@ -170,6 +169,8 @@ public class Config {
 
             CtrlConsoleOut = Integer.parseInt(getConfigParamValue(path,"CtrlConsoleOut"));
 
+            Boot_Strp_Value = Boolean.parseBoolean(getConfigParamValue(path,"Botstrp"));
+
             Last_Logout_time = getConfigParamValue(path,"LastLogoutTime.value");
         }
         catch(Exception e) {}
@@ -186,7 +187,7 @@ public class Config {
         return(val);
     }
 
-    public static void setConfigParamValue(String path,String Value,String key)
+    public void setConfigParamValue(String path,String Value,String key)
     {
         try
         {
@@ -228,6 +229,10 @@ public class Config {
 
     public String getLastLogoutTime() {
         return Last_Logout_time;
+    }
+
+    public boolean getBootValue() {
+        return Boot_Strp_Value;
     }
 
     public void saveLastLogoutTime(String logoutDatetime) {

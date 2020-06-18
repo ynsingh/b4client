@@ -30,6 +30,7 @@ public class ReadVerifyCert {
     private static String keyStorePass ;
     private static String keystorealias;
     private static	Certificate[] cert = null;
+
     public static KeyStore loadKeyStore(String keystorealias, String password) {
         //Before a key store can be accessed, it must be loaded.
         if (password == null || keystorealias == null || keystorealias.equals(""))
@@ -92,8 +93,17 @@ public class ReadVerifyCert {
         boolean status = true;// flag for certificate status
         boolean flag = false;
         do {
-            keyStorePass = Gui.getkeystorepass();
-            keystorealias = Gui.getaliasname();
+		boolean bootflg = Config.getConfigObject().getBootValue();
+		if(bootflg == true){
+		// check it is bootstrap
+			keyStorePass = Config.getConfigObject().getConfigParamValue("botstrp.properties","passwd");
+			keystorealias = Config.getConfigObject().getConfigParamValue("botstrp.properties","alias");
+		// if yes then get the values
+		}else{
+		// else
+            		keyStorePass = Gui.getkeystorepass();
+            		keystorealias = Gui.getaliasname();
+		}
             keystore = loadKeyStore(keystorealias, keyStorePass);
             if (keystore == null) {
                 X509Certificate newcert = GenerateCertificate2.createSelfSignedCert();

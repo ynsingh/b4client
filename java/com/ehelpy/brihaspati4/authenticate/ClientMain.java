@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import com.ehelpy.brihaspati4.voip.B4services;
+
+import com.ehelpy.brihaspati4.DFS.DFSUI;
+
 import com.ehelpy.brihaspati4.indexmanager.IndexManagement;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.indexmanager.IndexManagementUtilityMethods;
@@ -17,21 +20,18 @@ import com.ehelpy.brihaspati4.sms.sms_retrival_thread;
 import com.ehelpy.brihaspati4.sms.sms_send_rec_management;
 import com.ehelpy.brihaspati4.DFS.DistFileSys;
 import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
+import com.ehelpy.brihaspati4.comnmgr.NATServer;
+import com.ehelpy.brihaspati4.comnmgr.NATHandler; 
 
 public class ClientMain extends Thread {
     private static X509Certificate client_cert = null;
     private static X509Certificate server_cert = null;
     private static boolean flagset = false;
-    public static int CtrlConsoleOut=0;
+    private static int CtrlConsoleOut=0;
 
     public static void main(String args[]) throws Exception
     {
-        // X509Certificate client_cert = null;
-        // X509Certificate server_cert = null;
-        // boolean flagset = false;
-        // int CtrlConsoleOut=0;
-
-	// @SuppressWarnings("unused")
+        // @SuppressWarnings("unused")
 
         // Create a singleton global object and set run status as true.
         // GlobalObject will keep status of various threads and run status. This will be used
@@ -40,28 +40,41 @@ public class ClientMain extends Thread {
         GlobalObject globj= GlobalObject.getGlobalObject();
         globj.setRunStatus(true);
 
-        Config conf=Config.getConfigObject();
-        // Config initialization from configuration file done during call of the constructor of Config.
+        // Configuration object created and object referece is saved in
+        // GlobalObject.
+        Config conf= Config.getConfigObject();
+
+        // Config initialization from configuration file done during call of the
+        // constructor of Config.
         // Config_object will keep the data after reading from configuration file.
-        // On each change, the data should be written back to config file also.
+        // On each change, the data should also be written back to config file.
         // It implies, in each write api, write to config file on disk is to be implemented.
-        // debug level to be read from Config object which in turn to be read from configuration file. Can be modified in GUI, which
-        // will update it in the configuration file.
+        // Debug level (CtrlConsoleOut) is read from Config object which in
+        // turn is to be read from configuration file.
+        // Can be modified in GUI, which will update it in the configuration file.
 
         CtrlConsoleOut = conf.getCtrlConsoleOut();
 
-        SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
-        UpdateIP IPUpdate = new UpdateIP();
-        IPUpdate.start();
-        IPUpdate.setName("IPUpdate");
-        SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
+        /* Commented - to be removed when the branch is to be finally merged to
+         * the master.
+         */
+        	SysOutCtrl.SysoutSet("iptable initiated"+CommunicationManager.myIpTable);
+                UpdateIP IPUpdate = new UpdateIP();
+                IPUpdate.start();
+                IPUpdate.setName("IPUpdate");
+                SysOutCtrl.SysoutSet("Thread Id : "+IPUpdate.getName(), 1);
+        /* */
 
         boolean timeflg=dateTimeCheck.checkDate();
-        // Date and time is to be checked. It should be same as on standard time server
-        // or greater than equal to last logout date time value.
-        // If the time flag returns false (in case the above conditions fails)
-        // then exit the user from the system
-        // otherwise start the services.
+        /* Date and time is to be checked. It should be same as on standard time
+        * server or greater than equal to last logout date time value.  If the returns
+        * value false (in case the above conditions fails) then exit the user from the
+        * system with advise to user to correct the system date and time. otherwise
+        * start the services.
+        */
+
+        // Start the singleton object for UI
+        // UIObject ui = UIObject.getUIObject();
 
         if (!timeflg) {
             String msg = "Please reset your system time and try again." ;
@@ -71,15 +84,13 @@ public class ClientMain extends Thread {
         else {
             try {
                 flagset = ReadVerifyCert.verifyCert();
-                // check if there is valid certificate in the client. Also userID identified by this
-                // certificate. In case of invalid certificate, the ReadVerifyCert object should do
-                // credential verification, new certificate generation. If every thing fails, false flag
-                // should be returned.
+                // check if there is valid certificate is present in the keystore of of the client.
+                // In case of invalid certificate, new certificate generation and identity verification should be done.
 
                 client_cert = ReadVerifyCert.returnClientCert();
                 server_cert = ReadVerifyCert.returnServerCert();
-                //                  debug_level.debug(0,"clientcertsaved is =" + client_cert );
-                //                debug_level.debug(0,"servercertsaved is =" + server_cert );
+                // debug_level.debug(0,"clientcertsaved is =" + client_cert );
+                // debug_level.debug(0,"servercertsaved is =" + server_cert );
                 String email_id=emailid.getemaild();
                 debug_level.debug(0,"My Email-Id is =" + email_id );
 
@@ -95,13 +106,30 @@ public class ClientMain extends Thread {
             }
         }
         if(flagset) {
-            // 	debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
-            //   sms_methods.choose_loc();
-            //  	sms_send_rec_management.empty_cache_folder();
-            //  	sms_send_rec_management.empty_rec_folder();
+            // get singleton object for DHTRouter, RTManager, DHTable,
+            // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
+            // IndexingMgr, KeyCache, SearchEngine, ContentCache,
+            // Broadcast-RWRouter.
+            // DHTRouter dhtr = DHTRouter.getDHTRouter();
+            // RTManager rtmgr = RTManager.getRTManager();
+            // DHTable dhtable = DHTable.getDHTable();
+		// start the nat server
+            boolean bootflg = Config.getConfigObject().getBootValue();
+            if(bootflg == true){
+                NATServer ns=new NATServer();
+                ns.start();
+            }else{
+                NATHandler nh=new NATHandler();
+                nh.callNATHandler();
+            }
+
+            // debug_level.debug(0,"The private key of client is  =" + ReadVerifyCert.getKeyPair() );
+            // sms_methods.choose_loc();
+            // sms_send_rec_management.empty_cache_folder();
+            // sms_send_rec_management.empty_rec_folder();
             IndexManagementUtilityMethods.Ip_txt_empty();
             // call objects and methods from classes of - communication
-//            CommunicationManager cm= CommunicationManager.getCM(); //todo
+            //            CommunicationManager cm= CommunicationManager.getCM(); //todo
             CommunicationManager cm= new CommunicationManager();
             cm.start();
             // Communication manager thread started. The thread will have buffers to keep incoming messages
@@ -171,6 +199,7 @@ public class ClientMain extends Thread {
             // All generic services Interface
             // VOIP call, storage services, messaging service
             // }
+            DFSUI.essentials();
         }
         while(globj.getRunStatus()) {
             Thread.sleep(30000);
