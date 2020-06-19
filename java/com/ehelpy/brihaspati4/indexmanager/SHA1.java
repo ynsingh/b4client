@@ -7,18 +7,6 @@ import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 
 public class SHA1 {
 
-    public static void main(String[] argv) {
-
-        String value = "singhnk@iitk.ac.in";
-        SysOutCtrl.SysoutSet( "The sha1 of \""+ value + "\" is:",2);
-        String sha1=getSha1(value);
-        System.out.println(""+sha1);
-        SysOutCtrl.SysoutSet( ""+sha1 );
-
-    }
-
-
-
     public static String getSha1(String value)
     {
 
