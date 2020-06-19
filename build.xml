@@ -117,10 +117,10 @@
 	</target>
 
 	 <target name="javadoc" description="javadoc documentation">
-		 <!--                <javadoc destdir="build/javadoc" version="true" author="true" access="public" -->
-			 <javadoc destdir="build/javadoc" version="true" author="true" access="public"
+			 <javadoc destdir="javadoc" version="true" author="true" access="public"
                          doctitle="Brihaspati4 Api" windowtitle="Brihaspati4  Api"
-                         bottom="Copyright &#169; 2020 Brihaspati Group IIT Kanpur. All Right Reserved.">
+			 bottom="Copyright &#169; 2020 Brihaspati Group IIT Kanpur. All Right Reserved.">
+			 <classpath refid="src.classpath"/>
                         <fileset dir="java/com/ehelpy/brihaspati4/" defaultexcludes="yes">
                         </fileset>
                         <fileset dir="java/" defaultexcludes="yes">
