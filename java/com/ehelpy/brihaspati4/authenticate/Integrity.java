@@ -114,15 +114,11 @@ public class Integrity
     		System.out.println(sb.toString());
     		macaddr=sb.toString();
 
-    	} catch (UnknownHostException e) {
+    	} catch (Exception e) {
 
     		e.printStackTrace();
 
-    	} catch (SocketException e){
-
-    		e.printStackTrace();
-
-    	}
+    	} 
     	return macaddr;
     }
     /* This method is used to get Node ID of Device
