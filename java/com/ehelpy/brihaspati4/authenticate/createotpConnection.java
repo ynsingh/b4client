@@ -8,14 +8,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
-//This program was last modified by Lt Col Ankit Singhal Dated 22 May 2019 ; 1630 Hrs
+//This program was last modified Maj Dushyant Choudhary
 //This function send the OTP received to the Identity server for Authentication of the peer.
 public class createotpConnection   {
     private final static  String USER_AGENT = "Chrome";
     private static X509Certificate server_certificate =null;
     private static X509Certificate Client_certificate =null;
     // HTTP GET request
-    void sendGet(String urlmaster) throws Exception {
+    void sendGet(String urlmaster) throws Exception 
+    {
         URL obj = new URL(urlmaster);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         // optional default is GET
