@@ -1,37 +1,27 @@
 package com.ehelpy.brihaspati4.authenticate ;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.x509.X509Name;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.x509.X509Name;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 //Program rebuilt by Lt Col Ankit Singhal Dated 15 April 2019 ; 0600 Hrs
 //The private key generated is in PKCS8 format and public key in X509 format.
 //The Certificate uses SHA256WithRSA algorithm for signature, 2048 bit keys and is Version 3.
 //No extensions have been added to the generated certificate as of now and same may be added in future when the network grows 
 // to multiple layers as proper chaining of certificates will be required then. 
 @SuppressWarnings("deprecation")
-public class GenerateCertificate2 {	
+
+public class GenerateCertificate2 
+{	
     private static  String E = null;
     private static String OU = null;
     private static String O = null;
@@ -42,19 +32,27 @@ public class GenerateCertificate2 {
     static final char[] keyPass =null;
     public static PrivateKey privKey = null;
     static KeyPair keypair = null;
-    public static X509Certificate createSelfSignedCert() throws Exception {
+    
+    public static X509Certificate createSelfSignedCert() throws Exception 
+    {
     	Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-    	E = Gui.getemailid();
-      	OU = Gui.getorganizationalunit();
-        O = Gui.getorganization();
-        L = Gui.getcity();
-        ST = Gui.getstate();
-        C = Gui.getcountry();
+    	
+    	String formdata=Gui.createCertificateGUI();
+    	System.out.println("FORM DATA "+formdata);
+    	E = formdata.split(",")[0];
+      	OU = formdata.split(",")[1];
+        O = formdata.split(",")[2];
+        L = formdata.split(",")[3];
+        ST = formdata.split(",")[4];
+        C = formdata.split(",")[5];
         try {
             KeyStore keyStore = null;
-            try {
+            try 
+            {
                 keyStore = KeyStore.getInstance("JKS");
-                } catch (KeyStoreException e1) {
+            } 
+            catch (KeyStoreException e1) 
+            {
                 e1.printStackTrace();
             }
             try {
@@ -106,7 +104,8 @@ public class GenerateCertificate2 {
             c.add(Calendar.YEAR, 1);
             x500Name.setNotAfter(c.getTime());
             x500Name.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-            x500Name.setSignatureAlgorithm("SHA256WithRSAEncryption");
+           // x500Name.setSignatureAlgorithm("SHA256WithRSAEncryption");
+            x500Name.setSignatureAlgorithm("SHA1WithRSAEncryption");
             x500Name.setIssuerDN(issuerDN);
             x500Name.setSubjectDN(issuerDN);
             x500Name.setPublicKey(pubKey);
