@@ -80,7 +80,7 @@ public class CertificateSignature {
             reader.close();
             final String content = stringBuilder.toString();
             final createConnection http_3 = new createConnection();
-            http_3.sendJKSPost("http://localhost:8084/beans_b4server/ProcessRequest", content, certstring);
+            http_3.sendJKSPost("http://ictwiki.iitk.ac.in:8080/b4server/ProcessRequest", content, certstring);
             final String hash = Integrity.fileHash("SignedClientKeyStore.JKS");
             try {
                 final File auth = new File("authenticate.txt");
@@ -123,7 +123,7 @@ public class CertificateSignature {
         final byte[] certbyte = cert.getEncoded();
         final String certstringbyte = new String(Base64.getEncoder().encode(certbyte));
         debug_level.debug(1, "String format of recieved certificate for signatue is     :" + certstring);
-        final String mserverurl = "http://localhost:8084/beans_b4server";
+        final String mserverurl = "http://ictwiki.iitk.ac.in:8080/b4server";
         final String MSrequrl = mserverurl + "/ProcessRequest?req=ssccrevokecertsign&cert=" + URLEncoder.encode(certstring, "UTF-8") + "&certstringbyte=" + URLEncoder.encode(certstringbyte, "UTF-8") + "&deviceid=" + ClientMain.Device_Id + "&nodeid=" + ClientMain.Node_Id;
         System.out.println("Certificate String for POSTMAN " + certstring + " " + certstringbyte);
         debug_level.debug(1, MSrequrl);
@@ -151,7 +151,7 @@ public class CertificateSignature {
             reader.close();
             final String content = stringBuilder.toString();
             final createConnection http_3 = new createConnection();
-            http_3.sendJKSPost("http://localhost:8084/beans_b4server/ProcessRequest", content, certstring);
+            http_3.sendJKSPost("http://ictwiki.iitk.ac.in:8080/b4server/ProcessRequest", content, certstring);
             final String hash = Integrity.fileHash("SignedClientKeyStore.JKS");
             try {
                 final File auth = new File("authenticate.txt");

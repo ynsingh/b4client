@@ -98,26 +98,19 @@ public class Integrity
     	InetAddress ip;
     	try {
 
-    		ip = InetAddress.getLocalHost();
-    		System.out.println("Current IP address : " + ip.getHostAddress());
-
-    		NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-
+		String ipa=com.ehelpy.brihaspati4.routingmgmt.SystemIPAddress.getSystemIP();
+    		System.out.println("Current IP address : " + ipa);
+    		NetworkInterface network = NetworkInterface.getByInetAddress(InetAddress.getByName(ipa));
     		byte[] mac = network.getHardwareAddress();
-
-    		System.out.print("Current MAC address : ");
-
     		StringBuilder sb = new StringBuilder();
     		for (int i = 0; i < mac.length; i++) {
     			sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
     		}
-    		System.out.println(sb.toString());
+    		System.out.println("Current MAC address : "+sb.toString());
     		macaddr=sb.toString();
 
     	} catch (Exception e) {
-
     		e.printStackTrace();
-
     	} 
     	return macaddr;
     }
