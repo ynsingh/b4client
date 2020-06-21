@@ -10,7 +10,7 @@ public class GlobalObject {
     private static boolean Specific_status = false; //specific services not running
     private static boolean running_status = true;
 
-    public static GlobalObject getGlobalObject()
+    public static synchronized GlobalObject getGlobalObject()
     {
         if ( globalObject==null)
         {
