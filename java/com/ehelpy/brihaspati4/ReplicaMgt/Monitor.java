@@ -35,22 +35,14 @@ public class Monitor {
     {
         // open a server socket
         ServerSocket servsock = null;
-        try {
-            servsock = new ServerSocket(8880);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        Socket sock = null;
-        while(true){
-<<<<<<< HEAD
-        	try {
-            // accept the connection request on the server socket and move it to a socket
-            	sock = servsock.accept();
-        	} catch (IOException e) {
-            	e.printStackTrace();
-        	}
-      	}
-=======
+            try {
+                servsock = new ServerSocket(8888);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            Socket sock = null;
+            //loop to keep the socket open
+            while(true) {
             try {
                 // accept the connection request on the server socket and move it to a socket
                 sock = servsock.accept();
@@ -58,6 +50,5 @@ public class Monitor {
                 e.printStackTrace();
             }
         }
->>>>>>> 946bf187edcacde487fc12a71a049d1f63bd73c9
     }
 }
