@@ -42,6 +42,7 @@ public class Monitor {
         }
         Socket sock = null;
         while(true){
+<<<<<<< HEAD
         	try {
             // accept the connection request on the server socket and move it to a socket
             	sock = servsock.accept();
@@ -49,5 +50,14 @@ public class Monitor {
             	e.printStackTrace();
         	}
       	}
+=======
+            try {
+                // accept the connection request on the server socket and move it to a socket
+                sock = servsock.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+>>>>>>> 946bf187edcacde487fc12a71a049d1f63bd73c9
     }
 }
