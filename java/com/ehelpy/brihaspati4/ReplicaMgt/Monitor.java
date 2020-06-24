@@ -41,12 +41,23 @@ public class Monitor {
             e1.printStackTrace();
         }
         Socket sock = null;
-        try {
+        while(true){
+<<<<<<< HEAD
+        	try {
             // accept the connection request on the server socket and move it to a socket
-            sock = servsock.accept();
-        } catch (IOException e) {
-            e.printStackTrace();
+            	sock = servsock.accept();
+        	} catch (IOException e) {
+            	e.printStackTrace();
+        	}
+      	}
+=======
+            try {
+                // accept the connection request on the server socket and move it to a socket
+                sock = servsock.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        sock.close();
+>>>>>>> 946bf187edcacde487fc12a71a049d1f63bd73c9
     }
 }
