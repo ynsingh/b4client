@@ -2,11 +2,14 @@ package com.ehelpy.brihaspati4.DFS;
 
 import com.ehelpy.brihaspati4.comnmgr.Receiver;
 import com.ehelpy.brihaspati4.ReplicaMgt.Monitor;
+import com.ehelpy.brihaspati4.voip.B4services;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import static com.ehelpy.brihaspati4.DFS.Upload.start;
 
@@ -121,6 +124,29 @@ public class DFSUI extends JFrame
                 ListFiles.start();//reference to Upload.start()
             } catch (IOException ex) {
                 ex.printStackTrace();
+            }
+        });
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+        btnExit.addActionListener(e -> {
+            dispose();
+            try{
+                B4services.ss.close();
+            }catch(IOException ex){
+                ex.printStackTrace();
+            }
+            B4services.service();
+        });
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            dispose();
+            try {
+                B4services.ss.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            B4services.service();
             }
         });
     }
