@@ -14,11 +14,11 @@ import java.util.Base64;
 //Last updated by Maj Dushyant Choudhary April 2020
 //This function creates connection with the identity server with the
 //certificate signing request using send get and send post methods
-public class createConnection   
+public class createConnection
 {
     private final static String USER_AGENT = "Chrome";
     // HTTP GET request
-    public static boolean sendGet(String urlmaster) throws Exception 
+    public static boolean sendGet(String urlmaster) throws Exception
     {
         boolean serverstat = false;
         URL obj = new URL(urlmaster);
@@ -54,7 +54,7 @@ public class createConnection
         try {
             URL obj = new URL(urlmaster);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-           //add reuqest header
+            //add reuqest header
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", USER_AGENT);
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
@@ -70,7 +70,7 @@ public class createConnection
             System.out.println("Post parameters : " + urlParameters);
             System.out.println("Response Code : " + responseCode);
             BufferedReader in = new BufferedReader(
-            new InputStreamReader(con.getInputStream()));
+                new InputStreamReader(con.getInputStream()));
             String inputLine = null;
             StringBuffer response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
@@ -83,13 +83,13 @@ public class createConnection
             return;
         }
     }
-    
- // HTTP POST request
+
+// HTTP POST request
     void sendJKSPost(String urlmaster,String data,String certificate)  {
         try {
             URL obj = new URL(urlmaster);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-           //add reuqest header
+            //add reuqest header
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", USER_AGENT);
             con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
@@ -105,7 +105,7 @@ public class createConnection
             System.out.println("Post parameters : " + urlParameters);
             System.out.println("Response Code : " + responseCode);
             BufferedReader in = new BufferedReader(
-            new InputStreamReader(con.getInputStream()));
+                new InputStreamReader(con.getInputStream()));
             String inputLine = null;
             StringBuffer response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
@@ -118,7 +118,8 @@ public class createConnection
             return;
         }
     }
-    static	int sendPost(String urlmaster,String reqtype)  {
+
+    static int sendPost(String urlmaster,String reqtype)  {
         @SuppressWarnings("unused")
         boolean flag = false ;
         URL obj = null;
@@ -135,7 +136,7 @@ public class createConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        //add reuqest header
+        //add request header
         try {
             con.setRequestMethod("POST");
         } catch (ProtocolException e) {
@@ -205,26 +206,26 @@ public class createConnection
         }
         String recdmessage = response.toString();
         debug_level.debug(1,"Recd Message : " + recdmessage);
-        
+
         if(reqtype=="forgotpasswordotpverify")
         {
-        	return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else if(reqtype=="certificaterevocationotpverify")
         {
-        	return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else if(reqtype=="certificaterevocationreason")
         {
-        	return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else if(reqtype=="checkkeystore")
         {
-        	return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else if(reqtype=="checkcrl")
         {
-        	return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else if(reqtype=="keystorecheckotpverify")
         {
@@ -287,16 +288,16 @@ public class createConnection
                 catch (Exception ex) {}
                 return 16;
             }
-        		return Integer.parseInt(recdmessage);
+            return Integer.parseInt(recdmessage);
         }
         else
         {
-        
-        return 1;
+
+            return 1;
         }
     }
-    
- // HTTP POST request
+
+// HTTP POST request
     static	X509Certificate[] sendRevokePost(String urlmaster)  {
         @SuppressWarnings("unused")
         boolean flag = false ;
@@ -393,13 +394,13 @@ public class createConnection
             Emailid_exist.id_exist();
         }
         X509Certificate server_certificate = null;
-		try {
+        try {
             server_certificate = convertcerttox509.convertToX509Cert(ServerCert[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
         X509Certificate Client_certificate = null;
-		try {
+        try {
             Client_certificate = convertcerttox509.convertToX509Cert(ClientCert[0]);
         } catch (IOException e) {
             // TODO Auto-generated catch block
