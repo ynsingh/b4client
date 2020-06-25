@@ -110,6 +110,7 @@ public class ClientMain extends Thread
                         debug_level.debug(0,"New certificate of node will now be sent for signature to Identity Server ");
                         boolean staus = CertificateSignature.certsign((X509Certificate) newcert);
                         debug_level.debug(0,"status = "+ staus);
+			setFlagforcert();
                     }
                     if(val==14)
                     {
@@ -124,6 +125,8 @@ public class ClientMain extends Thread
                             val=http_1.sendPost(MSrequrl,"keystorecheckotpverify");
                             if(val==16)
                             {
+				    setFlagforcert();
+				    /*
                             	flagset = ReadVerifyCert.verifyCert();
                             	// check if there is valid certificate is present in the keystore of of the client.
                                 // In case of invalid certificate, new certificate generation and identity verification should be done.
@@ -133,25 +136,29 @@ public class ClientMain extends Thread
                                 //debug_level.debug(0,"servercertsaved is =" + server_cert );
                                 email_id=emailid.getemaild();
                                 debug_level.debug(0,"My Email-Id is =" + email_id );
+				*/
                             }
                             else if(val==17)
                             {
-                            	Gui.showMessageDialogBox("Record Doesnot Exists");
+                            	Gui.showMessageDialogBox("Record Doesnot Exists, so for generate new certificate");
+				System.exit(0);
                             }
                         }
                     }
-            	}
+            	}// integrity check if close
             	else
             	{
-            		flagset = ReadVerifyCert.verifyCert();
+			setFlagforcert();
+           /* 		flagset = ReadVerifyCert.verifyCert();
             		// check if there is valid certificate is present in the keystore of of the client.
-                    // In case of invalid certificate, new certificate generation and identity verification should be done.
+                    	// In case of invalid certificate, new certificate generation and identity verification should be done.
             		client_cert = ReadVerifyCert.returnClientCert();
-                    server_cert = ReadVerifyCert.returnServerCert();
-                    //debug_level.debug(0,"clientcertsaved is =" + client_cert );
-                    //debug_level.debug(0,"servercertsaved is =" + server_cert );
-                    String email_id=emailid.getemaild();
-                    debug_level.debug(0,"My Email-Id is =" + email_id );
+                    	server_cert = ReadVerifyCert.returnServerCert();
+                    	//debug_level.debug(0,"clientcertsaved is =" + client_cert );
+                    	//debug_level.debug(0,"servercertsaved is =" + server_cert );
+                    	String email_id=emailid.getemaild();
+                    	debug_level.debug(0,"My Email-Id is =" + email_id );
+			*/
             	}
                 
             } catch (CertificateException e) {
@@ -162,7 +169,7 @@ public class ClientMain extends Thread
                 e.printStackTrace();
                 System.exit(0);
             }
-        }
+        }// time flag else close
          if(flagset) {
              // get singleton object for DHTRouter, RTManager, DHTable,
              // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
@@ -262,4 +269,25 @@ public class ClientMain extends Thread
              Thread.sleep(30000);
          }
     }
+	private static void setFlagforcert(){
+		try{
+		flagset = ReadVerifyCert.verifyCert();
+                // check if there is valid certificate is present in the keystore of of the client.
+                // In case of invalid certificate, new certificate generation and identity verification should be done.
+                client_cert = ReadVerifyCert.returnClientCert();
+                server_cert = ReadVerifyCert.returnServerCert();
+                //debug_level.debug(0,"clientcertsaved is =" + client_cert );
+                //debug_level.debug(0,"servercertsaved is =" + server_cert );
+                String email_id=emailid.getemaild();
+                debug_level.debug(0,"My Email-Id is =" + email_id );
+		}
+		catch(CertificateException e) {
+			System.out.println("Exception in read and verify certifcate - setFlagforcert()-ClientMain "+e);
+			e.printStackTrace();
+                	System.exit(0);
+		}
+		catch (Exception e) {
+    			e.printStackTrace();
+		}
+	}
 }

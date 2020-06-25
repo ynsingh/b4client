@@ -66,7 +66,8 @@ public class createConnection
             wr.flush();
             wr.close();
             int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'POST' request to URL : " + urlmaster);
+            //System.out.println("\nSending 'POST' request to URL : " + urlmaster);
+            System.out.println("\nSending 'POST' request to server URL :sendPost - authenticate/createConnection " );
             System.out.println("Post parameters : " + urlParameters);
             System.out.println("Response Code : " + responseCode);
             BufferedReader in = new BufferedReader(
@@ -101,7 +102,8 @@ public class createConnection
             wr.flush();
             wr.close();
             int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'POST' request to URL : " + urlmaster);
+            System.out.println("\nSending 'POST' request to server URL :sendJKSPost - authenticate/createConnection " );
+//            System.out.println("\nSending 'POST' request to URL : " + urlmaster);
             System.out.println("Post parameters : " + urlParameters);
             System.out.println("Response Code : " + responseCode);
             BufferedReader in = new BufferedReader(
@@ -179,7 +181,8 @@ public class createConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+            System.out.println("\nSending 'POST' request to server URL :sendPost(1,2) - authenticate/createConnection " );
+ //       debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
@@ -205,7 +208,7 @@ public class createConnection
         }
         String recdmessage = response.toString();
         debug_level.debug(1,"Recd Message : " + recdmessage);
-        
+        System.out.println("The responce from get post is "+response.toString()); 
         if(reqtype=="forgotpasswordotpverify")
         {
         	return Integer.parseInt(recdmessage);
@@ -358,7 +361,8 @@ public class createConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+            System.out.println("\nSending 'POST' request to server URL :sendRevokePost - authenticate/createConnection " );
+        //debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
