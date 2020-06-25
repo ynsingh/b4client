@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
 import com.ehelpy.brihaspati4.authenticate.GlobalObject;
 import com.ehelpy.brihaspati4.authenticate.properties_access;
 import com.ehelpy.brihaspati4.overlaymgmt.XML_RTConversion;
+import com.ehelpy.brihaspati4.authenticate.Gui;
 
 public class NATHandler 
 {
@@ -59,11 +61,20 @@ public class NATHandler
 		// getting localhost ip 
 		//InetAddress ip = InetAddress.getByName("34.201.66.83"); 
 		InetAddress ip = InetAddress.getByName(BootstrapIP); 
-		System.out.println("Ip address (Inet address ) in NAT Handler"+ip.toString());
+		System.out.println("Ip address (Inet address ) in NAT Handler "+ip.toString());
 		
 		// establish the connection 34.201.66.83 103.246.106.195 
 		//Socket s = new Socket("34.201.66.83", ServerPort); 
 		//Socket s = new Socket(BootstrapIP, ServerPort); 
+		boolean flagsp=ipAddressReachable(BootstrapIP, ServerPort, 1000);
+		System.out.println(" ping result2 is  "+flagsp);
+                if(!flagsp){
+                        String msg = "Please check the internet connection because server is not reachable then try again." ;
+                        Gui.showMessageDialogBox(msg);
+                        System.exit(0);
+                }
+                else {
+
 		Socket s = new Socket(ip, ServerPort); 
 		//Socket s = new Socket("172.20.160.56", ServerPort); 
 		//Socket s = new Socket("103.246.106.197", ServerPort); 
@@ -79,7 +90,7 @@ public class NATHandler
 			@Override
 			public void run() { 
                             // write on the output stream 
-                            System.out.println("Connecting to Server with ID "+ID);
+                            System.out.println("Connecting to NAT Server with ID "+ID);
                             try {
                                 dos.writeUTF("CONNECT "+ID+" "+localip);
                             } catch (IOException ex) {
@@ -115,7 +126,7 @@ public class NATHandler
 					  while(dis.available()>0)
                                           {
                                                 String msg = dis.readUTF(); 
-                                                System.out.println("Message From Server"+msg);
+                                                System.out.println("Message From NAT Server "+msg);
                                                 if(msg.contains("ADDRESS"))
                                                 {
                                                     try 
@@ -155,6 +166,7 @@ public class NATHandler
 
 		sendMessage.start(); 
 		readMessage.start();
+		}// close ping else
         }//main close
         
         public static void UDP_Hole_Punching(final String destination_port)
@@ -243,7 +255,24 @@ public class NATHandler
              
 
         }
-        
+       
+	private static boolean ipAddressReachable(String address, int port, int timeout) {
+		try {
+ 
+			try (Socket b4Socket = new Socket()) {
+				// Connects this socket to the server with a specified timeout value.
+				b4Socket.connect(new InetSocketAddress(address, port), timeout);
+			}
+			// Return true if connection successful
+			return true;
+		} catch (IOException exception) {
+			exception.printStackTrace();
+ 
+			// Return false if connection fails
+			return false;
+		}
+	}
+
         public static String getPublicIp() throws Exception 
         {
             URL whatismyip = new URL("http://checkip.amazonaws.com");
