@@ -15,10 +15,15 @@ import com.ehelpy.brihaspati4.routingmgmt.SysOutCtrl;
 public class Save_Retrive_data_Structures {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	public static void Save_nodefilemap() throws IOException {
 		Set<String> files_extracted = DistFileSys.nodefilemap.keySet(); /// code to extract hash_id from array by
-																		/// first
-/// converting it into collection then to an array
+		/// first
+		/// converting it into collection then to an array
 		FileWriter write = null;
 		write = new FileWriter("DFS_nodefilemap.txt",true);
 		PrintWriter wr = new PrintWriter(write);
@@ -35,6 +40,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	public static void Retrive_nodefilemap() throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader("DFS_nodefilemap.txt"));
 		String Line;
@@ -61,6 +71,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	public static void Save_nodeFileChunkMap() throws IOException {
 		Set<String> files_extracted = DistFileSys.nodeFileChunkMap.keySet(); /// code to extract hash_id from array
 																				/// by
@@ -82,6 +97,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	@SuppressWarnings("null")
 	public static void Retrive_nodeFileChunkMap() throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader("DFS_nodeFileChunkMap.txt"));
@@ -120,6 +140,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	public static void Save_shared_Fileinfo_Map() throws IOException {
 		Set<String> files_extracted = DistFileSys.shared_Fileinfo_Map.keySet(); /// code to extract hash_id from
 																				/// array by
@@ -141,6 +166,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	@SuppressWarnings("null")
 	public static void Retrive_shared_Fileinfo_Map() throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader("DFS_shared_Fileinfo_Map.txt"));
@@ -179,6 +209,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	public static void Save_root_Fileinfo_Map() throws IOException {
 		Set<String> files_extracted = DistFileSys.root_Fileinfo_Map.keySet(); /// code to extract hash_id from array
 																				/// by
@@ -201,6 +236,11 @@ public class Save_Retrive_data_Structures {
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This is old DFS function
+	 * @deprecated
+	 */
+	 @Deprecated
 	@SuppressWarnings("null")
 	public static void Retrive_root_Fileinfo_Map() throws IOException {
 		BufferedReader BR = new BufferedReader(new FileReader("DFS_root_Fileinfo_Map.txt"));
