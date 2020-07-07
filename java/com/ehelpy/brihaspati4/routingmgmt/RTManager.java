@@ -32,13 +32,13 @@ public class RTManager extends Thread
 	public static Map<String, String>  Routing_Table = new ConcurrentHashMap<String, String>();
 	public static Lock lock_for_routoing_table = new ReentrantLock();
 
-	public static RTManager getRTMgr(){
+	public synchronized static RTManager getRTMgr(){
      		if(rtmgr ==null) rtmgr = new RTManager();
      		return rtmgr; 
    	}
 
-// public synchronized static void start() throws IOException
-   public synchronized static void initiateRT() throws IOException
+	// public synchronized static void start() throws IOException
+   	public synchronized static void initiateRT() throws IOException
 		
 		{
 			Save_Retrieve_RT.Retrieve_RT Read=	new Save_Retrieve_RT.Retrieve_RT();

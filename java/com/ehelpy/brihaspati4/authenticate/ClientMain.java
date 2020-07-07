@@ -1,7 +1,7 @@
 package com.ehelpy.brihaspati4.authenticate ;
 
 import com.ehelpy.brihaspati4.DFS.DFSUI;
-import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
+//import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.NATHandler;
 import com.ehelpy.brihaspati4.comnmgr.NATServer;
@@ -193,7 +193,7 @@ public class ClientMain extends Thread
              // sms_send_rec_management.empty_rec_folder();
              IndexManagementUtilityMethods.Ip_txt_empty();
              // call objects and methods from classes of - communication
-             //            CommunicationManager cm= CommunicationManager.getCM(); //todo
+             // CommunicationManager cm= CommunicationManager.getCM(); //todo
              CommunicationManager cm= new CommunicationManager();
              cm.start();
              // Communication manager thread started. The thread will have buffers to keep incoming messages
@@ -210,14 +210,14 @@ public class ClientMain extends Thread
                  //RTManager rm = RTManager.getRTMgr(); //TODO
                  //rm.start();//TODO
                  RTManager.initiateRT();
-                 Save_Retrive_data_Structures.Save_nodeFileChunkMap();
-                 Save_Retrive_data_Structures.Save_nodefilemap();
-                 Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
-                 Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
-                 Save_Retrive_data_Structures.Retrive_nodeFileChunkMap();
-                 Save_Retrive_data_Structures.Retrive_nodefilemap();
-                 Save_Retrive_data_Structures.Retrive_root_Fileinfo_Map();
-                 Save_Retrive_data_Structures.Retrive_shared_Fileinfo_Map();
+                 //Save_Retrive_data_Structures.Save_nodeFileChunkMap();
+//                 Save_Retrive_data_Structures.Save_nodefilemap();
+  //               Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
+    //             Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
+      //           Save_Retrive_data_Structures.Retrive_nodeFileChunkMap();
+        //         Save_Retrive_data_Structures.Retrive_nodefilemap();
+          //       Save_Retrive_data_Structures.Retrive_root_Fileinfo_Map();
+            //     Save_Retrive_data_Structures.Retrive_shared_Fileinfo_Map();
              } catch (IOException e) {
                  // TODO Auto-generated catch block
                  e.printStackTrace();

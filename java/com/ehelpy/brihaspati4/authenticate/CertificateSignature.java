@@ -101,9 +101,9 @@ public class CertificateSignature {
                 e3.printStackTrace();
             }
             GenerateCertificate2.saveKeyStore(keyStore, "KeyStore.JKS", password);
-            debug_level.debug(1, "New Certificates and Signature saved to Keystore");
+            debug_level.debug(1, "New Certificates and Signature saved to Keystore in cert sign");
             certsign = true;
-            debug_level.debug(1, "All Certificats and Signatures have been saved to a file and Certificate Signature routine Completed ");
+            debug_level.debug(1, "All Certificats and Signatures have been saved to a file and Certificate Signature routine Completed in cert sign");
         }
         return certsign;
     }
@@ -172,9 +172,9 @@ public class CertificateSignature {
                 e.printStackTrace();
             }
             GenerateCertificate2.saveKeyStore(keyStore, "KeyStore.JKS", password);
-            debug_level.debug(1, "New Certificates and Signature saved to Keystore");
+            debug_level.debug(1, "New Certificates and Signature saved to Keystore via revoke cert sign");
             certsign = true;
-            debug_level.debug(1, "All Certificats and Signatures have been saved to a file and Certificate Signature routine Completed ");
+            debug_level.debug(1, "All Certificats and Signatures have been saved to a file and Certificate Signature routine Completed via revoke cert sign");
         }
         return certsign;
     }
