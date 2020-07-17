@@ -32,7 +32,7 @@ public class RTManager extends Thread
     public static Map<String, String>  Routing_Table = new ConcurrentHashMap<String, String>();
     public static Lock lock_for_routoing_table = new ReentrantLock();
 
-    public synchronized tatic RTManager getRTMgr() {
+    public synchronized static RTManager getRTMgr() {
         if(rtmgr ==null) rtmgr = new RTManager();
         return rtmgr;
     }
