@@ -1,7 +1,7 @@
 package com.ehelpy.brihaspati4.authenticate ;
 
 import com.ehelpy.brihaspati4.DFS.DFSUI;
-import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
+//import com.ehelpy.brihaspati4.DFS.Save_Retrive_data_Structures;
 import com.ehelpy.brihaspati4.comnmgr.CommunicationManager;
 import com.ehelpy.brihaspati4.comnmgr.NATHandler;
 import com.ehelpy.brihaspati4.comnmgr.NATServer;
@@ -110,6 +110,7 @@ public class ClientMain extends Thread
                         debug_level.debug(0,"New certificate of node will now be sent for signature to Identity Server ");
                         boolean staus = CertificateSignature.certsign((X509Certificate) newcert);
                         debug_level.debug(0,"status = "+ staus);
+                        setFlagforcert();
                     }
                     if(val==14)
                     {
@@ -124,8 +125,9 @@ public class ClientMain extends Thread
                             val=http_1.sendPost(MSrequrl,"keystorecheckotpverify");
                             if(val==16)
                             {
-                                flagset = ReadVerifyCert.verifyCert();
+//                                flagset = ReadVerifyCert.verifyCert();
                                 // check if there is valid certificate is present in the keystore of of the client.
+                                setFlagforcert();
                                 // In case of invalid certificate, new certificate generation and identity verification should be done.
                                 client_cert = ReadVerifyCert.returnClientCert();
                                 server_cert = ReadVerifyCert.returnServerCert();
@@ -136,22 +138,25 @@ public class ClientMain extends Thread
                             }
                             else if(val==17)
                             {
-                                Gui.showMessageDialogBox("Record Doesnot Exists");
+                                Gui.showMessageDialogBox("Record Doesnot Exists, so for generate new certificate");
+                                System.exit(0);
                             }
                         }
                     }
-                }
+                }// integrity check if close
                 else
                 {
-                    flagset = ReadVerifyCert.verifyCert();
-                    // check if there is valid certificate present in the keystore of the client.
-                    // In case of invalid certificate, new certificate generation and identity verification should be done.
-                    client_cert = ReadVerifyCert.returnClientCert();
-                    server_cert = ReadVerifyCert.returnServerCert();
-                    //debug_level.debug(0,"clientcertsaved is =" + client_cert );
-                    //debug_level.debug(0,"servercertsaved is =" + server_cert );
-                    String email_id=emailid.getemaild();
-                    debug_level.debug(0,"My Email-Id is =" + email_id );
+                    setFlagforcert();
+                    /* 		flagset = ReadVerifyCert.verifyCert();
+                     		// check if there is valid certificate is present in the keystore of of the client.
+                             	// In case of invalid certificate, new certificate generation and identity verification should be done.
+                     		client_cert = ReadVerifyCert.returnClientCert();
+                             	server_cert = ReadVerifyCert.returnServerCert();
+                             	//debug_level.debug(0,"clientcertsaved is =" + client_cert );
+                             	//debug_level.debug(0,"servercertsaved is =" + server_cert );
+                             	String email_id=emailid.getemaild();
+                             	debug_level.debug(0,"My Email-Id is =" + email_id );
+                    */
                 }
 
             } catch (CertificateException e) {
@@ -162,7 +167,7 @@ public class ClientMain extends Thread
                 e.printStackTrace();
                 System.exit(0);
             }
-        }
+        }// time flag else close
         if(flagset) {
             // get singleton object for DHTRouter, RTManager, DHTable,
             // SpillOverTable, ComnMgr, ProxyRouter, MulticastMgr, MediaBridge,
@@ -186,7 +191,7 @@ public class ClientMain extends Thread
             // sms_send_rec_management.empty_rec_folder();
             IndexManagementUtilityMethods.Ip_txt_empty();
             // call objects and methods from classes of - communication
-            //            CommunicationManager cm= CommunicationManager.getCM(); //todo
+            // CommunicationManager cm= CommunicationManager.getCM(); //todo
             CommunicationManager cm= new CommunicationManager();
             cm.start();
             // Communication manager thread started. The thread will have buffers to keep incoming messages
@@ -203,14 +208,14 @@ public class ClientMain extends Thread
                 //RTManager rm = RTManager.getRTMgr(); //TODO
                 //rm.start();//TODO
                 RTManager.initiateRT();
-                Save_Retrive_data_Structures.Save_nodeFileChunkMap();
-                Save_Retrive_data_Structures.Save_nodefilemap();
-                Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
-                Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
-                Save_Retrive_data_Structures.Retrive_nodeFileChunkMap();
-                Save_Retrive_data_Structures.Retrive_nodefilemap();
-                Save_Retrive_data_Structures.Retrive_root_Fileinfo_Map();
-                Save_Retrive_data_Structures.Retrive_shared_Fileinfo_Map();
+                //Save_Retrive_data_Structures.Save_nodeFileChunkMap();
+//                 Save_Retrive_data_Structures.Save_nodefilemap();
+                //               Save_Retrive_data_Structures.Save_root_Fileinfo_Map();
+                //             Save_Retrive_data_Structures.Save_shared_Fileinfo_Map();
+                //           Save_Retrive_data_Structures.Retrive_nodeFileChunkMap();
+                //         Save_Retrive_data_Structures.Retrive_nodefilemap();
+                //       Save_Retrive_data_Structures.Retrive_root_Fileinfo_Map();
+                //     Save_Retrive_data_Structures.Retrive_shared_Fileinfo_Map();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -260,6 +265,28 @@ public class ClientMain extends Thread
         }
         while(globj.getRunStatus()) {
             Thread.sleep(30000);
+        }
+    }
+
+    private static void setFlagforcert() {
+        try {
+            flagset = ReadVerifyCert.verifyCert();
+            // check if there is valid certificate is present in the keystore of of the client.
+            // In case of invalid certificate, new certificate generation and identity verification should be done.
+            client_cert = ReadVerifyCert.returnClientCert();
+            server_cert = ReadVerifyCert.returnServerCert();
+            //debug_level.debug(0,"clientcertsaved is =" + client_cert );
+            //debug_level.debug(0,"servercertsaved is =" + server_cert );
+            String email_id=emailid.getemaild();
+            debug_level.debug(0,"My Email-Id is =" + email_id );
+        }
+        catch(CertificateException e) {
+            System.out.println("Exception in read and verify certifcate - setFlagforcert()-ClientMain "+e);
+            e.printStackTrace();
+            System.exit(0);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

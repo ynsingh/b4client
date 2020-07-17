@@ -27,7 +27,8 @@ public class createKeystoreRecoveryConnection
         //add request header
         con.setRequestProperty("User-Agent", USER_AGENT);
         int responseCode = con.getResponseCode();
-        debug_level.debug(1,"\nSending 'GET' request to URL : " + urlmaster);
+        System.out.println("\nSending 'GET' request to server URL :sendGet - authenticate/createKeystoreRecoveryConnection " );
+        //debug_level.debug(1,"\nSending 'GET' request to URL : " + urlmaster);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = new BufferedReader(
         new InputStreamReader(con.getInputStream()));
@@ -102,7 +103,8 @@ public class createKeystoreRecoveryConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+        System.out.println("\nSending 'POST' request to server URL :sendPost - authenticate/createKeystoreRecoveryConnection " );
+//        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
@@ -197,7 +199,8 @@ public class createKeystoreRecoveryConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+        System.out.println("\nSending 'POST' request to server URL :sendPosti(1) - authenticate/createKeystoreRecoveryConnection " );
+        //debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
@@ -317,7 +320,8 @@ public class createKeystoreRecoveryConnection
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+        System.out.println("\nSending 'POST' request to server URL :sendJKSPost - authenticate/createKeystoreRecoveryConnection " );
+        //debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
