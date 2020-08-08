@@ -8,14 +8,16 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
-//This program was last modified by Lt Col Ankit Singhal Dated 22 May 2019 ; 1630 Hrs
+
+//This program was last modified Maj Dushyant Choudhary
 //This function send the OTP received to the Identity server for Authentication of the peer.
 public class createotpConnection   {
     private final static  String USER_AGENT = "Chrome";
     private static X509Certificate server_certificate =null;
     private static X509Certificate Client_certificate =null;
     // HTTP GET request
-    void sendGet(String urlmaster) throws Exception {
+    void sendGet(String urlmaster) throws Exception 
+    {
         URL obj = new URL(urlmaster);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         // optional default is GET
@@ -97,13 +99,15 @@ public class createotpConnection   {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
+        System.out.println("\nSending 'POST' request to server URL :sendPost(1) - authenticate/createotpConnection " );
+        //debug_level.debug(1,"\nSending 'POST' request to URL : " + urlmaster);
         debug_level.debug(1,"Post parameters : " + urlParameters);
         debug_level.debug(1,"Response Code : " + responseCode);
         BufferedReader in = null;
         try {
             in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
+        debug_level.debug(1,"In put stream data : " + in.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

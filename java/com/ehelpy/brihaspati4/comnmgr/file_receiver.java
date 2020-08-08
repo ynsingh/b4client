@@ -86,7 +86,7 @@ class RequestHandler extends Thread
     {
         try
         {
-            System.out.println( "Received a connection" );
+            System.out.println( "Received a connection  in file_receiver - commanager" );
 
             int fileReceiveIndex = 0;
             // Get input streams
@@ -117,18 +117,18 @@ class RequestHandler extends Thread
             fos.close();
             socket.close();
 
-            for (int i = 0; i < mybytearray.length; i++) {
-                System.out.print(mybytearray[i] + " ");
-            }
-            SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
+//            for (int i = 0; i < mybytearray.length; i++) {
+  //              System.out.print(mybytearray[i] + " ");
+    //        }
+      //      SysOutCtrl.SysoutSet("File  downloaded (" + current + " bytes read)");
             File inFile = new File(fileName);
 
-            SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
-            SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
-            SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
+        //    SysOutCtrl.SysoutSet("File length after receiving" + inFile.length());
+          //  SysOutCtrl.SysoutSet("Receiving file index"+fileReceiveIndex);
+         //   SysOutCtrl.SysoutSet("inFile" + inFile.toString() + inFile.length() + "bytes");
 
             String[] xmlParsed =ParseXmlFile.ParseXml(inFile) ;
-            System.out.println("file received is : "+xmlParsed[0]);
+          //  System.out.println("file received is : "+xmlParsed[0]);
             if(xmlParsed[0].equals("0031"))
             {
                 CommunicationManager.RxBufferOM.add(inFile);
@@ -138,7 +138,7 @@ class RequestHandler extends Thread
 
             fileReceiveIndex++;
 
-            System.out.println( "Connection closed" );
+            System.out.println( "Connection closed in file_receiver - commanager" );
         }
         catch( Exception e )
         {
