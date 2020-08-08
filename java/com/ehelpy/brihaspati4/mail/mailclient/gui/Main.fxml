@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="307.0" prefWidth="597.0"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" >
+   <children>
+      <ImageView fitHeight="150.0" fitWidth="473.0" layoutX="218.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@logo-small.png" />
+         </image>
+      </ImageView>
+      <Hyperlink fx:id="addAc" layoutX="236.0" layoutY="200.0" onAction="#AddAccount" prefHeight="24.0" prefWidth="117.0" text="Add an account" />
+      <Hyperlink fx:id="openAc" layoutX="206.0" layoutY="260.0" onAction="#OpenAccount" text="Open an existing account" />
+   </children>
+</AnchorPane>

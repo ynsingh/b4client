@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.web.WebView?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722.0" prefWidth="1179.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <children>
+
+        <TreeView fx:id="mailFolders" layoutX="5.0" layoutY="50.0" prefHeight="518.0" prefWidth="208.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="50.0" />
+        <TableView fx:id="mailIndex" layoutX="208.0" layoutY="50.0" prefHeight="262.0" prefWidth="961.0" AnchorPane.leftAnchor="216.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
+            <columns>
+                <TableColumn fx:id="subjC" prefWidth="310.0" text="Subject" />
+                <TableColumn fx:id="fromC" prefWidth="243.0" text="From" />
+                <TableColumn fx:id="dateC" prefWidth="170.0" text="Date" />
+                <TableColumn fx:id="sizeC" prefWidth="170.0" text="Size" />
+                <TableColumn fx:id="flagC" prefWidth="55.0" text="Flag" />
+            </columns></TableView>
+        <WebView fx:id="msgView" layoutX="208.0" layoutY="313.0" prefHeight="394.0" prefWidth="961.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="312.0" />
+        <MenuBar fx:id="mailReadMenu">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoCompose" text="Compose" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoClose" text="Open account Management" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoClose" text="Save email" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoSync" text="Sync Account" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoClose" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoDelete" text="Delete" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGotheme" text="Theme" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoAddressBook" text="Address" />
+                        <MenuItem mnemonicParsing="false" onAction="#readUnread" text="Toggle" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoHeader" text="View header" />
+                        <MenuItem mnemonicParsing="false" onAction="#readMainGoAbout" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+
+        <Button fx:id="compose" layoutX="488.0" layoutY="3.0" mnemonicParsing="false" onAction="#readMainGoCompose" text="Compose" />
+        <Button fx:id="deleteMail" layoutX="578.0" layoutY="3.0" mnemonicParsing="false" onAction="#readMainGoDelete" text="Delete" />
+        <Button fx:id="replyMail" layoutX="650.0" layoutY="3.0" mnemonicParsing="false" onAction="#readMainGoReply" text="Reply" />
+        <Button fx:id="forwardMail" layoutX="718.0" layoutY="3.0" mnemonicParsing="false" onAction="#readMainGoForward" text="Forward" />
+        <Text fx:id="search" layoutX="790.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search" />
+        <TextField fx:id="searchMail" layoutX="840.0" layoutY="3.0" onAction="#readMainGoSearch" prefHeight="26.0" prefWidth="274.0" />
+
+
+        <!--<Label fx:id="downAttachLabel" layoutX="814.0" layoutY="13.0" prefHeight="17.0" prefWidth="157.0" text="downloading attachmens..." />
+        <ProgressBar fx:id="downAttachProgress" layoutX="814.0" layoutY="37.0" prefHeight="18.0" prefWidth="157.0" progress="0.0" />
+        <Button fx:id="downAttachBtn" layoutX="610.0" layoutY="21.0" mnemonicParsing="false" onAction="#downAttachBtnAction" prefHeight="25.0" prefWidth="147.0" text="Download Attachments" />-->
+    </children>
+
+</AnchorPane>
