@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="397.0" prefWidth="615.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ImageView fitHeight="150.0" fitWidth="473.0" layoutX="224.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@logo-small.png" />
+            </image>
+        </ImageView>
+
+        <Text layoutX="128.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email Address" />
+        <TextField fx:id="emailMasterCfg" layoutX="245.0" layoutY="172.0" prefHeight="26.0" prefWidth="305.0" />
+
+        <Text layoutX="67.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter master Password" />
+        <PasswordField fx:id="passMasterCfg" layoutX="245.0" layoutY="212.0" prefHeight="26.0" prefWidth="305.0" />
+
+        <Text layoutX="50.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm master Password" />
+        <PasswordField fx:id="repassMasterCfg" layoutX="245.0" layoutY="252.0" prefHeight="26.0" prefWidth="305.0" />
+
+        <Button fx:id="delMasterCfg" layoutX="73.0" layoutY="318.0" mnemonicParsing="false" onAction="#delMasterCfgGo" text="Delete" />
+        <Button fx:id="chgMasterCfg" layoutX="235.0" layoutY="318.0" mnemonicParsing="false" onAction="#chgMasterCfgGo" text="Change Master Password" >
+            <style>
+                -fx-pref-width: 200px;
+            </style></Button>
+        <Button fx:id="saveMasterCfg" layoutX="478.0" layoutY="318.0" mnemonicParsing="false" onAction="#saveMasterCfgGo" text="Save" />
+
+    </children>
+</AnchorPane>

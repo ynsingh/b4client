@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" >
+    <children>
+        <MenuBar fx:id="configMenu" prefHeight="29.0" prefWidth="600.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="importC" mnemonicParsing="false" onAction="#importConfig" text="Import Config" />
+                        <MenuItem fx:id="ExportC" mnemonicParsing="false" onAction="#exportConfig" text="Export Config" />
+                        <MenuItem fx:id="close" mnemonicParsing="false" onAction="#createConfigGoClose" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem fx:id="help" mnemonicParsing="false" onAction="#showHelp" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <Text layoutX="39.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" wrappingWidth="51.0673828125" />
+        <Text layoutX="39.0" layoutY="124.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password" wrappingWidth="64.7294921875" />
+        <Text layoutX="39.0" layoutY="170.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IMAP Server" />
+        <Text layoutX="39.0" layoutY="213.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IMAP Port" />
+        <Text layoutX="39.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SMTP Server" />
+        <Text layoutX="39.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SMTP Port" />
+        <TextField fx:id="emailId" layoutX="174.0" layoutY="54.0" prefHeight="26.0" prefWidth="336.0" promptText="e.g. admin@iitk.ac.in" />
+        <PasswordField fx:id="password" layoutX="174.0" layoutY="106.0" prefHeight="26.0" prefWidth="336.0" promptText="Your password"  />
+        <TextField fx:id="imaphost" layoutX="174.0" layoutY="152.0" prefHeight="26.0" prefWidth="336.0" promptText="e.g. imap.iitk.ac.in" />
+        <TextField fx:id="imapport" layoutX="174.0" layoutY="195.0" prefHeight="26.0" prefWidth="336.0" promptText="e,g, 143" />
+        <TextField fx:id="smtphost" layoutX="174.0" layoutY="249.0" prefHeight="26.0" prefWidth="336.0" promptText="ie.g. smtp.cc.iitk.ac.in" />
+        <TextField fx:id="smtpport" layoutX="174.0" layoutY="295.0" prefHeight="26.0" prefWidth="336.0" promptText="e.g. 25" />
+        <Text layoutX="236.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="B4Email: IIT Kanpur" />
+        <Button fx:id="createConfigNxt" layoutX="342.0" layoutY="335.0" mnemonicParsing="false" onAction="#createConfigGoNxt" text="Save" />
+      <Button fx:id="createConfigClose" layoutX="465.0" layoutY="335.0" mnemonicParsing="false" onAction="#createConfigGoClose" text="Exit" />
+
+    </children>
+</AnchorPane>

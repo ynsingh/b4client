@@ -1,0 +1,81 @@
+AnchorPane{
+  -fx-padding: 0;
+  -fx-background-color: radial-gradient(center 70% 5%, radius 60%, #013220,#133201);
+  -fx-background-repeat: repeat, no-repeat;
+  -fx-background-position: left top, left 19px top 15px ;
+}
+
+MenuBar {
+    -fx-background-color:
+            linear-gradient(#ffd65b, #e68400),
+            linear-gradient(#ffef84, #f2ba44),
+            linear-gradient(#ffea6a, #efaa22),
+            linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+            linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-background-radius: 5,5,4;
+    -fx-padding: 0;
+    -fx-text-fill: #242d35;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 12px;
+    -fx-text-fill: red;
+}
+
+Button {
+    -fx-background-color:
+            linear-gradient(#ffd65b, #e68400),
+            linear-gradient(#ffef84, #f2ba44),
+            linear-gradient(#ffea6a, #efaa22),
+            linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+            linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-text-fill: #242d35;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 12px;
+    -fx-text-fill: green;
+    -fx-pref-height: 19px;
+    -fx-pref-width: 64px;
+    -fx-background-radius: 30;
+    -fx-border-radius: 20;
+    }
+
+
+delMasterCfg {
+    -fx-pref-height: 30px;
+    -fx-pref-width: 100px;
+    }
+
+
+MenuItem {
+-fx-background-color:
+        #000000,
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 12 30 12 30;
+    -fx-text-fill: linear-gradient(#ff5400, #be1d00);
+    -fx-font-size: 12px;
+}
+.menu .label
+{
+    -fx-text-fill: green;
+}
+
+*{
+  -fx-border-radius: 0 0 0 0;
+  -fx-background-radius: 0 0 0 0;
+}
+
+.root {
+  -fx-background-color: radial-gradient(radius 25%, blue, white, yellow, orange, orangered, darkred);
+  -fx-font-family: "Serif";
+}
+.viewport {
+	    -fx-background-color: transparent;
+}
+.scroll-pane {
+	    -fx-background-color: transparent;
+	}
