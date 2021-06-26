@@ -263,6 +263,9 @@ public class ClientMain extends Thread
             // }
             DFSUI.essentials();
         }
+        
+        // Loop created so that object reference of Global object is maintained and it is not garbage collected.
+        // It need to exist for all the modules to run.
         while(globj.getRunStatus()) {
             Thread.sleep(30000);
         }
